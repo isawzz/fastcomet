@@ -8,6 +8,8 @@ ____ https://cloud.fastcomet.com/
 
 ssh -p 17177 moxitoon@de11.fcomet.com
 (alles sehr komisch aber ich bin drin!)
+wenn ssh nicht geht dann liegt es an der IP die nicht geadded wurde!
+goto what's my ip und adde sie mit dem fastcomet ssh tool
 
 _______ Ubuntu (see OneNote ubuntu linux)
 move file or dir: mv source target
