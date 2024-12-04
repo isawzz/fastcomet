@@ -1,0 +1,5 @@
+{
+  "ignore": ["temp/*", "otherDir/*","assets/*","img/*"],
+  "watch": ["wi/app*.js","wi/ai*.js","ode/app.js","frei/app.js","easy/app.js","free/app.js"],
+  "ext": "js"
+}
