@@ -1,0 +1,161 @@
+
+_______ FASTCOMET
+____ created test0/app.js: www.moxito.online/test0
+(not secure!) https://de11.fcomet.com:2083/cpsess0328552022/frontend/jupiter/lveversion/nodejs-selector.html.tt#/applications/test0
+____ added IP address to ssh tool
+
+____ https://cloud.fastcomet.com/
+
+ssh -p 17177 moxitoon@de11.fcomet.com
+(alles sehr komisch aber ich bin drin!)
+
+_______ Ubuntu (see OneNote ubuntu linux)
+move file or dir: mv source target
+delete file: rm -r target
+
+
+
+
+
+
+
+_______ MATH
+Jemand wuerfelt mit 3 wuerfeln und notiert die anzahl der wuerfel die eine gerade augenzahl zeigen.
+1) berechne den Erwartungswert und die Varianz.
+
+Jemand wirft dreimal eine Muenze und notiert die Anzahl von 'Wappen'. 
+1) berechne den Erwartungswert und die Varianz.
+
+
+js function that calculates the minimum number of trials necessary to get a success with a probability of x percent for binomial distribution with success probability p.
+
+js get date in yyyy-mm-dd format
+js get time in hh:mm format (24hours)
+
+js function that receives a container of specific size and inserts 2 divs: the top one should have 
+height auto. the bottom one should cover all the rest of the container height. when the top one grows, 
+the bottom one should automatically shrink in height. the bottom one should have overflow-y = 'scroll'
+
+js function that receives a container of specific size and inserts 3 divs: the top one should have 
+height auto. the bottom one should cover all the rest of the container height. when the top one grows, 
+the bottom one should automatically shrink in height. 
+the bottom one should have 2 divs inside: the left one is a sidebar that has the 'menu' symbol (3 lines) in it.
+when that sign is clicked, the sidebar should open/close (toggle) with a transition of .5s and ease.
+the right one covers the rest of the page width and should have a scroll bar (overlow-y scroll);
+automatically when the side bar opens, the left divs should shrink in width and vice versa.
+
+_______ how to start a project
+
+1. use mBodyResetter and mLayout... to make basic page layout
+
+_______
+beveled_star
+flower_star
+glowing_star
+flat_star
+eight_pointed_star
+ninja_star
+north_star_shuriken
+round_star
+star
+staryu
+star_shuriken
+seven_pointed_star
+laser-burst
+pentacle
+spikes
+spikes_init
+spikes_half
+spikes_full
+star_of_life
+
+
+
+monstera_leaf
+_______ TOC
+- wi: https://en.wikivoyage.org/wiki/Destinations
+- ode: crazu = lacuna canvas zeug
+- omnifin: 
+  - date frame button und 
+  - per month amount (toggleButton)
+  - see sql =>switch to sql view and execute statement
+  - color amount: rot ausgabe, gruen einnahme, schwarz internal (text color)
+
+
+_________ scrape / extract from wikivoyage dump
+enwikivoyage-20240220-pages-meta-current.xml
+
+npm install xml2js wikijs sax express
+
+
+_________ hugging face
+login angleeb
+account, settings, access tokens: https://huggingface.co/settings/tokens
+create new token: token1
+npm install express dotenv;
+in same dir as app.js, have .env file with 
+	HUGGING_FACE_API_TOKEN=your_hugging_face_api_token_here
+in app.js:
+const dotenv = require('dotenv');
+dotenv.config();
+
+app.get('/fetch-answer', async (req, res) => {
+  const query = req.query.question;
+  if (!query) {
+    return res.status(400).json({ error: 'Question parameter is required' });
+  }
+
+  const url = 'https://api-inference.huggingface.co/models/gpt2';
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.HUGGING_FACE_API_TOKEN}`,
+    },
+    body: JSON.stringify({ inputs: query }),
+  };
+
+  try {
+    const response = await fetch(url, options);
+    const data = await response.json();
+
+    if (response.ok) {
+      res.json({ answer: data[0].generated_text });
+    } else {
+      res.status(response.status).json({ error: data });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching answer from Hugging Face API', details: error.message });
+  }
+});
+
+_________ work with wikipedia api
+1. npm install express node-fetch
+
+2. in app.js add
+const fetch = require('node-fetch');
+...
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*'); // Allow requests from any origin
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
+...
+// Proxy endpoint to fetch data from Wikipedia
+app.get('/wiki', async (req, res) => {
+    const { keyword } = req.query;
+    if (!keyword) {
+        return res.status(400).json({ error: 'Keyword parameter is required.' });
+    }
+
+    try {
+        const encodedKeyword = encodeURIComponent(keyword);
+        const apiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro&explaintext&redirects=1&titles=${encodedKeyword}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error('Error fetching data from Wikipedia:', error);
+        res.status(500).json({ error: 'Error fetching data from Wikipedia.' });
+    }
+});

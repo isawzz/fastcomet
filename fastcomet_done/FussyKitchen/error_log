@@ -1,0 +1,67 @@
+[28-Nov-2024 13:32:22 UTC] PHP Warning:  Undefined array key "sitepad_setup_start" in /usr/local/sitepad/editor/site-data/plugins/sitepad/sitepad.php on line 317
+[28-Nov-2024 13:32:22 UTC] PHP Warning:  Undefined variable $parent_post_id in /usr/local/sitepad/editor/site-data/plugins/pagelayer/main/functions.php on line 2820
+[28-Nov-2024 13:32:23 UTC] PHP Warning:  Undefined variable $parent_post_id in /usr/local/sitepad/editor/site-data/plugins/pagelayer/main/functions.php on line 2820
+[28-Nov-2024 13:32:23 UTC] PHP Warning:  Undefined variable $parent_post_id in /usr/local/sitepad/editor/site-data/plugins/pagelayer/main/functions.php on line 2820
+[28-Nov-2024 13:32:23 UTC] PHP Warning:  Undefined variable $parent_post_id in /usr/local/sitepad/editor/site-data/plugins/pagelayer/main/functions.php on line 2820
+[28-Nov-2024 13:32:23 UTC] PHP Warning:  Undefined variable $parent_post_id in /usr/local/sitepad/editor/site-data/plugins/pagelayer/main/functions.php on line 2820
+[28-Nov-2024 13:32:23 UTC] PHP Warning:  Undefined variable $parent_post_id in /usr/local/sitepad/editor/site-data/plugins/pagelayer/main/functions.php on line 2820
+[28-Nov-2024 13:32:23 UTC] PHP Warning:  Undefined variable $parent_post_id in /usr/local/sitepad/editor/site-data/plugins/pagelayer/main/functions.php on line 2820
+[28-Nov-2024 13:32:23 UTC] PHP Warning:  Undefined variable $parent_post_id in /usr/local/sitepad/editor/site-data/plugins/pagelayer/main/functions.php on line 2820
+[28-Nov-2024 13:38:00 UTC] PHP Warning:  require_once(/usr/local/sitepad/editor//wp-admin/includes/plugin.php): Failed to open stream: No such file or directory in /usr/local/sitepad/editor/site-data/plugins/pagelayer-pro/main/plugin-update-checker.php on line 363
+[28-Nov-2024 13:38:00 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/usr/local/sitepad/editor//wp-admin/includes/plugin.php' (include_path='.:/opt/alt/php82/usr/share/pear:/opt/alt/php82/usr/share/php:/usr/share/pear:/usr/share/php') in /usr/local/sitepad/editor/site-data/plugins/pagelayer-pro/main/plugin-update-checker.php:363
+Stack trace:
+#0 /usr/local/sitepad/editor/site-data/plugins/pagelayer-pro/main/plugin-update-checker.php(326): PagelayerUpdateChecker_3_2->getPluginHeader()
+#1 /usr/local/sitepad/editor/site-data/plugins/pagelayer-pro/main/plugin-update-checker.php(375): PagelayerUpdateChecker_3_2->getInstalledVersion()
+#2 /usr/local/sitepad/editor/site-data/plugins/pagelayer-pro/main/plugin-update-checker.php(1357): PagelayerUpdateChecker_3_2->checkForUpdates()
+#3 /usr/local/sitepad/editor/site-inc/class-wp-hook.php(286): Pagelayer_PucScheduler_3_2->maybeCheckForUpdates()
+#4 /usr/local/sitepad/editor/site-inc/class-wp-hook.php(310): WP_Hook->apply_filters()
+#5 /usr/local/sitepad/editor/site-inc/plugin.php(531): WP_Hook->do_action()
+#6 /usr/local/sitepad/editor/cron.php(133): do_action_ref_array()
+#7 /usr/local/sitepad/editor/site-inc/bootstrap.php(86): include_once('/usr/local/site...')
+#8 /home3/moxitoon/public_html/FussyKitchen/index.php(28): include_once('/usr/local/site...')
+#9 {main}
+  thrown in /usr/local/sitepad/editor/site-data/plugins/pagelayer-pro/main/plugin-update-checker.php on line 363
+[28-Nov-2024 13:38:00 UTC] PHP Warning:  Undefined variable $current_theme_actions in /usr/local/sitepad/editor/site-admin/index.php on line 391
+[28-Nov-2024 13:38:00 UTC] PHP Fatal error:  Uncaught TypeError: implode(): Argument #1 ($array) must be of type array, string given in /usr/local/sitepad/editor/site-admin/index.php:391
+Stack trace:
+#0 /usr/local/sitepad/editor/site-admin/index.php(391): implode()
+#1 /usr/local/sitepad/editor/site-inc/bootstrap.php(86): include_once('/usr/local/site...')
+#2 /home3/moxitoon/public_html/FussyKitchen/index.php(28): include_once('/usr/local/site...')
+#3 {main}
+  thrown in /usr/local/sitepad/editor/site-admin/index.php on line 391
+[28-Nov-2024 13:39:03 UTC] PHP Fatal error:  Uncaught TypeError: closedir(): Argument #1 ($dir_handle) must be of type resource or null, bool given in /usr/local/sitepad/editor/site-admin/includes/file.php:168
+Stack trace:
+#0 /usr/local/sitepad/editor/site-admin/includes/file.php(168): closedir()
+#1 /usr/local/sitepad/editor/site-inc/functions.php(6803): list_files()
+#2 /usr/local/sitepad/editor/site-inc/class-wp-hook.php(286): wp_privacy_delete_old_export_files()
+#3 /usr/local/sitepad/editor/site-inc/class-wp-hook.php(310): WP_Hook->apply_filters()
+#4 /usr/local/sitepad/editor/site-inc/plugin.php(531): WP_Hook->do_action()
+#5 /usr/local/sitepad/editor/cron.php(133): do_action_ref_array()
+#6 /usr/local/sitepad/editor/site-inc/bootstrap.php(86): include_once('/usr/local/site...')
+#7 /home3/moxitoon/public_html/FussyKitchen/index.php(28): include_once('/usr/local/site...')
+#8 {main}
+  thrown in /usr/local/sitepad/editor/site-admin/includes/file.php on line 168
+[28-Nov-2024 13:39:03 UTC] PHP Warning:  Undefined variable $current_theme_actions in /usr/local/sitepad/editor/site-admin/index.php on line 391
+[28-Nov-2024 13:39:03 UTC] PHP Fatal error:  Uncaught TypeError: implode(): Argument #1 ($array) must be of type array, string given in /usr/local/sitepad/editor/site-admin/index.php:391
+Stack trace:
+#0 /usr/local/sitepad/editor/site-admin/index.php(391): implode()
+#1 /usr/local/sitepad/editor/site-inc/bootstrap.php(86): include_once('/usr/local/site...')
+#2 /home3/moxitoon/public_html/FussyKitchen/index.php(28): include_once('/usr/local/site...')
+#3 {main}
+  thrown in /usr/local/sitepad/editor/site-admin/index.php on line 391
+[28-Nov-2024 13:54:13 UTC] PHP Warning:  Undefined variable $urls in /usr/local/sitepad/editor/site-data/plugins/pagelayer/main/ajax.php on line 621
+[28-Nov-2024 13:54:13 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in /usr/local/sitepad/editor/site-data/plugins/pagelayer/main/ajax.php on line 621
+[28-Nov-2024 14:07:20 UTC] PHP Warning:  Attempt to read property "post_status" on null in /usr/local/sitepad/editor/site-admin/includes/template.php on line 767
+[28-Nov-2024 14:07:20 UTC] PHP Warning:  Attempt to read property "post_date" on null in /usr/local/sitepad/editor/site-admin/includes/template.php on line 779
+[28-Nov-2024 14:53:05 UTC] PHP Fatal error:  Uncaught TypeError: closedir(): Argument #1 ($dir_handle) must be of type resource or null, bool given in /usr/local/sitepad/editor/site-admin/includes/file.php:168
+Stack trace:
+#0 /usr/local/sitepad/editor/site-admin/includes/file.php(168): closedir()
+#1 /usr/local/sitepad/editor/site-inc/functions.php(6803): list_files()
+#2 /usr/local/sitepad/editor/site-inc/class-wp-hook.php(286): wp_privacy_delete_old_export_files()
+#3 /usr/local/sitepad/editor/site-inc/class-wp-hook.php(310): WP_Hook->apply_filters()
+#4 /usr/local/sitepad/editor/site-inc/plugin.php(531): WP_Hook->do_action()
+#5 /usr/local/sitepad/editor/cron.php(133): do_action_ref_array()
+#6 /usr/local/sitepad/editor/site-inc/bootstrap.php(86): include_once('/usr/local/site...')
+#7 /home3/moxitoon/public_html/FussyKitchen/index.php(28): include_once('/usr/local/site...')
+#8 {main}
+  thrown in /usr/local/sitepad/editor/site-admin/includes/file.php on line 168
