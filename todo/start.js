@@ -12,10 +12,17 @@ async function test0() {
 	let names = M.divNames = mAreas(dPage, ` 'dTop' 'dMain' 'dStatus' `, '1fr', 'auto 1fr auto');
 	mShade(names); //area coloring
 	mStyle('dMain', { padding: 4, overy: 'auto' })
-	mFlexV('dTop'); mStyle('dTop', { padding: 4, pabottom: 10 })
+	//mFlexBaseline('dTop'); mStyle('dTop', { padding: 4 })
 	mStyle('dStatus', { padding: 4 }, { html: '&nbsp;' })
 
-	let dTop = mDom('dTop'); //top menu
+	let d = mDom('dTop'); //top menu
+	let border = '4px solid red';
+	//mDom(d,{fz:40},{html:'hallo'});mFlexV(d)
+	//mDom(d,{h:50},{tag:'img',src:'../assets/img/emo/airplane.png'});
+
+	let ui = mKey('airplane', d, { fz: 30,margin:10, cursor: 'pointer' }, { onclick: onclickHome, menu:'top' });
+
+	ui.click();
 
 	return;
 	let dHome = mHomeLogo(dTop, 'airplane', onclickHome, 'top'); //logo
