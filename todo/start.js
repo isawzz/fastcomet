@@ -1,9 +1,10 @@
 onload = start;
 DA.FASTCOMET = 'php';
 
-async function start() { loadColors(); await test0(); }
+async function start() { await test0(); }
 
 async function test0() {
+	loadColors(); console.log(M); return;
 	await loadAssets();
 
 	let dPage = document.getElementById('dPage');
