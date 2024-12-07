@@ -1,0 +1,8 @@
+write a js function that ist given a list of filenames (containing javascript functions), loads each file, extracts all functions (as text) and puts them in a dict where keys are function names. functions with same name are overwritten if they occur in a file that comes later in the initial list. 
+at the end, the functions are written alphabetically to a string, separated by an empty line. the resulting string is returned.
+
+write a function that gets a dictionary of functions with corresponding code and a 
+list of function names. starting from those names, it should return a closure of all 
+functions used within the initial functions and also the functions used in any 
+derived function. as before the resulting code that represents a minimal closure 
+for code needed to execute the initial functions should be saved in a file named closure.js
