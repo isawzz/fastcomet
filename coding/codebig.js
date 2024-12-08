@@ -563,7 +563,7 @@ function binomialCoefficient(n, k) {
 }
 function binomialPdf(n, p, k) {
   if (k < 0 || k > n) {
-    return 0;  
+    return 0;
   }
   const binomCoeff = binomialCoefficient(n, k);
   return binomCoeff * Math.pow(p, k) * Math.pow(1 - p, n - k);
@@ -909,21 +909,21 @@ function calcYears(n, unit) {
 }
 function calculateCDF(xValues, probabilities) {
   if (xValues.length !== probabilities.length) {
-      throw new Error("The lengths of xValues and probabilities must be equal.");
+    throw new Error("The lengths of xValues and probabilities must be equal.");
   }
   const totalProbability = probabilities.reduce((sum, prob) => sum + prob, 0);
   const normalizedProbabilities = probabilities.map(prob => prob / totalProbability);
   let cumulativeSum = 0;
   const cdf = normalizedProbabilities.map((prob, index) => {
-      cumulativeSum += prob;
-      return {
-          x: xValues[index],
-          cumulativeProbability: cumulativeSum
-      };
+    cumulativeSum += prob;
+    return {
+      x: xValues[index],
+      cumulativeProbability: cumulativeSum
+    };
   });
   return cdf;
 }
-function calculateExpectedValue(xlist,ylist){
+function calculateExpectedValue(xlist, ylist) {
   let res = 0;
   for (let i = 0; i < xlist.length; i++) {
     res += xlist[i] * ylist[i];
@@ -953,20 +953,20 @@ function calculateGoodColors(bg, fg) {
 }
 function calculateInterval(mu, sigma, percent) {
   if (percent <= 0 || percent >= 100) {
-      throw new Error("Percent must be between 0 and 100.");
+    throw new Error("Percent must be between 0 and 100.");
   }
   const p = percent / 100;
   const z = inverseCDF((1 + p) / 2);
   const lowerBound = mu - z * sigma;
   const upperBound = mu + z * sigma;
-  return [ lowerBound, upperBound ];
+  return [lowerBound, upperBound];
 }
 function calculateMean(values) {
   const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
   return mean;
 }
-function calculateStatistics(xlist,ylist){
-  let n=xlist.length;
+function calculateStatistics(xlist, ylist) {
+  let n = xlist.length;
   let mu = 0;
   for (let i = 0; i < n; i++) {
     mu += xlist[i] * ylist[i];
@@ -975,27 +975,27 @@ function calculateStatistics(xlist,ylist){
   for (let i = 0; i < n; i++) {
     v += ylist[i] * (xlist[i] - mu) ** 2;
   }
-  let stdev=Math.sqrt(v);
+  let stdev = Math.sqrt(v);
   const mean = xlist.reduce((sum, value) => sum + value, 0) / xlist.length;
   const sortedValues = [...xlist].sort((a, b) => a - b);
   const mid = Math.floor(sortedValues.length / 2);
-  const median = sortedValues.length % 2 === 0 ? 
-      (sortedValues[mid - 1] + sortedValues[mid]) / 2 : 
-      sortedValues[mid];
+  const median = sortedValues.length % 2 === 0 ?
+    (sortedValues[mid - 1] + sortedValues[mid]) / 2 :
+    sortedValues[mid];
   const frequencyMap = {};
   let maxFreq = 0;
   let mode = [];
   xlist.forEach(value => {
-      frequencyMap[value] = (frequencyMap[value] || 0) + 1;
-      if (frequencyMap[value] > maxFreq) {
-          maxFreq = frequencyMap[value];
-          mode = [value];
-      } else if (frequencyMap[value] === maxFreq) {
-          mode.push(value);
-      }
+    frequencyMap[value] = (frequencyMap[value] || 0) + 1;
+    if (frequencyMap[value] > maxFreq) {
+      maxFreq = frequencyMap[value];
+      mode = [value];
+    } else if (frequencyMap[value] === maxFreq) {
+      mode.push(value);
+    }
   });
-  mode = [...new Set(mode)]; 
-  return {mu,v,stdev,mean,median,mode};
+  mode = [...new Set(mode)];
+  return { mu, v, stdev, mean, median, mode };
 }
 function calculateZ(x, mu, sigma) {
   if (sigma === 0) {
@@ -1162,6 +1162,30 @@ function clusterize(di, sz = 20) {
 }
 function cmdDisable(key) { mClass(mBy(key), 'disabled') }
 function cmdEnable(key) { mClassRemove(mBy(key), 'disabled') }
+async function codeBigSmall(project, names, funcs) {
+  let di = await codeDictForFiles(names.map(x => `${project}/${x}.js`));
+  console.log(di);
+  codeDictToText(di, 'codebig.txt');
+  let keys = findFunctionClosure(di, funcs);
+  console.log(keys);
+  const closureCode = Array.from(keys).sort().map((name) => di[name].code).join('\r\n');
+  downloadAsText(closureCode, 'codesmall.txt');
+}
+async function codeDictForFiles(files) {
+  let di = {};
+  for (const name of files) {
+    let list = await codeParseFile(name);
+    let dilist = list2dict(list, 'key');
+    copyKeys(dilist, di);
+  }
+  return di;
+}
+function codeDictToText(di, downloadName) {
+  const sortedFunctionNames = Object.keys(di).sort();
+  const result = sortedFunctionNames.map(name => di[name].code).join('\n');
+  if (isdef(downloadName)) downloadAsText(result, downloadName);
+  return sortedFunctionNames;
+}
 function codeParseBlock(lines, i) {
   let l = lines[i];
   let type = l[0] == 'a' ? ithWord(l, 1) : ithWord(l, 0);
@@ -1173,10 +1197,10 @@ function codeParseBlock(lines, i) {
   }
   code = replaceAllSpecialChars(code, '\t', '  ');
   code = code.trim();
-  return [{ key: key, type: type, code: code }, i];
+  return [{ key, type, code }, i];
 }
 function codeParseBlocks(text) {
-  let lines = text.split('\r\n');
+  let lines = text.split('\n');
   lines = lines.map(x => removeTrailingComments(x));
   let i = 0, o = null, res = [];
   while (i < lines.length) {
@@ -1190,7 +1214,8 @@ function codeParseBlocks(text) {
   return res;
 }
 async function codeParseFile(path) {
-  let text = await route_path_text(path);
+  let file = await fetch(path);
+  let text = await file.text();
   let olist = codeParseBlocks(text);
   return olist;
 }
@@ -1806,9 +1831,9 @@ function colorLight(c, percent = 20, log = true) {
 function colorMix(c1, c2, percent = 50) {
   return colorCalculator(percent / 100, colorFrom(c2), colorFrom(c1), true);
 }
-function colorMix1(c1, c2, percent=50) {
-  let rgbA = colorHexToRgbArray(c1, true); 
-  let rgbB = colorHexToRgbArray(c2, true); 
+function colorMix1(c1, c2, percent = 50) {
+  let rgbA = colorHexToRgbArray(c1, true);
+  let rgbB = colorHexToRgbArray(c2, true);
   amountToMix = percent / 100;
   var r = colorChannelMixer(rgbA[0], rgbB[0], amountToMix);
   var g = colorChannelMixer(rgbA[1], rgbB[1], amountToMix);
@@ -2705,11 +2730,11 @@ function deleteKeyFromLocalSuperdi(k) {
 function detectSessionType() {
   let loc = window.location.href; console.log('loc', loc);
   DA.sessionType =
-  loc.includes('moxito.online') ? 'fastcomet' :
-    loc.includes('vidulus') ? 'vps' :
-      loc.includes('telecave') ? 'telecave' : loc.includes('8080') ? 'php'
-        : loc.includes(':40') ? 'nodejs'
-          : loc.includes(':60') ? 'flask' : 'live';
+    loc.includes('moxito.online') ? 'fastcomet' :
+      loc.includes('vidulus') ? 'vps' :
+        loc.includes('telecave') ? 'telecave' : loc.includes('8080') ? 'php'
+          : loc.includes(':40') ? 'nodejs'
+            : loc.includes(':60') ? 'flask' : 'live';
   return DA.sessionType;
 }
 function dict2list(d, keyName = 'id') {
@@ -2782,7 +2807,7 @@ function downloadAsCode(obj, fname) {
     } else if (typeof obj === 'string') {
       return `"${obj}"`;  // wrap strings in quotes
     } else {
-      return obj;  
+      return obj;
     }
   }
   const objectAsCode = `const O = ${convertObjectToCode(obj)};`;
@@ -2794,11 +2819,15 @@ function downloadAsCode(obj, fname) {
   link.click();
   document.body.removeChild(link);
 }
-function downloadAsText(s, filename, ext = 'txt') {
-  saveFileAtClient(
-    filename + "." + ext,
-    "data:application/text",
-    new Blob([s], { type: "" }));
+function downloadAsText(text, filename) {
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
 }
 function downloadAsYaml(o, filename) {
   let y = jsyaml.dump(o);
@@ -3111,12 +3140,12 @@ function enterInterruptState() {
   auxOpen = true;
 }
 function erf(x) {
-  const a1 =  0.254829592;
+  const a1 = 0.254829592;
   const a2 = -0.284496736;
-  const a3 =  1.421413741;
+  const a3 = 1.421413741;
   const a4 = -1.453152027;
-  const a5 =  1.061405429;
-  const p  =  0.3275911;
+  const a5 = 1.061405429;
+  const p = 0.3275911;
   const sign = x < 0 ? -1 : 1;
   x = Math.abs(x);
   const t = 1 / (1 + p * x);
@@ -3357,33 +3386,33 @@ function factorial(x) {
 async function fetchYamlFile() {
   const url = 'https://www.telecave.net/mag/easy/app.php'; // Update with your PHP file URL
   try {
-      const response = await fetch(url);
-      if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const yamlText = await response.text();
-      const data = jsyaml.load(yamlText);
-      console.log("YAML Data:", data);
-      return data;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const yamlText = await response.text();
+    const data = jsyaml.load(yamlText);
+    console.log("YAML Data:", data);
+    return data;
   } catch (error) {
-      console.error("Error fetching YAML file:", error);
+    console.error("Error fetching YAML file:", error);
   }
 }
 async function fetchYamlFiles(fileList) {
   const filesParam = fileList.join(',');
   const url = `https://your-domain.com/serveYamlFiles.php?files=${encodeURIComponent(filesParam)}`;
   try {
-      const response = await fetch(url);
-      if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const jsonData = await response.json();
-      Object.keys(jsonData).forEach(fileName => {
-          console.log(`Data from ${fileName}:`, jsonData[fileName]);
-      });
-      return jsonData; 
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const jsonData = await response.json();
+    Object.keys(jsonData).forEach(fileName => {
+      console.log(`Data from ${fileName}:`, jsonData[fileName]);
+    });
+    return jsonData;
   } catch (error) {
-      console.error("Error fetching YAML files:", error);
+    console.error("Error fetching YAML files:", error);
   }
 }
 function fillFormFromObject(inputs, wIdeal, df, db, styles, opts) {
@@ -3603,10 +3632,30 @@ function findElementBy(prop, val) {
   const elements = document.querySelectorAll('*');
   for (let element of elements) {
     if (element[prop] === val) {
-      return element;  
+      return element;
     }
   }
-  return null;  
+  return null;
+}
+function findFunctionClosure(di, initialFunctions, outputFile) {
+  const closure = new Set();
+  const toProcess = [...initialFunctions];
+  DA.di = di;
+  while (toProcess.length > 0) {
+    const funcName = toProcess.pop();
+    let isKey = Object.prototype.hasOwnProperty.call(di, funcName);
+    if (!isKey || closure.has(funcName)) {
+      continue;
+    }
+    closure.add(funcName);
+    const functionCode = di[funcName].code;
+    console.log(funcName, functionCode)
+    const calledFunctions = Array.from(functionCode.matchAll(/\b([a-zA-Z_$][\w$]*)\s*\(/g))
+      .map((match) => match[1])
+      .filter((name) => name !== funcName && di[name]);
+    toProcess.push(...calledFunctions);
+  }
+  return closure;
 }
 function findIsolatedPairs(nodes, prop = 'bg', threshold = 3) {
   const isolatedPairs = [], obstaclePairs = [];
@@ -3934,7 +3983,7 @@ function fleetingMessage(msg, d, styles, ms, fade) {
   if (fade) Animation1 = mAnimate(dFleetingMessage, 'opacity', [1, .4, 0], null, ms, 'ease-in', 0, 'both');
   return dFleetingMessage;
 }
-function formatFloatToDecimal(num,n=3) {
+function formatFloatToDecimal(num, n = 3) {
   return parseFloat(num.toFixed(n));
 }
 function formatLegend(key) {
@@ -5501,10 +5550,10 @@ async function getUser(name, cachedOk = false) {
 }
 function getUserColor(uname) { return Serverdata.users[uname].color; }
 function getUserOptionsForGame(name, gamename) { return lookup(Serverdata.users, [name, 'games', gamename]); }
-function getValuesFromInput(id){
+function getValuesFromInput(id) {
   let input = document.getElementById(id).value;
   input = replaceCommasWithDots(input);
-  let values = input.split(' ').map(s => eval(s.trim())).map(num=>parseFloat(num)).filter(num => !isNaN(num));
+  let values = input.split(' ').map(s => eval(s.trim())).map(num => parseFloat(num)).filter(num => !isNaN(num));
   console.log(values);
   return values;
 }
@@ -5535,7 +5584,7 @@ function hPrepUi(ev, areas, cols, rows, bg) {
   return names;
 }
 function hToggleClassMenu(a) {
-  a = a.target; 
+  a = a.target;
   let menu = a.getAttribute('menu');
   let others = document.querySelectorAll(`[menu='${menu}']`);
   for (const o of others) {
@@ -5800,18 +5849,18 @@ function inverseCDF(p) {
   const pHigh = 1 - pLow;
   let q, r;
   if (p < pLow) {
-      q = Math.sqrt(-2 * Math.log(p));
-      return (((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) /
-             ((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
+    q = Math.sqrt(-2 * Math.log(p));
+    return (((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) /
+      ((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
   } else if (p <= pHigh) {
-      q = p - 0.5;
-      r = q * q;
-      return (((((a1 * r + a2) * r + a3) * r + a4) * r + a5) * r + a6) * q /
-             (((((b1 * r + b2) * r + b3) * r + b4) * r + b5) * r + 1);
+    q = p - 0.5;
+    r = q * q;
+    return (((((a1 * r + a2) * r + a3) * r + a4) * r + a5) * r + a6) * q /
+      (((((b1 * r + b2) * r + b3) * r + b4) * r + b5) * r + 1);
   } else {
-      q = Math.sqrt(-2 * Math.log(1 - p));
-      return -(((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) /
-              ((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
+    q = Math.sqrt(-2 * Math.log(1 - p));
+    return -(((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) /
+      ((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
   }
 }
 function isAlphaNum(s) { query = /^[a-zA-Z0-9]+$/; return query.test(s); }
@@ -5928,7 +5977,7 @@ function isTimeForAddon() {
 function isWhiteSpace(s) { let white = new RegExp(/^\s$/); return white.test(s.charAt(0)); }
 function isWithinDelta(n, goal, delta) { return isBetween(n, goal - delta, goal + delta) }
 function isWordSeparator(ch) { return ' ,-.!?;:'.includes(ch); }
-function isdef(x) { return x !== null && x !== undefined && x !== 'undefined'; }
+function isdef(x) { return x !== null && x !== undefined; }
 function ithWord(s, n, allow_) {
   let ws = toWords(s, allow_);
   return ws[Math.min(n, ws.length - 1)];
@@ -6325,14 +6374,14 @@ async function loadAndScaleImage(imageUrl) {
 }
 async function loadAssets(sessionType) {
   if (nundef(M)) M = {};
-  if (nundef(sessionType)) sessionType = detectSessionType(); 
-  console.log('in loadAssets:',sessionType)
+  if (nundef(sessionType)) sessionType = detectSessionType();
+  console.log('in loadAssets:', sessionType)
   if (sessionType == 'telecave') {
     let res = await postPHP({}, 'assets'); //console.log(res);
-    let jsonObject = JSON.parse(res); 
+    let jsonObject = JSON.parse(res);
     let di = {};
     for (const k in jsonObject) {
-      di[k] = jsyaml.load(jsonObject[k]); 
+      di[k] = jsyaml.load(jsonObject[k]);
     }
     for (const k in di.m) M[k] = di.m[k];
     for (const k in di) if (k != 'm') M[k] = di[k];
@@ -6407,16 +6456,16 @@ async function loadYamlFile(url) {
   }
   console.log("Loading YAML file from:", url);
   try {
-      const response = await fetch(url, { mode: 'no-cors' });
-      if (!response.ok) {
-          throw new Error(`Error fetching the file: ${response.statusText}`);
-      }
-      const yamlText = await response.text();
-      const data = jsyaml.load(yamlText);
-      console.log("YAML Data:", data);
-      return data; 
+    const response = await fetch(url, { mode: 'no-cors' });
+    if (!response.ok) {
+      throw new Error(`Error fetching the file: ${response.statusText}`);
+    }
+    const yamlText = await response.text();
+    const data = jsyaml.load(yamlText);
+    console.log("YAML Data:", data);
+    return data;
   } catch (error) {
-      console.error("Error loading YAML file:", error);
+    console.error("Error loading YAML file:", error);
   }
 }
 function lockForLengthyProcess() {
@@ -6437,7 +6486,6 @@ function logMinMax(fenPoints) {
   console.log('Max Y:', maxY);
 }
 function lookup(dict, keys) {
-  if (nundef(dict)) return null;
   let d = dict;
   let ilast = keys.length - 1;
   let i = 0;
@@ -6454,7 +6502,7 @@ function lookup(dict, keys) {
 function lookupAddIfToList(dict, keys, val) {
   let lst = lookup(dict, keys);
   if (isList(lst) && lst.includes(val)) return;
-  return lookupAddToList(dict, keys, val);
+  lookupAddToList(dict, keys, val);
 }
 function lookupAddToList(dict, keys, val) {
   let d = dict;
@@ -6485,6 +6533,7 @@ function lookupSet(dict, keys, val) {
   let i = 0;
   for (const k of keys) {
     if (nundef(k)) continue;
+    if (d[k] === undefined) d[k] = (i == ilast ? val : {});
     if (nundef(d[k])) d[k] = (i == ilast ? val : {});
     d = d[k];
     if (i == ilast) return d;
@@ -6554,7 +6603,7 @@ function mArea(padding, dParent, styles = {}, opts = {}) {
 }
 function mAreas(dParent, areas, gridCols, gridRows) {
   mClear(dParent); mStyle(dParent, { padding: 0 })
-  let names = arrNoDuplicates(toWords(areas)); 
+  let names = arrNoDuplicates(toWords(areas));
   let dg = mDom(dParent);
   for (const name of names) {
     let d = mDom(dg, { family: 'opensans', wbox: true }, { id: name });
@@ -7272,19 +7321,19 @@ function mLayoutLine5(dParent, testing = false) {
   let [dRight, dSymRight] = [func(dr), func(dr)];
   return [dSymLeft, dLeft, dMiddle, dRight, dSymRight];
 }
-function mLinebreak(dParent, gap=0) {
+function mLinebreak(dParent, gap = 0) {
   dParent = toElem(dParent);
   let display = getComputedStyle(dParent).display;
   if (display == 'flex') {
-    d = mDom(dParent, { 'flex-basis': '100%', h: gap, hline:gap, w: '100%' },{html:''});
+    d = mDom(dParent, { 'flex-basis': '100%', h: gap, hline: gap, w: '100%' }, { html: '' });
   } else {
-    d=mDom(dParent,{hline:gap,h:gap},{html:'&nbsp;'});
+    d = mDom(dParent, { hline: gap, h: gap }, { html: '&nbsp;' });
   }
   return d;
 }
-function mLinkMenu(d, text, styles={}, handler=null, menu=null, kennzahl=null) {
+function mLinkMenu(d, text, styles = {}, handler = null, menu = null, kennzahl = null) {
   if (nundef(kennzahl)) kennzahl = getUID();
-  addKeys({ className: 'a', hmargin: 8, vmargin:2, deco: 'none', rounding: 10, hpadding: 9, vpadding: 3 }, styles)
+  addKeys({ className: 'a', hmargin: 8, vmargin: 2, deco: 'none', rounding: 10, hpadding: 9, vpadding: 3 }, styles)
   let ui = mDom(d, styles, { tag: 'a', html: text, href: '#', onclick: handler, kennzahl, menu });
   return ui;
 }
@@ -7503,24 +7552,24 @@ function mRows100(dParent, spec, gap = 4) {
   return res;
 }
 function mSelect(elem) { mClass(elem, 'framedPicture'); }
-function mShade(names,offset=1,contrast=1) {
-  let palette = paletteTransWhiteBlack(names.length*contrast+2*offset).slice(offset); 
+function mShade(names, offset = 1, contrast = 1) {
+  let palette = paletteTransWhiteBlack(names.length * contrast + 2 * offset).slice(offset);
   for (const name of names) {
-    let d = mBy(name); 
+    let d = mBy(name);
     mStyle(d, { bg: palette.shift(), fg: 'contrast', wbox: true });
   }
 }
-function mShadeDark(names,offset=1,contrast=1) {
-  let palette = paletteTransBlack(names.length*contrast+2*offset).slice(offset); 
+function mShadeDark(names, offset = 1, contrast = 1) {
+  let palette = paletteTransBlack(names.length * contrast + 2 * offset).slice(offset);
   for (const name of names) {
-    let d = mBy(name); 
+    let d = mBy(name);
     mStyle(d, { bg: palette.shift(), fg: 'contrast', wbox: true });
   }
 }
-function mShadeLight(names,offset=1,contrast=1) {
-  let palette = paletteTransWhite(names.length*contrast+2*offset).slice(offset); 
+function mShadeLight(names, offset = 1, contrast = 1) {
+  let palette = paletteTransWhite(names.length * contrast + 2 * offset).slice(offset);
   for (const name of names) {
-    let d = mBy(name); 
+    let d = mBy(name);
     mStyle(d, { bg: palette.shift(), fg: 'contrast', wbox: true });
   }
 }
@@ -7909,8 +7958,8 @@ function mimali(c, m) {
   return wheel;
 }
 function minTrialsForSuccess(x, p) {
-  console.log(x,p);
-  const xDecimal = x; 
+  console.log(x, p);
+  const xDecimal = x;
   const trials = Math.ceil(Math.log(1 - xDecimal) / Math.log(1 - p));
   return trials;
 }
@@ -7983,7 +8032,7 @@ function normalCdfRange(min, max, mu, sigma) {
   return cdfMax - cdfMin;
 }
 function normalExpectedValue(mean) {
-  return mean; 
+  return mean;
 }
 function normalGreaterThan(x, mean, stdev) {
   let res = jStat.normal.cdf(x, mean, stdev);
@@ -7995,7 +8044,7 @@ function normalPdf(x, mean, stdDev) {
   return coefficient * Math.exp(exponent);
 }
 function normalVariance(stdDev) {
-  return Math.pow(stdDev, 2); 
+  return Math.pow(stdDev, 2);
 }
 function normalizeString(s, sep = '_', keep = []) {
   s = s.toLowerCase().trim();
@@ -8080,7 +8129,7 @@ async function onclickAll(ev) {
   let dTable = mBy('dTable'); mStyle('dTable', { padding: 10, display: 'flex', wrap: 'true', acontent: 'start', gap: 10 });
   let d1 = mDom(dTable, { display: 'flex', dir: 'column', padding: 10, gap: 10, className: 'input' });
   mDom(d1, {}, { html: 'normal:' })
-  let inputs = ['xmin','xmax', 'percent', 'mean', 'stdev'];
+  let inputs = ['xmin', 'xmax', 'percent', 'mean', 'stdev'];
   for (const name of inputs) {
     mInput(d1, { hpadding: 10, vpadding: 2 }, `inp_n${name}`, `<Enter ${name}>`, 'input', 0, '', true, 'number');
   }
@@ -8094,13 +8143,13 @@ async function onclickAll(ev) {
   mDom(d1, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_pdf`, html: '&nbsp;' });
   mDom(d1, {}, { html: 'F(x):' })
   mDom(d1, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_cdf`, html: '&nbsp;' });
-  mBy('inp_nxmin').value = 0; 
-  mBy('inp_nxmax').value = 0; 
-  mBy('inp_npercent').value = 90; 
-  mBy('inp_nmean').value = 320; 
+  mBy('inp_nxmin').value = 0;
+  mBy('inp_nxmax').value = 0;
+  mBy('inp_npercent').value = 90;
+  mBy('inp_nmean').value = 320;
   mBy('inp_nstdev').value = 156;
 }
-async function onclickArchive(ev){
+async function onclickArchive(ev) {
 }
 async function onclickBinomial(ev) {
   hToggleClassMenu(ev); mClear('dTable');
@@ -8323,9 +8372,9 @@ async function onclickHome(ev) {
   let names = hPrepUi(ev, ` 'dSide dTable' `, 'auto 1fr', '1fr', 'skyblue');
   mShadeLight(names)
   mRemoveClass(ev.target, 'active'); //just set other top menu buttons inactive!
-  let d=mBy('dSide');
-  for(const name in {new:onclickNew,archive:onclickArchive}){
-    mDom(d,{},{tag:'button',html:name})
+  let d = mBy('dSide');
+  for (const name in { new: onclickNew, archive: onclickArchive }) {
+    mDom(d, {}, { tag: 'button', html: name })
   }
 }
 async function onclickHomeNew() {
@@ -8416,11 +8465,11 @@ async function onclickNATIONS() {
     }
   }
 }
-async function onclickNew(ev){
-  let a=mBy('dTable');
-  let b=mDom(a,{},{});
+async function onclickNew(ev) {
+  let a = mBy('dTable');
+  let b = mDom(a, {}, {});
   mFlex(b);
-  let c=mDom(b,{},{})
+  let c = mDom(b, {}, {})
 }
 async function onclickNormal(ev) {
   hToggleClassMenu(ev); mClear('dTable');
@@ -8485,10 +8534,10 @@ async function onclickNormalAlles(ev) {
     let res = calculateInterval(mean, stdev, percent);
     mBy('result_min').innerHTML = res[0];
     mBy('result_max').innerHTML = res[1];
-  }else{
-    if (isNaN(xmin)) xmin = -Infinity; 
+  } else {
+    if (isNaN(xmin)) xmin = -Infinity;
     if (isNaN(xmax)) xmax = Infinity;
-    mBy('result_cdf').innerHTML = normalBetween(xmin,xmax, mean, stdev);
+    mBy('result_cdf').innerHTML = normalBetween(xmin, xmax, mean, stdev);
   }
 }
 async function onclickNormalCdf(ev) {
@@ -8499,7 +8548,7 @@ async function onclickNormalCdf(ev) {
   mBy('result_cdf').innerHTML = res;
 }
 async function onclickNormalClear(ev) {
-  let inputs = ['xmin','xmax', 'percent', 'mean', 'stdev'];
+  let inputs = ['xmin', 'xmax', 'percent', 'mean', 'stdev'];
   for (const name of inputs) {
     mBy(`inp_n${name}`).value = '';
   }
@@ -8578,17 +8627,17 @@ async function onclickPlay() {
 async function onclickRecipe(key) {
   let recipe = M.recipes[key]; console.log(recipe);
   let dTable = mBy('dTable'); mClear('dTable');
-  mStyle('dTable', { padding: 10, display: 'flex', wrap: 'true', acontent: 'start', gap: 0, overy:'scroll' });
-  mDom(dTable, { family:'algerian' }, { tag: 'h1', html: `${fromNormalized(recipe.title)}` });
-  mLinebreak(dTable,0);
-  console.log(recipe.text); 
+  mStyle('dTable', { padding: 10, display: 'flex', wrap: 'true', acontent: 'start', gap: 0, overy: 'scroll' });
+  mDom(dTable, { family: 'algerian' }, { tag: 'h1', html: `${fromNormalized(recipe.title)}` });
+  mLinebreak(dTable, 0);
+  console.log(recipe.text);
   for (const t of recipe.text) {
     if (t.includes('.jpg') || t.includes('.png')) {
-      let d = mDom(dTable, { height:200,margin:4 }, { tag: 'img', src: `../easy/recipes/${key}/${t}` });
+      let d = mDom(dTable, { height: 200, margin: 4 }, { tag: 'img', src: `../easy/recipes/${key}/${t}` });
     } else {
-      let d = mDom(dTable, { margin:0 }, { tag: 'div', html: `${t}` });
+      let d = mDom(dTable, { margin: 0 }, { tag: 'div', html: `${t}` });
     }
-    for(const i of range(10)) mLinebreak(dTable,0);
+    for (const i of range(10)) mLinebreak(dTable, 0);
   }
 }
 async function onclickRecipeType(ev) {
@@ -8603,7 +8652,7 @@ async function onclickRecipeType(ev) {
     let path = `../easy/recipes/${k}/${o.image}`;
     let d = mDom(dTable, { bg: 'orange', fg: 'contrast', padding: 10, margin: 3 }, { tag: 'div', html: `${fromNormalized(k)}<br>` });
     mDom(d, { padding: 10, margin: 3, h: 200 }, { tag: 'img', src: path });
-    d.onclick = ()=>onclickRecipe(k);
+    d.onclick = () => onclickRecipe(k);
   }
 }
 async function onclickSetAvatar(ev) { await simpleSetAvatar(UI.selectedImages[0]); }
@@ -9125,8 +9174,8 @@ function paletteTrans(color, from = 0.1, to = 1, step = 0.2) {
 function paletteTransBlack(n = 9) {
   let c = 'black';
   let pal = [c];
-  let incw = 1 / (n-1);
-  for (let i = 1; i < n-1; i++) {
+  let incw = 1 / (n - 1);
+  for (let i = 1; i < n - 1; i++) {
     let alpha = 1 - i * incw;
     pal.push(colorTrans(c, alpha));
   }
@@ -9136,8 +9185,8 @@ function paletteTransBlack(n = 9) {
 function paletteTransWhite(n = 9) {
   let c = 'white';
   let pal = [c];
-  let incw = 1 / (n-1);
-  for (let i = 1; i < n-1; i++) {
+  let incw = 1 / (n - 1);
+  for (let i = 1; i < n - 1; i++) {
     let alpha = 1 - i * incw;
     pal.push(colorTrans(c, alpha));
   }

@@ -1,4 +1,13 @@
 
+async function codeBigSmall(project,names,funcs){
+	let di = await codeDictForFiles(names.map(x=>`${project}/${x}.js`));
+	console.log(di);
+	codeDictToText(di,'codebig.txt');
+	let keys = findFunctionClosure(di, funcs);
+	console.log(keys);
+	const closureCode = Array.from(keys).sort().map((name) => di[name].code).join('\r\n');
+	downloadAsText(closureCode,'codesmall.txt');
+}
 async function codeDictForFiles(files) {
 	let di={};
 	for(const name of files){
@@ -67,7 +76,7 @@ function dict2list(d, keyName = 'id') {
   return res;
 }
 function downloadAsText(text,filename) {
-  const blob = new Blob([text], { type: 'text/plain' });
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
   link.download = filename;

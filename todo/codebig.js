@@ -1,3 +1,59 @@
+class SimpleTimer {
+  constructor(elem, msTick, onTick, msTotal, onElapsed) {
+    this.elem = elem;
+    this.msTotal = this.msLeft = msTotal;
+    this.onTick = onTick;
+    this.onElapsed = onElapsed;
+    this.interval = msTick;
+    this.running = false;
+    this.paused = false;
+    this.TO = null;
+  }
+  clear() { let elapsed = this.stop(); clearElement(this.elem); return elapsed; }
+  continue() {
+    if (!this.running) this.start();
+    else if (!this.paused) return;
+    else { this.paused = false; this.TO = setInterval(this.tickHandler.bind(this), this.interval); }
+  }
+  output() {
+    this.elem.innerHTML = timeConversion(Math.max(this.msLeft, 0), 'msh');
+  }
+  pause() {
+    if (this.paused || !this.running) return;
+    clearInterval(this.TO);
+    this.paused = true;
+  }
+  tickHandler() {
+    this.msLeft -= this.interval;
+    this.msElapsed = this.msTotal - this.msLeft;
+    this.output();
+    if (isdef(this.onTick)) this.onTick();
+    if (this.msLeft <= 0) {
+      this.stop();
+      this.msLeft = 0;
+      if (isdef(this.onElapsed)) {
+        this.onElapsed(0);
+      }
+    }
+  }
+  togglePause() { if (this.paused) this.continue(); else this.pause(); }
+  start() {
+    if (this.running) this.stop();
+    this.started = new Date().now;
+    this.msLeft = this.msTotal;
+    this.msElapsed = 0;
+    this.running = true;
+    this.output();
+    this.TO = setInterval(this.tickHandler.bind(this), this.interval);
+  }
+  stop() {
+    if (!this.running) return;
+    clearInterval(this.TO);
+    this.TO = null;
+    this.running = false;
+    return this.msLeft;
+  }
+}
 function _INTERRUPT() {
   clearEvents();
 }
@@ -290,12 +346,6 @@ function alphaToHex(a01) {
   return hex;
 }
 function amIHuman(table) { return isPlayerHuman(table, getUname()); }
-function animatedTitle(msg = 'DU BIST DRAN!!!!!') {
-  TO.titleInterval = setInterval(() => {
-    let corner = CORNERS[WhichCorner++ % CORNERS.length];
-    document.title = `${corner} ${msg}`; //'⌞&amp;21543;    U+231E \0xE2Fo\u0027o Bar';
-  }, 1000);
-}
 function animateEndpointsOfActivatedLines() {
   function potentialSelectedPoint(p, l) {
     let d = iDiv(p);
@@ -313,6 +363,12 @@ function animateEndpointsOfActivatedLines() {
     potentialSelectedPoint(l.p1, l);
     potentialSelectedPoint(l.p2, l);
   }
+}
+function animatedTitle(msg = 'DU BIST DRAN!!!!!') {
+  TO.titleInterval = setInterval(() => {
+    let corner = CORNERS[WhichCorner++ % CORNERS.length];
+    document.title = `${corner} ${msg}`; //'⌞&amp;21543;    U+231E \0xE2Fo\u0027o Bar';
+  }, 1000);
 }
 function annotate(sp) {
   for (const k in sp) {
@@ -619,6 +675,67 @@ function buyProgressCard(ev) {
     M.selectedCivSpot = null;
   }
 }
+function cBlank(dParent, styles = {}, opts = {}) {
+  if (nundef(styles.h)) styles.h = valf(styles.sz, 100);
+  if (nundef(styles.w)) styles.w = styles.h * .7;
+  if (nundef(styles.bg)) styles.bg = 'white';
+  styles.position = 'relative';
+  if (nundef(styles.rounding)) styles.rounding = Math.min(styles.w, styles.h) / 21;
+  addKeys({ className: 'card' }, opts);
+  let d = mDom(dParent, styles, opts);
+  opts.type = 'card';
+  addKeys(styles, opts);
+  let item = mItem(d ? { div: d } : {}, opts);
+  return item;
+}
+function cLandscape(dParent, styles = {}, opts = {}) {
+  if (nundef(styles.w)) styles.w = 100;
+  if (nundef(styles.h)) styles.h = styles.w * .65;
+  return cBlank(dParent, styles, opts);
+}
+function cNumber(ckey, styles = {}, opts = {}) {
+  addKeys({ border: 'silver', h: 100 }, styles);
+  addKeys({ backcolor: BLUE, ov: .3, key: ckey, type: 'num' }, opts);
+  let c = cPortrait(null, styles, opts);
+  if (isNumeric(ckey)) { ckey = `${ckey}_blue`; }
+  let sym = c.rank = stringBefore(ckey, '_');
+  let color = c.suit = c.val = stringAfter(ckey, '_');
+  let sz = c.h;
+  let [sm, lg, w, h] = [sz / 8, sz / 4, c.w, c.h];
+  let styleSmall = { fg: color, h: sm, fz: sm, hline: sm, weight: 'bold' };
+  cPrintSym(c, sym, styleSmall, 'tl')
+  cPrintSym(c, sym, styleSmall, 'tr')
+  styleSmall.transform = 'rotate(180deg)';
+  cPrintSym(c, sym, styleSmall, 'bl')
+  cPrintSym(c, sym, styleSmall, 'br')
+  let styleBig = { matop: (h - lg) / 2, family: 'algerian', fg: color, fz: lg, h: lg, w: w, hline: lg, align: 'center' }
+  styleBig = { display: 'inline', family: 'algerian', fg: color, fz: lg, hline: lg }
+  cPrintSym(c, sym, styleBig, 'cc')
+  return c;
+}
+function cPortrait(dParent, styles = {}, opts = {}) {
+  if (nundef(styles.h)) styles.h = 100;
+  if (nundef(styles.w)) styles.w = styles.h * .7;
+  return cBlank(dParent, styles, opts);
+}
+function cPrintSym(card, sym, styles, pos) {
+  let d = iDiv(card);
+  let opts = {};
+  if (isNumber(sym)) {
+    opts.html = sym;
+  } else if (sym.includes('/')) {
+    opts.tag = 'img';
+    opts.src = sym;
+  }
+  let d1 = mDom(d, styles, opts);
+  mPlace(d1, pos, pos[0] == 'c' ? 0 : 2, pos[1] == 'c' ? 0 : 2);
+}
+function cRound(dParent, styles = {}, opts = {}) {
+  styles.w = valf(styles.w, 100);
+  styles.h = valf(styles.h, 100);
+  styles.rounding = '50%';
+  return cBlank(dParent, styles, opts);
+}
 function calcBotLevel(table) {
   let humanPlayers = dict2list(table.players).filter(x => x.playmode == 'human');
   if (isEmpty(humanPlayers) || getGameOption('use_level') == 'no') return null;
@@ -776,6 +893,20 @@ function calcScoreSum(table) {
 function calcSize(str) {
   return calcNumericInfo(str, { cm: .01, centimeter: .01, centimeters: .01, mm: .001, millimeter: .001, millimeters: .001, meter: 1, meters: 1, m: 1 }, 'm');
 }
+async function calcUserPalette(name) {
+  if (nundef(name)) name = U.name;
+  let user = await getUser(name);
+  let dParent = mPopup(null, { opacity: 0 });
+  return await showPaletteFor(dParent, user.texture, user.color, user.blendMode);
+}
+function calcWeight(str) {
+  return calcNumericInfo(str, { kg: 1, kilogram: 1, kilograms: 1, mg: .000001, milligram: .000001, milligrams: .000001, grams: .001, gram: .001, g: .001, ton: 1000, tons: 1000 }, 'kg');
+}
+function calcYears(n, unit) {
+  let ch = unit[0];
+  let frac = ch == 'y' ? 1 : ch == 'm' ? 12 : ch == 'w' ? 52 : ch == 'd' ? 365 : ch == 'h' ? 365 * 24 : 1;
+  return n / frac;
+}
 function calculateCDF(xValues, probabilities) {
   if (xValues.length !== probabilities.length) {
       throw new Error("The lengths of xValues and probabilities must be equal.");
@@ -873,20 +1004,6 @@ function calculateZ(x, mu, sigma) {
   const z = (x - mu) / sigma;
   return z;
 }
-async function calcUserPalette(name) {
-  if (nundef(name)) name = U.name;
-  let user = await getUser(name);
-  let dParent = mPopup(null, { opacity: 0 });
-  return await showPaletteFor(dParent, user.texture, user.color, user.blendMode);
-}
-function calcWeight(str) {
-  return calcNumericInfo(str, { kg: 1, kilogram: 1, kilograms: 1, mg: .000001, milligram: .000001, milligrams: .000001, grams: .001, gram: .001, g: .001, ton: 1000, tons: 1000 }, 'kg');
-}
-function calcYears(n, unit) {
-  let ch = unit[0];
-  let frac = ch == 'y' ? 1 : ch == 'm' ? 12 : ch == 'w' ? 52 : ch == 'd' ? 365 : ch == 'h' ? 365 * 24 : 1;
-  return n / frac;
-}
 function canAct() { return (aiActivated || uiActivated) && !auxOpen; }
 function capitalize(s) {
   if (typeof s !== 'string') return '';
@@ -920,19 +1037,6 @@ function cardRect(ctx, x, y, color) {
   console.log('line', o5)
   return { x: o1.x, y: o4.y, w: o2.x - o1.x, h: o5.y - o4.y };
 }
-function cBlank(dParent, styles = {}, opts = {}) {
-  if (nundef(styles.h)) styles.h = valf(styles.sz, 100);
-  if (nundef(styles.w)) styles.w = styles.h * .7;
-  if (nundef(styles.bg)) styles.bg = 'white';
-  styles.position = 'relative';
-  if (nundef(styles.rounding)) styles.rounding = Math.min(styles.w, styles.h) / 21;
-  addKeys({ className: 'card' }, opts);
-  let d = mDom(dParent, styles, opts);
-  opts.type = 'card';
-  addKeys(styles, opts);
-  let item = mItem(d ? { div: d } : {}, opts);
-  return item;
-}
 function centerVerticalOneLine(elem, h) {
   if (nundef(h)) h = elem.offsetHeight;
   mStyle(elem.hline, h);
@@ -954,11 +1058,6 @@ function circleFromCenter(dParent, center, styles = {}) {
   return d;
 }
 function clamp(x, min, max) { return Math.min(Math.max(x, min), max); }
-function cLandscape(dParent, styles = {}, opts = {}) {
-  if (nundef(styles.w)) styles.w = 100;
-  if (nundef(styles.h)) styles.h = styles.w * .65;
-  return cBlank(dParent, styles, opts);
-}
 function clearBodyDiv(styles = {}, opts = {}) { document.body.innerHTML = ''; return mDom(document.body, styles, opts) }
 function clearBodyReset100(styles = {}, opts = {}) {
   let body = document.body;
@@ -1063,25 +1162,37 @@ function clusterize(di, sz = 20) {
 }
 function cmdDisable(key) { mClass(mBy(key), 'disabled') }
 function cmdEnable(key) { mClassRemove(mBy(key), 'disabled') }
-function cNumber(ckey, styles = {}, opts = {}) {
-  addKeys({ border: 'silver', h: 100 }, styles);
-  addKeys({ backcolor: BLUE, ov: .3, key: ckey, type: 'num' }, opts);
-  let c = cPortrait(null, styles, opts);
-  if (isNumeric(ckey)) { ckey = `${ckey}_blue`; }
-  let sym = c.rank = stringBefore(ckey, '_');
-  let color = c.suit = c.val = stringAfter(ckey, '_');
-  let sz = c.h;
-  let [sm, lg, w, h] = [sz / 8, sz / 4, c.w, c.h];
-  let styleSmall = { fg: color, h: sm, fz: sm, hline: sm, weight: 'bold' };
-  cPrintSym(c, sym, styleSmall, 'tl')
-  cPrintSym(c, sym, styleSmall, 'tr')
-  styleSmall.transform = 'rotate(180deg)';
-  cPrintSym(c, sym, styleSmall, 'bl')
-  cPrintSym(c, sym, styleSmall, 'br')
-  let styleBig = { matop: (h - lg) / 2, family: 'algerian', fg: color, fz: lg, h: lg, w: w, hline: lg, align: 'center' }
-  styleBig = { display: 'inline', family: 'algerian', fg: color, fz: lg, hline: lg }
-  cPrintSym(c, sym, styleBig, 'cc')
-  return c;
+function codeParseBlock(lines, i) {
+  let l = lines[i];
+  let type = l[0] == 'a' ? ithWord(l, 1) : ithWord(l, 0);
+  let key = l[0] == 'a' ? ithWord(l, 2, true) : ithWord(l, 1, true);
+  let code = l + '\n'; i++; l = lines[i];
+  while (i < lines.length && !(['var', 'const', 'cla', 'func', 'async'].some(x => l.startsWith(x)) && !l.startsWith('}'))) {
+    if (!(l.trim().startsWith('//') || isEmptyOrWhiteSpace(l))) code += l + '\n';
+    i++; l = lines[i];
+  }
+  code = replaceAllSpecialChars(code, '\t', '  ');
+  code = code.trim();
+  return [{ key: key, type: type, code: code }, i];
+}
+function codeParseBlocks(text) {
+  let lines = text.split('\r\n');
+  lines = lines.map(x => removeTrailingComments(x));
+  let i = 0, o = null, res = [];
+  while (i < lines.length) {
+    let l = lines[i];
+    if (['var', 'const', 'cla', 'func', 'async'].some(x => l.startsWith(x))) {
+      [o, iLineAfterBlock] = codeParseBlock(lines, i);
+      i = iLineAfterBlock;
+      res.push(o)
+    } else i++;
+  }
+  return res;
+}
+async function codeParseFile(path) {
+  let text = await route_path_text(path);
+  let olist = codeParseBlocks(text);
+  return olist;
 }
 async function codebaseExtendFromProject(project) {
   let globlist = await codeParseFile('../basejs/allghuge.js');
@@ -1136,39 +1247,20 @@ async function codebaseFromFiles(files, bykey, bytype, list) {
   sortedFuncKeys.map(x => functextold += (isdef(bykey[x].oldcode) ? bykey[x].oldcode : bykey[x].code) + '\n');
   return [globtext, functext, functextold]
 }
-function codeParseBlock(lines, i) {
-  let l = lines[i];
-  let type = l[0] == 'a' ? ithWord(l, 1) : ithWord(l, 0);
-  let key = l[0] == 'a' ? ithWord(l, 2, true) : ithWord(l, 1, true);
-  let code = l + '\n'; i++; l = lines[i];
-  while (i < lines.length && !(['var', 'const', 'cla', 'func', 'async'].some(x => l.startsWith(x)) && !l.startsWith('}'))) {
-    if (!(l.trim().startsWith('//') || isEmptyOrWhiteSpace(l))) code += l + '\n';
-    i++; l = lines[i];
-  }
-  code = replaceAllSpecialChars(code, '\t', '  ');
-  code = code.trim();
-  return [{ key: key, type: type, code: code }, i];
-}
-function codeParseBlocks(text) {
-  let lines = text.split('\r\n');
-  lines = lines.map(x => removeTrailingComments(x));
-  let i = 0, o = null, res = [];
-  while (i < lines.length) {
-    let l = lines[i];
-    if (['var', 'const', 'cla', 'func', 'async'].some(x => l.startsWith(x))) {
-      [o, iLineAfterBlock] = codeParseBlock(lines, i);
-      i = iLineAfterBlock;
-      res.push(o)
-    } else i++;
-  }
-  return res;
-}
-async function codeParseFile(path) {
-  let text = await route_path_text(path);
-  let olist = codeParseBlocks(text);
-  return olist;
-}
 function coin(percent = 50) { return Math.random() * 100 < percent; }
+function collFilterImages(coll, s) {
+  let di = {};
+  for (const k of coll.masterKeys) { di[k] = true; }
+  let list = isEmpty(s) ? Object.keys(di) : isdef(M.byCat[s]) ? M.byCat[s].filter(x => isdef(di[x])) : [];
+  if (nundef(list) || isEmpty(list)) {
+    list = [];
+    for (const k of coll.masterKeys) {
+      let o = M.superdi[k];
+      if (k.includes(s) || o.friendly.toLowerCase().includes(s)) list.push(k);
+    }
+  }
+  return list;
+}
 function collectCats(klist) {
   let cats = [];
   for (const k of klist) {
@@ -1191,19 +1283,6 @@ function collectPlayers() {
   let players = {};
   for (const name of DA.playerList) { players[name] = allPlToPlayer(name); }
   return players;
-}
-function collFilterImages(coll, s) {
-  let di = {};
-  for (const k of coll.masterKeys) { di[k] = true; }
-  let list = isEmpty(s) ? Object.keys(di) : isdef(M.byCat[s]) ? M.byCat[s].filter(x => isdef(di[x])) : [];
-  if (nundef(list) || isEmpty(list)) {
-    list = [];
-    for (const k of coll.masterKeys) {
-      let o = M.superdi[k];
-      if (k.includes(s) || o.friendly.toLowerCase().includes(s)) list.push(k);
-    }
-  }
-  return list;
 }
 function colorBlendMode(c1, c2, blendMode) {
   function colorBurn(base, blend) {
@@ -1724,6 +1803,174 @@ function colorLight(c, percent = 20, log = true) {
   let zero1 = percent / 100;
   return colorCalculator(zero1, c, undefined, !log);
 }
+function colorMix(c1, c2, percent = 50) {
+  return colorCalculator(percent / 100, colorFrom(c2), colorFrom(c1), true);
+}
+function colorMix1(c1, c2, percent=50) {
+  let rgbA = colorHexToRgbArray(c1, true); 
+  let rgbB = colorHexToRgbArray(c2, true); 
+  amountToMix = percent / 100;
+  var r = colorChannelMixer(rgbA[0], rgbB[0], amountToMix);
+  var g = colorChannelMixer(rgbA[1], rgbB[1], amountToMix);
+  var b = colorChannelMixer(rgbA[2], rgbB[2], amountToMix);
+  return colorFrom("rgb(" + r + "," + g + "," + b + ")");
+}
+function colorNatToHue(ncol) {
+  let pure = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta'].map(x => x.toUpperCase()[0]);
+  let [letter, num] = [ncol[0], Number(ncol.substring(1))];
+  let idx = pure.indexOf(letter);
+  let hue = idx * 60 + num;
+  return hue;
+}
+function colorNcolToHue(ncol) {
+  let pure = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta'].map(x => x.toUpperCase()[0]);
+  let [letter, num] = [ncol[0], Number(ncol.substring(1))];
+  let idx = pure.indexOf(letter);
+  let hue = idx * 60 + fromPercent(num, 60);
+  return hue;
+}
+function colorNearestNamed(inputColor, namedColors) {
+  if (nundef(namedColors)) namedColors = M.colorList;
+  let minDistance = Infinity;
+  let nearestColor = null;
+  namedColors.forEach(namedColor => {
+    let distance = colorDistance(inputColor, namedColor.hex);
+    if (distance < minDistance) {
+      minDistance = distance;
+      nearestColor = namedColor;
+    }
+  });
+  return nearestColor;
+}
+function colorO(c) {
+  if (isDict(c)) return c;
+  let hex = colorFrom(c);
+  let o = w3color(hex);
+  let named = colorNearestNamed(hex);
+  let distance = Math.round(colorDistance(named.hex, hex));
+  o.name = named.name;
+  o.distance = distance;
+  o.bucket = colorGetBucket(hex);
+  o.hex = hex;
+  return o;
+}
+function colorPalette(color, type = 'shade') { return colorShades(colorFrom(color)); }
+function colorPaletteFromImage(img) {
+  if (nundef(ColorThiefObject)) ColorThiefObject = new ColorThief();
+  return ColorThiefObject.getPalette(img).map(x => colorFrom(x));
+}
+function colorPaletteFromUrl(path) {
+  let img = mCreateFrom(`<img src='${path}' />`);
+  let pal = colorPaletteFromImage(img);
+  return pal;
+}
+function colorRgbArgsToHex79(r, g, b, a) {
+  r = Math.round(r).toString(16).padStart(2, '0');
+  g = Math.round(g).toString(16).padStart(2, '0');
+  b = Math.round(b).toString(16).padStart(2, '0');
+  if (nundef(a)) return `#${r}${g}${b}`;
+  a = Math.round(a * 255).toString(16).padStart(2, '0');
+  return `#${r}${g}${b}${a}`;
+}
+function colorRgbArgsToHsl01Array(r, g, b) {
+  r /= 255, g /= 255, b /= 255;
+  let max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h, s, l = (max + min) / 2;
+  if (max === min) {
+    h = s = 0;
+  } else {
+    let d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h /= 6;
+  }
+  return [h, s, l];
+}
+function colorRgbArrayToHex79(arr) { return colorRgbArgsToHex79(...arr); }
+function colorRgbStringToHex79(c) {
+  let parts = c.split(',');
+  let r = firstNumber(parts[0]);
+  let g = firstNumber(parts[1]);
+  let b = firstNumber(parts[2]);
+  let a = parts.length > 3 ? Number(stringBefore(parts[3], ')')) : null;
+  return colorRgbArgsToHex79(r, g, b, a);
+}
+function colorSample(d, color) {
+  if (nundef(d)) return;
+  mStyle(d, { bg: color, fg: colorIdealText(color) }); //, fg:colorIdealText(color) });  
+  d.innerHTML = `${color}<br>${w3color(color).toHslString()}`;
+}
+function colorSchemeRYB() {
+  let ryb = ['#FE2712', '#FC600A', '#FB9902', '#FCCC1A', '#FEFE33', '#B2D732', '#66B032', '#347C98', '#0247FE', '#4424D6', '#8601AF', '#C21460'];
+  return ryb;
+  console.log('w3color', w3color('deeppink'))
+  for (const c of ryb) {
+    let cw = w3color(c);
+    console.log(cw.hue, cw.sat, cw.lightness, cw.ncol);
+  }
+}
+function colorShades(color) {
+  let res = [];
+  for (let frac = -0.8; frac <= 0.8; frac += 0.2) {
+    let c = colorCalculator(frac, color, undefined, true);
+    res.push(c);
+  }
+  return res;
+}
+function colorSortByLightness(list) {
+  let ext = list.map(x => colorO(x));
+  let sorted = sortByDescending(ext, 'lightness').map(x => x.hex);
+  return sorted;
+}
+function colorToHex79(c) {
+  if (colorIsHex79(c)) return c;
+  ColorDi = M.colorByName;
+  let tString = isString(c), tArr = isList(c), tObj = isDict(c);
+  if (tString && c[0] == '#') return colorHex45ToHex79(c);
+  else if (tString && isdef(ColorDi) && lookup(ColorDi, [c])) return ColorDi[c].hex;
+  else if (tString && c.startsWith('rand')) {
+    let spec = capitalize(c.substring(4));
+    let func = window['color' + spec];
+    c = isdef(func) ? func() : rColor();
+    assertion(colorIsHex79(c), 'ERROR coloFrom!!!!!!!!! (rand)');
+    return c;
+  } else if (tString && (c.startsWith('linear') || c.startsWith('radial'))) return c;
+  else if (tString && c.startsWith('rgb')) return colorRgbStringToHex79(c);
+  else if (tString && c.startsWith('hsl')) return colorHsl360StringToHex79(c);
+  else if (tString && c == 'transparent') return '#00000000';
+  else if (tString && c == 'inherit') return c;
+  else if (tString) { ensureColorDict(); let c1 = ColorDi[c]; assertion(isdef(c1), `UNKNOWN color ${c}`); return c1.hex; }
+  else if (tArr && (c.length == 3 || c.length == 4) && isNumber(c[0])) return colorRgbArrayToHex79(c);
+  else if (tArr) return colorToHex79(rChoose(tArr));
+  else if (tObj && 'h' in c && c.h > 1) { return colorHsl360ObjectToHex79(c); } //console.log('!!!');
+  else if (tObj && 'h' in c) return colorHsl01ObjectToHex79(c);
+  else if (tObj && 'r' in c) return colorRgbArgsToHex79(c.r, c.g, c.b, c.a);
+  assertion(false, `NO COLOR FOUND FOR ${c}`);
+}
+function colorToHwb360Object(c) {
+  c = colorFrom(c);
+  let [r, g, blue] = colorHexToRgbArray(c);
+  let [h, s, l] = colorHexToHsl01Array(c); h *= 360;
+  let w = 100 * Math.min(r, g, blue) / 255;
+  let b = 100 * (1 - Math.max(r, g, blue) / 255);
+  return { h, w, b };
+}
+function colorToHwbRounded(c) {
+  let o = colorToHwb360Object(c);
+  return { h: Math.round(o.h), w: Math.round(o.w), b: Math.round(o.b) };
+}
+function colorTrans(cAny, alpha = 0.5) { return colorFrom(cAny, alpha); }
+function colorTurnHueBy(color, inc = 180) {
+  let [r, g, b] = colorHexToRgbArray(colorFrom(color));
+  let [h, s, l] = colorRgbArgsToHsl01Array(r, g, b); h *= 360;
+  h = (h + inc) % 360;
+  let [newR, newG, newB] = colorHsl01ArgsToRgbArray(h / 360, s, l);
+  return colorRgbArgsToHex79(newR, newG, newB);
+}
 function colormapAsString() {
   let html = `
     <area style='cursor:pointer' shape='poly' coords='63,0,72,4,72,15,63,19,54,15,54,4' onclick='clickColor("#003366",-200,54)' onmouseover='mouseOverColor("#003366")' alt='#003366' />
@@ -1988,116 +2235,6 @@ function colormapAsStringOrig() {
    `;
   return html;
 }
-function colorMix(c1, c2, percent = 50) {
-  return colorCalculator(percent / 100, colorFrom(c2), colorFrom(c1), true);
-}
-function colorMix1(c1, c2, percent=50) {
-  let rgbA = colorHexToRgbArray(c1, true); 
-  let rgbB = colorHexToRgbArray(c2, true); 
-  amountToMix = percent / 100;
-  var r = colorChannelMixer(rgbA[0], rgbB[0], amountToMix);
-  var g = colorChannelMixer(rgbA[1], rgbB[1], amountToMix);
-  var b = colorChannelMixer(rgbA[2], rgbB[2], amountToMix);
-  return colorFrom("rgb(" + r + "," + g + "," + b + ")");
-}
-function colorNatToHue(ncol) {
-  let pure = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta'].map(x => x.toUpperCase()[0]);
-  let [letter, num] = [ncol[0], Number(ncol.substring(1))];
-  let idx = pure.indexOf(letter);
-  let hue = idx * 60 + num;
-  return hue;
-}
-function colorNcolToHue(ncol) {
-  let pure = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta'].map(x => x.toUpperCase()[0]);
-  let [letter, num] = [ncol[0], Number(ncol.substring(1))];
-  let idx = pure.indexOf(letter);
-  let hue = idx * 60 + fromPercent(num, 60);
-  return hue;
-}
-function colorNearestNamed(inputColor, namedColors) {
-  if (nundef(namedColors)) namedColors = M.colorList;
-  let minDistance = Infinity;
-  let nearestColor = null;
-  namedColors.forEach(namedColor => {
-    let distance = colorDistance(inputColor, namedColor.hex);
-    if (distance < minDistance) {
-      minDistance = distance;
-      nearestColor = namedColor;
-    }
-  });
-  return nearestColor;
-}
-function colorO(c) {
-  if (isDict(c)) return c;
-  let hex = colorFrom(c);
-  let o = w3color(hex);
-  let named = colorNearestNamed(hex);
-  let distance = Math.round(colorDistance(named.hex, hex));
-  o.name = named.name;
-  o.distance = distance;
-  o.bucket = colorGetBucket(hex);
-  o.hex = hex;
-  return o;
-}
-function colorPalette(color, type = 'shade') { return colorShades(colorFrom(color)); }
-function colorPaletteFromImage(img) {
-  if (nundef(ColorThiefObject)) ColorThiefObject = new ColorThief();
-  return ColorThiefObject.getPalette(img).map(x => colorFrom(x));
-}
-function colorPaletteFromUrl(path) {
-  let img = mCreateFrom(`<img src='${path}' />`);
-  let pal = colorPaletteFromImage(img);
-  return pal;
-}
-function colorRgbArgsToHex79(r, g, b, a) {
-  r = Math.round(r).toString(16).padStart(2, '0');
-  g = Math.round(g).toString(16).padStart(2, '0');
-  b = Math.round(b).toString(16).padStart(2, '0');
-  if (nundef(a)) return `#${r}${g}${b}`;
-  a = Math.round(a * 255).toString(16).padStart(2, '0');
-  return `#${r}${g}${b}${a}`;
-}
-function colorRgbArgsToHsl01Array(r, g, b) {
-  r /= 255, g /= 255, b /= 255;
-  let max = Math.max(r, g, b), min = Math.min(r, g, b);
-  let h, s, l = (max + min) / 2;
-  if (max === min) {
-    h = s = 0;
-  } else {
-    let d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
-    }
-    h /= 6;
-  }
-  return [h, s, l];
-}
-function colorRgbArrayToHex79(arr) { return colorRgbArgsToHex79(...arr); }
-function colorRgbStringToHex79(c) {
-  let parts = c.split(',');
-  let r = firstNumber(parts[0]);
-  let g = firstNumber(parts[1]);
-  let b = firstNumber(parts[2]);
-  let a = parts.length > 3 ? Number(stringBefore(parts[3], ')')) : null;
-  return colorRgbArgsToHex79(r, g, b, a);
-}
-function colorSample(d, color) {
-  if (nundef(d)) return;
-  mStyle(d, { bg: color, fg: colorIdealText(color) }); //, fg:colorIdealText(color) });  
-  d.innerHTML = `${color}<br>${w3color(color).toHslString()}`;
-}
-function colorSchemeRYB() {
-  let ryb = ['#FE2712', '#FC600A', '#FB9902', '#FCCC1A', '#FEFE33', '#B2D732', '#66B032', '#347C98', '#0247FE', '#4424D6', '#8601AF', '#C21460'];
-  return ryb;
-  console.log('w3color', w3color('deeppink'))
-  for (const c of ryb) {
-    let cw = w3color(c);
-    console.log(cw.hue, cw.sat, cw.lightness, cw.ncol);
-  }
-}
 function colorsFromBFA(bg, fg, alpha) {
   if (fg == 'contrast') {
     if (bg != 'inherit') bg = colorFrom(bg, alpha);
@@ -2110,64 +2247,6 @@ function colorsFromBFA(bg, fg, alpha) {
     if (isdef(fg) && fg != 'inherit') fg = colorFrom(fg);
   }
   return [bg, fg];
-}
-function colorShades(color) {
-  let res = [];
-  for (let frac = -0.8; frac <= 0.8; frac += 0.2) {
-    let c = colorCalculator(frac, color, undefined, true);
-    res.push(c);
-  }
-  return res;
-}
-function colorSortByLightness(list) {
-  let ext = list.map(x => colorO(x));
-  let sorted = sortByDescending(ext, 'lightness').map(x => x.hex);
-  return sorted;
-}
-function colorToHex79(c) {
-  if (colorIsHex79(c)) return c;
-  ColorDi = M.colorByName;
-  let tString = isString(c), tArr = isList(c), tObj = isDict(c);
-  if (tString && c[0] == '#') return colorHex45ToHex79(c);
-  else if (tString && isdef(ColorDi) && lookup(ColorDi, [c])) return ColorDi[c].hex;
-  else if (tString && c.startsWith('rand')) {
-    let spec = capitalize(c.substring(4));
-    let func = window['color' + spec];
-    c = isdef(func) ? func() : rColor();
-    assertion(colorIsHex79(c), 'ERROR coloFrom!!!!!!!!! (rand)');
-    return c;
-  } else if (tString && (c.startsWith('linear') || c.startsWith('radial'))) return c;
-  else if (tString && c.startsWith('rgb')) return colorRgbStringToHex79(c);
-  else if (tString && c.startsWith('hsl')) return colorHsl360StringToHex79(c);
-  else if (tString && c == 'transparent') return '#00000000';
-  else if (tString && c == 'inherit') return c;
-  else if (tString) { ensureColorDict(); let c1 = ColorDi[c]; assertion(isdef(c1), `UNKNOWN color ${c}`); return c1.hex; }
-  else if (tArr && (c.length == 3 || c.length == 4) && isNumber(c[0])) return colorRgbArrayToHex79(c);
-  else if (tArr) return colorToHex79(rChoose(tArr));
-  else if (tObj && 'h' in c && c.h > 1) { return colorHsl360ObjectToHex79(c); } //console.log('!!!');
-  else if (tObj && 'h' in c) return colorHsl01ObjectToHex79(c);
-  else if (tObj && 'r' in c) return colorRgbArgsToHex79(c.r, c.g, c.b, c.a);
-  assertion(false, `NO COLOR FOUND FOR ${c}`);
-}
-function colorToHwb360Object(c) {
-  c = colorFrom(c);
-  let [r, g, blue] = colorHexToRgbArray(c);
-  let [h, s, l] = colorHexToHsl01Array(c); h *= 360;
-  let w = 100 * Math.min(r, g, blue) / 255;
-  let b = 100 * (1 - Math.max(r, g, blue) / 255);
-  return { h, w, b };
-}
-function colorToHwbRounded(c) {
-  let o = colorToHwb360Object(c);
-  return { h: Math.round(o.h), w: Math.round(o.w), b: Math.round(o.b) };
-}
-function colorTrans(cAny, alpha = 0.5) { return colorFrom(cAny, alpha); }
-function colorTurnHueBy(color, inc = 180) {
-  let [r, g, b] = colorHexToRgbArray(colorFrom(color));
-  let [h, s, l] = colorRgbArgsToHsl01Array(r, g, b); h *= 360;
-  h = (h + inc) % 360;
-  let [newR, newG, newB] = colorHsl01ArgsToRgbArray(h / 360, s, l);
-  return colorRgbArgsToHex79(newR, newG, newB);
 }
 function conslog(s) { console.log(s, window[s]) }
 function contains(s, sSub) { return s.toLowerCase().includes(sSub.toLowerCase()); }
@@ -2194,23 +2273,6 @@ async function correctUsersDeleteKeyImageKey() {
     delete u.imageKey;
     await postUserChange(u, true);
   }
-}
-function cPortrait(dParent, styles = {}, opts = {}) {
-  if (nundef(styles.h)) styles.h = 100;
-  if (nundef(styles.w)) styles.w = styles.h * .7;
-  return cBlank(dParent, styles, opts);
-}
-function cPrintSym(card, sym, styles, pos) {
-  let d = iDiv(card);
-  let opts = {};
-  if (isNumber(sym)) {
-    opts.html = sym;
-  } else if (sym.includes('/')) {
-    opts.tag = 'img';
-    opts.src = sym;
-  }
-  let d1 = mDom(d, styles, opts);
-  mPlace(d1, pos, pos[0] == 'c' ? 0 : 2, pos[1] == 'c' ? 0 : 2);
 }
 function createBatchGridCells(d, w, h, styles = {}, opts = {}) {
   let gap = valf(styles.gap, 4);
@@ -2513,23 +2575,7 @@ function cropTo(tool, wnew, hnew) {
   let ynew = y + (hnew - h) / 2;
   redrawImage(img, dParent, xnew, ynew, wnew, wnew, wnew, hnew, () => setRect(0, 0, wnew, hnew))
 }
-function cRound(dParent, styles = {}, opts = {}) {
-  styles.w = valf(styles.w, 100);
-  styles.h = valf(styles.h, 100);
-  styles.rounding = '50%';
-  return cBlank(dParent, styles, opts);
-}
 function deckDeal(deck, n) { return deck.splice(0, n); }
-function deepmerge(target, source, optionsArgument) {
-  var array = Array.isArray(source);
-  var options = optionsArgument || { arrayMerge: defaultArrayMerge }
-  var arrayMerge = options.arrayMerge || defaultArrayMerge
-  if (array) {
-    return Array.isArray(target) ? arrayMerge(target, source, optionsArgument) : cloneIfNecessary(source, optionsArgument)
-  } else {
-    return mergeObject(target, source, optionsArgument)
-  }
-}
 function deepMerge(target, source) {
   if (Array.isArray(target) && Array.isArray(source)) {
     return mergeArrays(target, source);
@@ -2591,7 +2637,6 @@ function deepMergeIndex(target, source) {
   }
   return target;
 }
-function deepmergeOverride(base, drueber) { return mergeOverrideArrays(base, drueber); }
 function deepMergeOverrideLists(target, source) {
   let output = Object.assign({}, source);
   if (isObject(source) && isObject(target)) {
@@ -2608,6 +2653,17 @@ function deepMergeOverrideLists(target, source) {
   }
   return output;
 }
+function deepmerge(target, source, optionsArgument) {
+  var array = Array.isArray(source);
+  var options = optionsArgument || { arrayMerge: defaultArrayMerge }
+  var arrayMerge = options.arrayMerge || defaultArrayMerge
+  if (array) {
+    return Array.isArray(target) ? arrayMerge(target, source, optionsArgument) : cloneIfNecessary(source, optionsArgument)
+  } else {
+    return mergeObject(target, source, optionsArgument)
+  }
+}
+function deepmergeOverride(base, drueber) { return mergeOverrideArrays(base, drueber); }
 function defaultArrayMerge(target, source, optionsArgument) {
   var destination = target.slice()
   source.forEach(function (e, i) {
@@ -2669,6 +2725,7 @@ function dict2list(d, keyName = 'id') {
 }
 function disableButton(b) { mClass(toElem(b), 'disabled') }
 function disableUI() { mShield('dGameDiv'); }
+function divInt(a, b) { return Math.trunc(a / b); }
 function divideRectangleIntoGrid(w, h, n) {
   let bestRows = 1;
   let bestCols = n;
@@ -2686,7 +2743,33 @@ function divideRectangleIntoGrid(w, h, n) {
   }
   return { rows: bestRows, cols: bestCols };
 }
-function divInt(a, b) { return Math.trunc(a / b); }
+function doYourThing(inp, grid) {
+  let words = extractWords(inp.value, ' ').map(x => x.toLowerCase());
+  let checklist = Array.from(grid.querySelectorAll('input[type="checkbox"]')); //chks=items.map(x=>iDiv(x).firstChild);
+  let allNames = checklist.map(x => x.name);
+  let names = checklist.filter(x => x.checked).map(x => x.name);
+  for (const w of words) {
+    if (!allNames.includes(w)) {
+      let div = mCheckbox(grid, w);
+      let chk = div.firstChild;
+      chk.checked = true;
+      chk.addEventListener('click', ev => checkToInput(ev, inp, grid))
+      needToSortChildren = true;
+    } else {
+      let chk = checklist.find(x => x.name == w);
+      if (!chk.checked) chk.checked = true;
+    }
+  }
+  for (const name of names) {
+    if (!words.includes(name)) {
+      let chk = checklist.find(x => x.name == name);
+      chk.checked = false;
+    }
+  }
+  sortCheckboxes(grid);
+  words.sort();
+  inp.value = words.join(', ') + ', ';
+}
 function downloadAsCode(obj, fname) {
   function convertObjectToCode(obj) {
     if (typeof obj === 'object' && !Array.isArray(obj)) {
@@ -2720,33 +2803,6 @@ function downloadAsText(s, filename, ext = 'txt') {
 function downloadAsYaml(o, filename) {
   let y = jsyaml.dump(o);
   downloadAsText(y, filename, 'yaml');
-}
-function doYourThing(inp, grid) {
-  let words = extractWords(inp.value, ' ').map(x => x.toLowerCase());
-  let checklist = Array.from(grid.querySelectorAll('input[type="checkbox"]')); //chks=items.map(x=>iDiv(x).firstChild);
-  let allNames = checklist.map(x => x.name);
-  let names = checklist.filter(x => x.checked).map(x => x.name);
-  for (const w of words) {
-    if (!allNames.includes(w)) {
-      let div = mCheckbox(grid, w);
-      let chk = div.firstChild;
-      chk.checked = true;
-      chk.addEventListener('click', ev => checkToInput(ev, inp, grid))
-      needToSortChildren = true;
-    } else {
-      let chk = checklist.find(x => x.name == w);
-      if (!chk.checked) chk.checked = true;
-    }
-  }
-  for (const name of names) {
-    if (!words.includes(name)) {
-      let chk = checklist.find(x => x.name == name);
-      chk.checked = false;
-    }
-  }
-  sortCheckboxes(grid);
-  words.sort();
-  inp.value = words.join(', ') + ', ';
 }
 function drag(ev) {
   let elem = ev.target;
@@ -3071,26 +3127,6 @@ function error(msg) {
   let fname = getFunctionsNameThatCalledThisFunction();
   console.log(fname, 'ERROR!!!!! ', msg);
 }
-function evalCond(o, condKey, condVal) {
-  let func = FUNCTIONS[condKey];
-  if (isString(func)) func = window[func];
-  if (nundef(func)) {
-    if (nundef(o[condKey])) return null;
-    if (isList(condVal)) {
-      for (const v of condVal) if (o[condKey] == v) return true;
-      return null;
-    } else {
-      return isdef(o[condKey]) ? o[condKey] == condVal : null;
-    }
-  }
-  return func(o, condVal);
-}
-function evalConds(o, conds) {
-  for (const [f, v] of Object.entries(conds)) {
-    if (!evalCond(o, f, v)) return false;
-  }
-  return true;
-}
 function evNoBubble(ev) { ev.preventDefault(); ev.cancelBubble = true; }
 function evToAttr(ev, attr) {
   let elem = ev.target;
@@ -3119,6 +3155,26 @@ function evToClass(ev, className) {
 function evToId(ev) {
   let elem = findParentWithId(ev.target);
   return elem.id;
+}
+function evalCond(o, condKey, condVal) {
+  let func = FUNCTIONS[condKey];
+  if (isString(func)) func = window[func];
+  if (nundef(func)) {
+    if (nundef(o[condKey])) return null;
+    if (isList(condVal)) {
+      for (const v of condVal) if (o[condKey] == v) return true;
+      return null;
+    } else {
+      return isdef(o[condKey]) ? o[condKey] == condVal : null;
+    }
+  }
+  return func(o, condVal);
+}
+function evalConds(o, conds) {
+  for (const [f, v] of Object.entries(conds)) {
+    if (!evalCond(o, f, v)) return false;
+  }
+  return true;
 }
 function exitToAddon(callback) {
   AD.callback = callback;
@@ -3192,32 +3248,6 @@ function extractFoodAndType(s) {
   }
   return [contained, type];
 }
-function extractFoods(s) {
-  s = s.toLowerCase();
-  let words = toWords(s, true).map(x => strRemoveTrailing(x, 's'));
-  let herbi = M.byCat.plant; herbi = herbi.concat(['plant', 'berries', 'grasses', 'leave', 'tree', 'twig', 'fruit', 'grass', 'grain']);
-  let carni = M.byCat.animal; carni = carni.concat(['animal'])
-  let insecti = ['insect', 'worm', 'ant', 'fly', 'flies']
-  let di = { herbi, carni, insecti };
-  let types = [];
-  let contained = [];
-  for (const type in di) {
-    let arr = di[type];
-    for (const a of arr) {
-      let w = strRemoveTrailing(a, 's'); //console.log('w',w)
-      let o = M.superdi[a];
-      if (isdef(o) && words.includes(o.friendly) || words.includes(w)) {
-        let cont = {};
-        if (o) { cont.key = a; cont.cats = o.cats; cont.friendly = o.friendly }
-        else cont.key = w;
-        addIf(contained, cont);
-        addIf(types, type);
-        continue;
-      }
-    }
-  }
-  return [contained, types];
-}
 function extractFoodType(s, easy = true, key = null) {
   s = s.toLowerCase();
   let words = toWords(s, true).map(x => strRemoveTrailing(x, 's'));
@@ -3251,6 +3281,32 @@ function extractFoodType(s, easy = true, key = null) {
   if (types.includes('herbi') && types.length >= 2) return 'omnivorous';
   else if (types.length >= 2) return 'carnivorous';
   else return types[0] + 'vorous';
+}
+function extractFoods(s) {
+  s = s.toLowerCase();
+  let words = toWords(s, true).map(x => strRemoveTrailing(x, 's'));
+  let herbi = M.byCat.plant; herbi = herbi.concat(['plant', 'berries', 'grasses', 'leave', 'tree', 'twig', 'fruit', 'grass', 'grain']);
+  let carni = M.byCat.animal; carni = carni.concat(['animal'])
+  let insecti = ['insect', 'worm', 'ant', 'fly', 'flies']
+  let di = { herbi, carni, insecti };
+  let types = [];
+  let contained = [];
+  for (const type in di) {
+    let arr = di[type];
+    for (const a of arr) {
+      let w = strRemoveTrailing(a, 's'); //console.log('w',w)
+      let o = M.superdi[a];
+      if (isdef(o) && words.includes(o.friendly) || words.includes(w)) {
+        let cont = {};
+        if (o) { cont.key = a; cont.cats = o.cats; cont.friendly = o.friendly }
+        else cont.key = w;
+        addIf(contained, cont);
+        addIf(types, type);
+        continue;
+      }
+    }
+  }
+  return [contained, types];
 }
 function extractHabitat(str, ignore = []) {
   let s = str.toLowerCase();
@@ -3527,6 +3583,11 @@ function findEdgeHor(ctx, x1, x2, h, cgoal, lighting = true) {
   let vfreq = findMostFrequentVal(list, 'x');
   return list.filter(o => o.x == vfreq);
 }
+function findEdgeVert(ctx, y1, y2, w, cgoal, lighting = true) {
+  let [_, list] = findPoints(ctx, 0, w, y1, y2, cgoal, 20);
+  let vfreq = findMostFrequentVal(list, 'y');
+  return list.filter(o => o.y == vfreq);
+}
 function findEdgesApart(list, dx, dy, prop) {
   list.map(o => o.nei = findPointAtDistance(o, dx, dy, list, 10))
   list = list.filter(o => o.nei)
@@ -3537,11 +3598,6 @@ function findEdgesApart(list, dx, dy, prop) {
   let good2 = list.filter(o => o[prop] == vfreq);
   list = good.concat(good2);
   return list;
-}
-function findEdgeVert(ctx, y1, y2, w, cgoal, lighting = true) {
-  let [_, list] = findPoints(ctx, 0, w, y1, y2, cgoal, 20);
-  let vfreq = findMostFrequentVal(list, 'y');
-  return list.filter(o => o.y == vfreq);
 }
 function findElementBy(prop, val) {
   const elements = document.querySelectorAll('*');
@@ -3893,17 +3949,6 @@ function fromNormalized(s, sep = '_') {
 }
 function fromPercent(n, total) { return Math.round(n * total / 100); }
 function fromPercentTo01(x, nDecimals = 2) { return Number((Number(x) / 100).toFixed(nDecimals)); }
-async function gameoverScore(table) {
-  table.winners = getPlayersWithMaxScore(table);
-  table.status = 'over';
-  table.turn = [];
-  let id = table.id;
-  let name = getUname();
-  let step = table.step;
-  let stepIfValid = step + 1;
-  let o = { id, name, step, stepIfValid, table };
-  let res = await mPostRoute('table', o); //console.log(res);
-}
 function gBg(g, color) { g.setAttribute('fill', color); }
 function gCanvas(area, w, h, color, originInCenter = true) {
   let dParent = mBy(area);
@@ -3922,6 +3967,123 @@ function gCanvas(area, w, h, color, originInCenter = true) {
 }
 function gCreate(tag) { return document.createElementNS('http:/' + '/www.w3.org/2000/svg', tag); }
 function gEllipse(w, h) { let r = gCreate('ellipse'); r.setAttribute('rx', w / 2); r.setAttribute('ry', h / 2); return r; }
+function gFg(g, color, thickness) { g.setAttribute('stroke', color); if (thickness) g.setAttribute('stroke-width', thickness); }
+function gHex(w, h) { let pts = size2hex(w, h); return gPoly(pts); }
+function gLine(x1, y1, x2, y2) { let r = gCreate('line'); r.setAttribute('x1', x1); r.setAttribute('y1', y1); r.setAttribute('x2', x2); r.setAttribute('y2', y2); return r; }
+function gPoly(pts) { let r = gCreate('polygon'); if (pts) r.setAttribute('points', pts); return r; }
+function gPos(g, x, y) { g.style.transform = `translate(${x}px, ${y}px)`; }
+function gRect(w, h) { let r = gCreate('rect'); r.setAttribute('width', w); r.setAttribute('height', h); r.setAttribute('x', -w / 2); r.setAttribute('y', -h / 2); return r; }
+function gRounding(r, rounding) {
+  r.setAttribute('rx', rounding);
+  r.setAttribute('ry', rounding);
+}
+function gSet() {
+  function set_fen() {
+    let items = Session.items;
+    let fen = items.map(x => x.fen).join(',');
+    return fen;
+  }
+  function set_prompt(g, fen) {
+    let [n, rows, cols] = [g.num_attrs, g.rows, g.cols];
+    let all_attrs = gSet_attributes();
+    let attrs_in_play = arrTake(get_keys(all_attrs), n);
+    let deck = g.deck = make_set_deck(n);
+    shuffle(deck);
+    let goal = Goal = { set: make_goal_set(deck, g.prob_different), cards: [] };
+    let dCards = stdRowsColsContainer(dTable, cols, styles = { bg: 'transparent' });
+    let card_styles = { w: cols > 4 ? 130 : 160 };
+    let items = g.items = [];
+    let deck_rest = arrWithout(deck, goal.set);
+    let fens = choose(deck_rest, rows * cols - 3);
+    let all_fens = goal.set.concat(fens);
+    shuffle(all_fens);
+    if (isdef(fen)) { all_fens = fen.split(','); }
+    for (const f of all_fens) {
+      let item = create_set_card(f, dCards, card_styles);
+      let d = iDiv(item);
+      mStyle(d, { cursor: 'pointer' });
+      d.onclick = set_interact;
+      if (Goal.set.includes(item.fen)) Goal.cards.push(item);
+      items.push(item);
+    }
+    g.selected = [];
+    return items;
+  }
+  function set_interact(ev) {
+    ev.cancelBubble = true;
+    if (!canAct()) { console.log('no act'); return; }
+    let id = evToId(ev);
+    if (isdef(Items[id])) {
+      let item = Items[id];
+      toggleSelectionOfPicture(item, Session.selected);
+      if (Session.selected.length == 3) {
+        let correct = check_complete_set(Session.selected.map(x => x.fen));
+        if (correct) {
+          Selected = { isCorrect: true, feedbackUI: Session.selected.map(x => iDiv(x)) };
+        } else {
+          Selected = { isCorrect: false, correctUis: Goal.cards.map(x => iDiv(x)), feedbackUI: null, animation: 'onPulse1' };
+        }
+        set_eval();
+      }
+    }
+  }
+  function set_eval() {
+    if (!canAct()) return;
+    uiActivated = false; clear_timeouts();
+    IsAnswerCorrect = Selected.isCorrect;
+    race_set_fen();
+    race_update_my_score(IsAnswerCorrect ? 1 : 0);
+    let delay = show_feedback(IsAnswerCorrect);
+    setTimeout(() => {
+      in_game_open_prompt_off();
+      clear_table_events();
+      race_send_move();
+    }, delay);
+  }
+  return {
+    prompt: set_prompt,
+    fen: set_fen,
+  }
+}
+function gShape(shape, w = 20, h = 20, color = 'green', rounding) {
+  let el = gG();
+  if (nundef(shape)) shape = 'rect';
+  if (shape != 'line') agColoredShape(el, shape, w, h, color);
+  else gStroke(el, color, w);
+  if (isdef(rounding) && shape == 'rect') {
+    let r = el.children[0];
+    gRounding(r, rounding);
+  }
+  return el;
+}
+function gSize(g, w, h, shape = null, iChild = 0) {
+  let el = (getTypeOf(g) != 'g') ? g : g.children[iChild];
+  let t = getTypeOf(el);
+  switch (t) {
+    case 'rect': el.setAttribute('width', w); el.setAttribute('height', h); el.setAttribute('x', -w / 2); el.setAttribute('y', -h / 2); break;
+    case 'ellipse': el.setAttribute('rx', w / 2); el.setAttribute('ry', h / 2); break;
+    default:
+      if (shape) {
+        switch (shape) {
+          case 'hex': let pts = size2hex(w, h); el.setAttribute('points', pts); break;
+        }
+      }
+  }
+  return el;
+}
+function gStroke(g, color, thickness) { g.setAttribute('stroke', color); if (thickness) g.setAttribute('stroke-width', thickness); }
+function gSvg() { return gCreate('svg'); }
+async function gameoverScore(table) {
+  table.winners = getPlayersWithMaxScore(table);
+  table.status = 'over';
+  table.turn = [];
+  let id = table.id;
+  let name = getUname();
+  let step = table.step;
+  let stepIfValid = step + 1;
+  let o = { id, name, step, stepIfValid, table };
+  let res = await mPostRoute('table', o); //console.log(res);
+}
 function generateEventId(tsDay, tsCreated) { return `${rLetter()}_${tsDay}_${tsCreated}`; }
 function generateGridPoints(n, w, h) {
   const points = [];
@@ -4141,6 +4303,14 @@ function getBestContrastingColor(color) {
   let yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
   return (yiq >= 128) ? '#000000' : '#FFFFFF';
 }
+function getBlendCSS(blcanvas) {
+  const blendModes = {
+    'source-over': 'normal',
+    'lighter': 'normal',
+    'copy': 'normal'
+  };
+  return valf(blendModes[blcanvas], blcanvas);
+}
 function getBlendCanvas(blendMode = 'normal') {
   const blendModeMapping = {
     'normal': 'source-over',       // Default blending mode
@@ -4157,13 +4327,8 @@ function getBlendCanvas(blendMode = 'normal') {
   };
   return valf(blendModeMapping[blendMode], blendMode);
 }
-function getBlendCSS(blcanvas) {
-  const blendModes = {
-    'source-over': 'normal',
-    'lighter': 'normal',
-    'copy': 'normal'
-  };
-  return valf(blendModes[blcanvas], blcanvas);
+function getBlendModesCSS() {
+  return 'normal|multiply|screen|overlay|darken|lighten|color-dodge|saturation|color|luminosity'.split('|');
 }
 function getBlendModesCanvas() {
   const blendModes = [
@@ -4187,9 +4352,6 @@ function getBlendModesCanvas() {
     'luminosity'
   ];
   return blendModes;
-}
-function getBlendModesCSS() {
-  return 'normal|multiply|screen|overlay|darken|lighten|color-dodge|saturation|color|luminosity'.split('|');
 }
 function getBrowser() {
   var userAgent = navigator.userAgent;
@@ -4215,6 +4377,7 @@ function getBrowser() {
 function getButtonCaptionName(name) { return `bTest${name}`; }
 function getButtonCaptionNames(table) { return isdef(table) ? table.playerNames : ['felix', 'gul', 'amanda', 'lauren', 'mimi']; }
 function getButtonId(key) { return 'b' + capitalize(key); }
+function getCSSVariable(varname) { return getCssVar(varname); }
 async function getCanvasCtx(d, styles = {}, opts = {}) {
   opts.tag = 'canvas';
   let cv = mDom(d, styles, opts);
@@ -4454,13 +4617,6 @@ function getColorHexes(x) {
     '9acd32'
   ];
 }
-function getColormapColors() {
-  let s = colormapAsStringOrig();
-  let parts = s.split('clickColor("');
-  let colors = [];
-  for (const p of parts) { if (p.startsWith('#')) colors.push(p.substring(0, 7)); }
-  return colors;
-}
 function getColorNames() {
   return [
     'AliceBlue',
@@ -4613,8 +4769,14 @@ function getColorNames() {
     'YellowGreen'
   ];
 }
+function getColormapColors() {
+  let s = colormapAsStringOrig();
+  let parts = s.split('clickColor("');
+  let colors = [];
+  for (const p of parts) { if (p.startsWith('#')) colors.push(p.substring(0, 7)); }
+  return colors;
+}
 function getCssVar(varname) { return getComputedStyle(document.body).getPropertyValue(varname); }
-function getCSSVariable(varname) { return getCssVar(varname); }
 function getDetailedSuperdi(key) {
   let o = M.superdi[key];
   let details = valf(M.details[key], M.details[o.friendly]);
@@ -4699,13 +4861,13 @@ async function getEvent(id, cachedOk = true) {
   if (!cachedOk) Serverdata.events[id] = await mGetRoute('event', { id });
   return res;
 }
-async function getEvents(cachedOk = false) {
-  if (!cachedOk) Serverdata.events = await mGetRoute('events');
-  return Serverdata.events;
-}
 function getEventValue(o) {
   if (isEmpty(o.time)) return o.text;
   return o.time + ' ' + stringBefore(o.text, '\n');
+}
+async function getEvents(cachedOk = false) {
+  if (!cachedOk) Serverdata.events = await mGetRoute('events');
+  return Serverdata.events;
 }
 function getFormattedDate() {
   const date = new Date();
@@ -5188,12 +5350,12 @@ function getParams(areaName, oSpec, oid) {
   if (bg) { mColor(parent, bg, fg); }
   return [num, or, split, bg, fg, id, panels, parent];
 }
-function getPixelKey(pix) { return getXYKey(pix.x, pix.y); }
 function getPixRgb(ctx, x, y) {
   var pix = ctx.getImageData(x, y, 1, 1).data;
   var red = pix[0]; var green = pix[1]; var blue = pix[2];
   return { r: red, g: green, b: blue };
 }
+function getPixelKey(pix) { return getXYKey(pix.x, pix.y); }
 function getPlayerProp(prop, name) { let pl = T.players[valf(name, getUname())]; return pl[prop]; }
 function getPlayersWithMaxScore(table) {
   let list = dict2list(table.players, 'name');
@@ -5290,16 +5452,16 @@ function getSetOfDifferentTypesOfPoints(points) {
 function getStyleProp(elem, prop) { return getComputedStyle(elem).getPropertyValue(prop); }
 function getSuperdi(key) { return valf(M.superdi[key], {}); }
 function getTable() { assertion(!Tid, `getTable!!! ${T.id} !!! ${Tid}`); return T; }
-async function getTextures() {
-  M.textures = (await mGetFiles(`../assets/textures`)).map(x => `../assets/textures/${x}`);
-  return M.textures;
-}
 function getTextureStyle(bg, t) {
   let bgRepeat = t.includes('marble_') || t.includes('wall') ? 'no-repeat' : 'repeat';
   let bgSize = t.includes('marble_') || t.includes('wall') ? `cover` : t.includes('ttrans') ? '' : 'auto';
   let bgImage = `url('${t}')`;
   let bgBlend = t.includes('ttrans') ? 'normal' : (t.includes('marble_') || t.includes('wall')) ? 'luminosity' : 'multiply';
   return { bg, bgImage, bgSize, bgRepeat, bgBlend };
+}
+async function getTextures() {
+  M.textures = (await mGetFiles(`../assets/textures`)).map(x => `../assets/textures/${x}`);
+  return M.textures;
 }
 function getThemeDark() { return getCSSVariable('--bgNav'); }
 function getThemeFg() { return getCSSVariable('--fgButton'); }
@@ -5348,16 +5510,6 @@ function getValuesFromInput(id){
 }
 function getWaitingHtml(sz = 30) { return `<img src="../assets/icons/active_player.gif" height="${sz}" style="margin:0px ${sz / 3}px" />`; }
 function getXYKey(x, y) { return [x, y]; }
-function gFg(g, color, thickness) { g.setAttribute('stroke', color); if (thickness) g.setAttribute('stroke-width', thickness); }
-function gHex(w, h) { let pts = size2hex(w, h); return gPoly(pts); }
-function gLine(x1, y1, x2, y2) { let r = gCreate('line'); r.setAttribute('x1', x1); r.setAttribute('y1', y1); r.setAttribute('x2', x2); r.setAttribute('y2', y2); return r; }
-function gPoly(pts) { let r = gCreate('polygon'); if (pts) r.setAttribute('points', pts); return r; }
-function gPos(g, x, y) { g.style.transform = `translate(${x}px, ${y}px)`; }
-function gRect(w, h) { let r = gCreate('rect'); r.setAttribute('width', w); r.setAttribute('height', h); r.setAttribute('x', -w / 2); r.setAttribute('y', -h / 2); return r; }
-function gRounding(r, rounding) {
-  r.setAttribute('rx', rounding);
-  r.setAttribute('ry', rounding);
-}
 function groupByProperty(list, prop) {
   const groups = {};
   list.forEach(obj => {
@@ -5369,102 +5521,28 @@ function groupByProperty(list, prop) {
   });
   return Object.values(groups);
 }
-function gSet() {
-  function set_fen() {
-    let items = Session.items;
-    let fen = items.map(x => x.fen).join(',');
-    return fen;
-  }
-  function set_prompt(g, fen) {
-    let [n, rows, cols] = [g.num_attrs, g.rows, g.cols];
-    let all_attrs = gSet_attributes();
-    let attrs_in_play = arrTake(get_keys(all_attrs), n);
-    let deck = g.deck = make_set_deck(n);
-    shuffle(deck);
-    let goal = Goal = { set: make_goal_set(deck, g.prob_different), cards: [] };
-    let dCards = stdRowsColsContainer(dTable, cols, styles = { bg: 'transparent' });
-    let card_styles = { w: cols > 4 ? 130 : 160 };
-    let items = g.items = [];
-    let deck_rest = arrWithout(deck, goal.set);
-    let fens = choose(deck_rest, rows * cols - 3);
-    let all_fens = goal.set.concat(fens);
-    shuffle(all_fens);
-    if (isdef(fen)) { all_fens = fen.split(','); }
-    for (const f of all_fens) {
-      let item = create_set_card(f, dCards, card_styles);
-      let d = iDiv(item);
-      mStyle(d, { cursor: 'pointer' });
-      d.onclick = set_interact;
-      if (Goal.set.includes(item.fen)) Goal.cards.push(item);
-      items.push(item);
-    }
-    g.selected = [];
-    return items;
-  }
-  function set_interact(ev) {
-    ev.cancelBubble = true;
-    if (!canAct()) { console.log('no act'); return; }
-    let id = evToId(ev);
-    if (isdef(Items[id])) {
-      let item = Items[id];
-      toggleSelectionOfPicture(item, Session.selected);
-      if (Session.selected.length == 3) {
-        let correct = check_complete_set(Session.selected.map(x => x.fen));
-        if (correct) {
-          Selected = { isCorrect: true, feedbackUI: Session.selected.map(x => iDiv(x)) };
-        } else {
-          Selected = { isCorrect: false, correctUis: Goal.cards.map(x => iDiv(x)), feedbackUI: null, animation: 'onPulse1' };
-        }
-        set_eval();
-      }
-    }
-  }
-  function set_eval() {
-    if (!canAct()) return;
-    uiActivated = false; clear_timeouts();
-    IsAnswerCorrect = Selected.isCorrect;
-    race_set_fen();
-    race_update_my_score(IsAnswerCorrect ? 1 : 0);
-    let delay = show_feedback(IsAnswerCorrect);
-    setTimeout(() => {
-      in_game_open_prompt_off();
-      clear_table_events();
-      race_send_move();
-    }, delay);
-  }
-  return {
-    prompt: set_prompt,
-    fen: set_fen,
-  }
+function hFunc(content, funcname, arg1, arg2, arg3) {
+  let html = `<a style='color:blue' href="javascript:${funcname}('${arg1}','${arg2}','${arg3}');">${content}</a>`;
+  return html;
 }
-function gShape(shape, w = 20, h = 20, color = 'green', rounding) {
-  let el = gG();
-  if (nundef(shape)) shape = 'rect';
-  if (shape != 'line') agColoredShape(el, shape, w, h, color);
-  else gStroke(el, color, w);
-  if (isdef(rounding) && shape == 'rect') {
-    let r = el.children[0];
-    gRounding(r, rounding);
-  }
-  return el;
+function hPrepUi(ev, areas, cols, rows, bg) {
+  hToggleClassMenu(ev); mClear('dMain');
+  let d = mDom('dMain', { w: '100%', h: '100%' });
+  let names = mAreas(d, areas, cols, rows);
+  names.unshift('dTop');
+  names = names.concat(['dStatus', 'dMain']);
+  mStyle('dPage', { bg });
+  return names;
 }
-function gSize(g, w, h, shape = null, iChild = 0) {
-  let el = (getTypeOf(g) != 'g') ? g : g.children[iChild];
-  let t = getTypeOf(el);
-  switch (t) {
-    case 'rect': el.setAttribute('width', w); el.setAttribute('height', h); el.setAttribute('x', -w / 2); el.setAttribute('y', -h / 2); break;
-    case 'ellipse': el.setAttribute('rx', w / 2); el.setAttribute('ry', h / 2); break;
-    default:
-      if (shape) {
-        switch (shape) {
-          case 'hex': let pts = size2hex(w, h); el.setAttribute('points', pts); break;
-        }
-      }
+function hToggleClassMenu(a) {
+  a = a.target; 
+  let menu = a.getAttribute('menu');
+  let others = document.querySelectorAll(`[menu='${menu}']`);
+  for (const o of others) {
+    mClassRemove(o, 'active')
   }
-  return el;
+  mClassToggle(a, 'active');
 }
-function gStroke(g, color, thickness) { g.setAttribute('stroke', color); if (thickness) g.setAttribute('stroke-width', thickness); }
-function gSvg() { return gCreate('svg'); }
 function hexBoardCenters(topside, side) {
   if (nundef(topside)) topside = 4;
   if (nundef(side)) side = topside;
@@ -5491,10 +5569,6 @@ function hexFromCenter(dParent, center, styles = {}, opts = {}) {
   let d = mDom(dParent, { position: 'absolute', left, top, 'clip-path': 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }, opts);
   mStyle(d, styles);
   return d;
-}
-function hFunc(content, funcname, arg1, arg2, arg3) {
-  let html = `<a style='color:blue' href="javascript:${funcname}('${arg1}','${arg2}','${arg3}');">${content}</a>`;
-  return html;
 }
 function hide(elem) {
   if (isString(elem)) elem = document.getElementById(elem);
@@ -5559,24 +5633,6 @@ function homeSidebar(wmin = 150) {
 }
 function hourglassUpdate() {
 }
-function hPrepUi(ev, areas, cols, rows, bg) {
-  hToggleClassMenu(ev); mClear('dMain');
-  let d = mDom('dMain', { w: '100%', h: '100%' });
-  let names = mAreas(d, areas, cols, rows);
-  names.unshift('dTop');
-  names = names.concat(['dStatus', 'dMain']);
-  mStyle('dPage', { bg });
-  return names;
-}
-function hToggleClassMenu(a) {
-  a = a.target; 
-  let menu = a.getAttribute('menu');
-  let others = document.querySelectorAll(`[menu='${menu}']`);
-  for (const o of others) {
-    mClassRemove(o, 'active')
-  }
-  mClassToggle(a, 'active');
-}
 function iAdd(item, liveprops = {}, addprops = {}) {
   let id, l;
   if (isString(item)) { id = item; item = valf(Items[id], {}); }
@@ -5595,6 +5651,7 @@ function iAdd(item, liveprops = {}, addprops = {}) {
   return item;
 }
 function iDiv(i) { return isdef(i.live) ? i.live.div : valf(i.div, i.ui, i); } //isdef(i.div) ? i.div : i; }
+function iRegister(item, id) { let uid = isdef(id) ? id : getUID(); Items[uid] = item; return uid; }
 async function imgAsIsInDiv(url, dParent) {
   let d = mDom(dParent, { bg: 'pink', wmin: 128, hmin: 128, display: 'inline-block', align: 'center', margin: 10 }, { className: 'imgWrapper' });
   let sz = 300;
@@ -5757,7 +5814,6 @@ function inverseCDF(p) {
               ((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
   }
 }
-function iRegister(item, id) { let uid = isdef(id) ? id : getUID(); Items[uid] = item; return uid; }
 function isAlphaNum(s) { query = /^[a-zA-Z0-9]+$/; return query.test(s); }
 function isAlphanumeric(s) { for (const ch of s) { if (!isLetter(ch) && !isDigit(ch)) return false; } return isLetter(s[0]); }
 function isAncestorOf(elem, elemAnc) {
@@ -5773,7 +5829,6 @@ function isAtLeast(n, num = 1) { return n >= num; }
 function isBetween(n, a, b) { return n >= a && n <= b }
 function isCloseTo(n, m, acc = 10) { return Math.abs(n - m) <= acc + 1; }
 function isColor(s) { return isdef(M.colorByName[s]) || s.length == 7 && s[0] == '#'; }
-function isdef(x) { return x !== null && x !== undefined && x !== 'undefined'; }
 function isDict(d) { let res = (d !== null) && (typeof (d) == 'object') && !isList(d); return res; }
 function isDigit(s) { return /^[0-9]$/i.test(s); }
 function isEmpty(arr) {
@@ -5873,6 +5928,7 @@ function isTimeForAddon() {
 function isWhiteSpace(s) { let white = new RegExp(/^\s$/); return white.test(s.charAt(0)); }
 function isWithinDelta(n, goal, delta) { return isBetween(n, goal - delta, goal + delta) }
 function isWordSeparator(ch) { return ' ,-.!?;:'.includes(ch); }
+function isdef(x) { return x !== null && x !== undefined && x !== 'undefined'; }
 function ithWord(s, n, allow_) {
   let ws = toWords(s, allow_);
   return ws[Math.min(n, ws.length - 1)];
@@ -6267,6 +6323,46 @@ async function loadAndScaleImage(imageUrl) {
     console.error("Error loading image:", error);
   }
 }
+async function loadAssets(sessionType) {
+  if (nundef(M)) M = {};
+  if (nundef(sessionType)) sessionType = detectSessionType(); 
+  console.log('in loadAssets:',sessionType)
+  if (sessionType == 'telecave') {
+    let res = await postPHP({}, 'assets'); //console.log(res);
+    let jsonObject = JSON.parse(res); 
+    let di = {};
+    for (const k in jsonObject) {
+      di[k] = jsyaml.load(jsonObject[k]); 
+    }
+    for (const k in di.m) M[k] = di.m[k];
+    for (const k in di) if (k != 'm') M[k] = di[k];
+  } else {
+    let m = await mGetYaml('../y/m.yaml');
+    for (const k in m) M[k] = m[k];
+    M.superdi = await mGetYaml('../y/superdi.yaml');
+    M.details = await mGetYaml('../y/details.yaml');
+    M.dicolor = await mGetYaml(`../assets/dicolor.yaml`);
+  }
+  let [di, byColl, byFriendly, byCat, allImages] = [M.superdi, {}, {}, {}, {}];
+  for (const k in di) {
+    let o = di[k];
+    for (const cat of o.cats) lookupAddIfToList(byCat, [cat], k);
+    for (const coll of o.colls) lookupAddIfToList(byColl, [coll], k);
+    lookupAddIfToList(byFriendly, [o.friendly], k)
+    if (isdef(o.img)) {
+      let fname = stringAfterLast(o.img, '/')
+      allImages[fname] = { fname, path: o.img, k };
+    }
+  }
+  M.allImages = allImages;
+  M.byCat = byCat;
+  M.byCollection = byColl;
+  M.byFriendly = byFriendly;
+  M.categories = Object.keys(byCat); M.categories.sort();
+  M.collections = Object.keys(byColl); M.collections.sort();
+  M.names = Object.keys(byFriendly); M.names.sort();
+  [M.colorList, M.colorByHex, M.colorByName] = getListAndDictsForDicolors();
+}
 function loadColors(bh = 18, bs = 20, bl = 20) {
   if (nundef(M.dicolor)) {
     M.dicolor = dicolor;
@@ -6423,45 +6519,6 @@ function mAdjustPage(wmargin) {
   mStyle('dMain', { w, h });
   mStyle('dPage', { w, h });
 }
-function makeArrayWithParts(keys) {
-  let arr = []; keys[0].split('_').map(x => arr.push([]));
-  for (const key of keys) {
-    let parts = key.split('_');
-    for (let i = 0; i < parts.length; i++) arr[i].push(parts[i]);
-  }
-  return arr;
-}
-function makeDefaultPool(fromData) {
-  if (nundef(fromData) || isEmpty(fromData.table) && isEmpty(fromData.players)) return {};
-  if (nundef(fromData.table)) fromData.table = {};
-  let data = jsCopy(fromData.table);
-  for (const k in fromData.players) {
-    data[k] = jsCopy(fromData.players[k]);
-  }
-  return data;
-}
-function makePool(cond, source, R) {
-  if (nundef(cond)) return [];
-  else if (cond == 'all') return source;
-  let pool = [];
-  for (const oid of source) {
-    let o = R.getO(oid);
-    if (!evalConds(o, cond)) continue;
-    pool.push(oid);
-  }
-  return pool;
-}
-function makeSVG(tag, attrs) {
-  var el = "<" + tag;
-  for (var k in attrs)
-    el += " " + k + "=\"" + attrs[k] + "\"";
-  return el + "/>";
-}
-function makeUnitString(nOrString, unit = 'px', defaultVal = '100%') {
-  if (nundef(nOrString)) return defaultVal;
-  if (isNumber(nOrString)) nOrString = '' + nOrString + unit;
-  return nOrString;
-}
 function mAnchorTo(elem, dAnchor, align = 'bl') {
   let rect = dAnchor.getBoundingClientRect();
   let drect = elem.getBoundingClientRect();
@@ -6487,9 +6544,6 @@ function mAnimate(elem, prop, valist, callback, msDuration = 1000, easing = 'cub
   return a;
 }
 function mAppend(d, child) { toElem(d).appendChild(child); return child; }
-function mapRange(value, inMin, inMax, outMin, outMax) {
-  return Math.round((value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin);
-}
 function mArea(padding, dParent, styles = {}, opts = {}) {
   addKeys({ padding, wbox: true, position: 'relative' }, styles)
   let d0 = mDom(dParent, styles);
@@ -6876,6 +6930,21 @@ function mCropResizePan(dParent, img, dButtons) {
     show: show_cropbox,
   }
 }
+function mDataTable(reclist, dParent, rowstylefunc, headers, id, showheaders = true) {
+  if (nundef(headers)) headers = Object.keys(reclist[0]);
+  let t = mTable(dParent, headers, showheaders);
+  if (isdef(id)) t.id = `t${id}`;
+  let rowitems = [];
+  let i = 0;
+  for (const u of reclist) {
+    let rid = isdef(id) ? `r${id}_${i}` : null;
+    r = mTableRow(t, u, headers, rid);
+    if (isdef(rowstylefunc)) mStyle(r.div, rowstylefunc(u));
+    rowitems.push({ div: r.div, colitems: r.colitems, o: u, id: rid, index: i });
+    i++;
+  }
+  return { div: t, rowitems: rowitems };
+}
 function mDatalist(dParent, list, opts = {}) {
   var mylist = list;
   var opts = opts;
@@ -6908,21 +6977,6 @@ function mDatalist(dParent, list, opts = {}) {
     listElem: datalist,
     opts: opts,
   }
-}
-function mDataTable(reclist, dParent, rowstylefunc, headers, id, showheaders = true) {
-  if (nundef(headers)) headers = Object.keys(reclist[0]);
-  let t = mTable(dParent, headers, showheaders);
-  if (isdef(id)) t.id = `t${id}`;
-  let rowitems = [];
-  let i = 0;
-  for (const u of reclist) {
-    let rid = isdef(id) ? `r${id}_${i}` : null;
-    r = mTableRow(t, u, headers, rid);
-    if (isdef(rowstylefunc)) mStyle(r.div, rowstylefunc(u));
-    rowitems.push({ div: r.div, colitems: r.colitems, o: u, id: rid, index: i });
-    i++;
-  }
-  return { div: t, rowitems: rowitems };
 }
 function mDiv(dParent, styles, id, inner, classes, sizing) {
   dParent = toElem(dParent);
@@ -7002,133 +7056,6 @@ function mDummyFocus() {
   if (nundef(mBy('dummy'))) addDummy(document.body, 'cc');
   mBy('dummy').focus();
 }
-function measureElement(el) {
-  let info = window.getComputedStyle(el, null);
-  return { w: info.width, h: info.height };
-}
-function measureFieldset(fs) {
-  let legend = fs.firstChild;
-  let r = getRect(legend);
-  let labels = fs.getElementsByTagName('label');
-  let wmax = 0;
-  for (const l of labels) {
-    let r1 = getRect(l);
-    wmax = Math.max(wmax, r1.w);
-  }
-  let wt = r.w;
-  let wo = wmax + 24;
-  let diff = wt - wo;
-  if (diff >= 10) {
-    for (const l of labels) { let d = l.parentNode; mStyle(d, { maleft: diff / 2 }); }
-  }
-  let wneeded = Math.max(wt, wo) + 10;
-  mStyle(fs, { wmin: wneeded });
-  for (const l of labels) { let d = l.parentNode; mStyle(l, { display: 'inline-block', wmin: 50 }); mStyle(d, { wmin: wneeded - 40 }); }
-}
-function measureHeight(elem) { return mGetStyle(elem, 'h') }
-function measureHeightOfTextStyle(dParent, styles = {}) {
-  let d = mDom(dParent, styles, { html: 'Hql' });
-  let s = measureElement(d);
-  d.remove();
-  return firstNumber(s.h);
-}
-function measureWidth(elem) { return mGetStyle(elem, 'w') }
-function menuCloseCalendar() { closePopup(); delete DA.calendar; clearMain(); }
-function menuCloseCurrent(menu) {
-  let curKey = lookup(menu, ['cur']);
-  if (curKey) {
-    let cur = menu.commands[curKey];
-    if (nundef(cur)) return;
-    mClassRemove(iDiv(cur), 'activeLink'); //unselect cur command
-    cur.close();
-  }
-}
-function menuCloseGames() { clearMain(); }
-function menuCloseHome() { closeLeftSidebar(); clearMain(); }
-async function menuCloseSettings() { delete DA.settings; closeLeftSidebar(); clearMain(); }
-function menuCloseSimple() { closeLeftSidebar(); clearMain(); }
-function menuCloseTable() { if (T) Tid = T.id; T = null; delete DA.pendingChanges; clearMain(); mClass('dExtra', 'p10hide'); }
-function menuCommand(dParent, menuKey, key, html, open, close) {
-  let cmd = mCommand(dParent, key, html, { open, close });
-  let a = iDiv(cmd);
-  a.setAttribute('key', `${menuKey}_${key}`);
-  a.onclick = onclickMenu;
-  cmd.menuKey = menuKey;
-  return cmd;
-}
-function menuDisable(menu, key) { mClass(iDiv(menu.commands[key]), 'disabled') }
-function menuEnable(menu, key) { mClassRemove(iDiv(menu.commands[key]), 'disabled') }
-async function menuOpen(menu, key, defaultKey = 'settings') {
-  let cmd = menu.commands[key];
-  if (nundef(cmd)) { console.log('abandon', key); await switchToMainMenu(defaultKey); return; }
-  menu.cur = key;
-  mClass(iDiv(cmd), 'activeLink'); //console.log('cmd',cmd)
-  if (isdef(mBy('dExtra'))) await updateExtra();
-  await cmd.open();
-}
-function mergeArrays(target, source) {
-  function getKey(item) { return item.key || item.id || item.name; }
-  const merged = Array.from(target);
-  const keyMap = {};
-  target.forEach((item, index) => {
-    const k = getKey(item);
-    if (k) keyMap[k] = index;
-  });
-  source.forEach((item) => {
-    const k = getKey(item);
-    if (k && keyMap[k] !== undefined) {
-      merged[keyMap[k]] = deepMerge(target[keyMap[k]], item);
-    } else {
-      merged.push(item);
-    }
-  });
-  return merged;
-}
-function mergeDynSetNodes(o) {
-  let merged = {};
-  let interpool = null;
-  for (const nodeId in o.RSG) {
-    let node = jsCopy(dynSpec[nodeId]);
-    let pool = node.pool;
-    if (pool) {
-      if (!interpool) interpool = pool;
-      else interpool = intersection(interpool, pool);
-    }
-    merged = deepmerge(merged, node);
-  }
-  merged.pool = interpool;
-  return merged;
-}
-function mergeIncludingPrototype(oid, o) {
-  let merged = mergeDynSetNodes(o);
-  merged.oid = oid;
-  let t = merged.type;
-  let info;
-  if (t && PROTO[t]) {
-    info = deepmerge(merged, jsCopy(PROTO[t]));
-  } else info = merged;
-  return info;
-}
-function mergeObject(target, source, optionsArgument) {
-  var destination = {}
-  if (isMergeableObject(target)) {
-    Object.keys(target).forEach(function (key) {
-      destination[key] = cloneIfNecessary(target[key], optionsArgument)
-    })
-  }
-  Object.keys(source).forEach(function (key) {
-    if (!isMergeableObject(source[key]) || !target[key]) {
-      destination[key] = cloneIfNecessary(source[key], optionsArgument)
-    } else {
-      destination[key] = deepmerge(target[key], source[key], optionsArgument)
-    }
-  })
-  return destination;
-}
-function mergeOverride(base, drueber) { return _deepMerge(base, drueber, { arrayMerge: _overwriteMerge }); }
-function mergeOverrideArrays(base, drueber) {
-  return deepmerge(base, drueber, { arrayMerge: overwriteMerge });
-}
 function mExists(d) { return isdef(toElem(d)); }
 function mFlex(d, or = 'h') {
   d = toElem(d);
@@ -7136,8 +7063,8 @@ function mFlex(d, or = 'h') {
   d.style.flexFlow = (or == 'v' ? 'column' : 'row') + ' ' + (or == 'w' ? 'wrap' : 'nowrap');
 }
 function mFlexBaseline(d) { mStyle(d, { display: 'flex', 'align-items': 'baseline' }); }
-function mFlexLine(d, startEndCenter = 'center') { mStyle(d, { display: 'flex', 'justify-content': startEndCenter, 'align-items': 'center' }); }
 function mFlexLR(d) { mStyle(d, { display: 'flex', 'justify-content': 'space-between', 'align-items': 'center' }); }
+function mFlexLine(d, startEndCenter = 'center') { mStyle(d, { display: 'flex', 'justify-content': startEndCenter, 'align-items': 'center' }); }
 function mFlexSpacebetween(d) { mFlexLR(d); }
 function mFlexV(d) { mStyle(d, { display: 'flex', 'align-items': 'center' }); }
 function mFlexVWrap(d) { mStyle(d, { display: 'flex', 'align-items': 'center', 'flex-flow': 'row wrap' }); }
@@ -7266,17 +7193,6 @@ function mHomeLogo(d, key, handler, menu) {
   return ui;
 }
 function mIfNotRelative(d) { d = toElem(d); if (isEmpty(d.style.position)) d.style.position = 'relative'; }
-function mimali(c, m) {
-  let seasonColors = 'winter_blue midnightblue light_azure capri spring_frost light_green deep_green summer_sky yellow_pantone orange pale_fallen_leaves timberwolf'.split(' ');
-  let c2 = seasonColors[m - 1];
-  let colors = paletteMix(c, c2, 6).slice();
-  let wheel = [];
-  for (const x of colors) {
-    let pal1 = paletteShades(x);
-    for (const i of range(7)) wheel.push(pal1[i + 2]);
-  }
-  return wheel;
-}
 function mInput(dParent, styles, id, placeholder, classtr = 'input', tabindex = null, value = '', selectOnClick = false, type = "text") {
   let html = `<input type="${type}" autocomplete="off" ${selectOnClick ? 'onclick="this.select();"' : ''} id=${id} class="${classtr}" placeholder="${valf(placeholder, '')}" tabindex="${tabindex}" value="${value}">`;
   let d = mAppend(dParent, mCreateFrom(html));
@@ -7284,12 +7200,6 @@ function mInput(dParent, styles, id, placeholder, classtr = 'input', tabindex = 
   return d;
 }
 function mInsert(dParent, el, index = 0) { dParent.insertBefore(el, dParent.childNodes[index]); return el; }
-function minTrialsForSuccess(x, p) {
-  console.log(x,p);
-  const xDecimal = x; 
-  const trials = Math.ceil(Math.log(1 - xDecimal) / Math.log(1 - p));
-  return trials;
-}
 function mItem(liveprops = {}, opts = {}) {
   let id = valf(opts.id, getUID());
   let item = opts;
@@ -7298,22 +7208,6 @@ function mItem(liveprops = {}, opts = {}) {
   let d = iDiv(item); if (isdef(d)) d.id = id;
   Items[id] = item;
   return item;
-}
-function mixColors(c1, c2, c2Weight01) {
-  let [color1, color2] = [colorFrom(c1), colorFrom(c2)]
-  const hex1 = color1.substring(1);
-  const hex2 = color2.substring(1);
-  const r1 = parseInt(hex1.substring(0, 2), 16);
-  const g1 = parseInt(hex1.substring(2, 4), 16);
-  const b1 = parseInt(hex1.substring(4, 6), 16);
-  const r2 = parseInt(hex2.substring(0, 2), 16);
-  const g2 = parseInt(hex2.substring(2, 4), 16);
-  const b2 = parseInt(hex2.substring(4, 6), 16);
-  const r = Math.floor(r1 * (1 - c2Weight01) + r2 * c2Weight01);
-  const g = Math.floor(g1 * (1 - c2Weight01) + g2 * c2Weight01);
-  const b = Math.floor(b1 * (1 - c2Weight01) + b2 * c2Weight01);
-  const hex = colorRgbArgsToHex79(r, g, b);
-  return hex;
 }
 function mKey(imgKey, d, styles = {}, opts = {}) {
   let o = lookup(M.superdi, [imgKey]);
@@ -7327,6 +7221,13 @@ function mKey(imgKey, d, styles = {}, opts = {}) {
   addKeys({ tag: 'img', src }, opts)
   let img = mDom(d, styles, opts);
   return img;
+}
+function mLMR(dParent) {
+  dParent = toElem(dParent);
+  let d = mDom(dParent, { display: 'flex', 'align-items': 'center', 'justify-content': 'space-between', 'flex-flow': 'row nowrap' });
+  let stflex = { gap: 10, display: 'flex', 'align-items': 'center' };
+  let [l, m, r] = [mDom(d, stflex), mDom(d, stflex), mDom(d, stflex)];
+  return [d, l, m, r];
 }
 function mLacunaCirles(dParent, n = 49, neach = 7, sz = 10, rand = .7) {
   let [w, h] = [mGetStyle(dParent, 'w'), mGetStyle(dParent, 'h')];
@@ -7392,13 +7293,6 @@ function mLinkSide(d, text, handler, menu, kennzahl) {
   let ui = mDom(d, { rounding: 10, hpadding: 10, vpadding: 4 }, { tag: 'a', html: text, href: '#', onclick: handler, kennzahl, menu });
   return ui;
 }
-function mLMR(dParent) {
-  dParent = toElem(dParent);
-  let d = mDom(dParent, { display: 'flex', 'align-items': 'center', 'justify-content': 'space-between', 'flex-flow': 'row nowrap' });
-  let stflex = { gap: 10, display: 'flex', 'align-items': 'center' };
-  let [l, m, r] = [mDom(d, stflex), mDom(d, stflex), mDom(d, stflex)];
-  return [d, l, m, r];
-}
 function mMagnify(elem, scale = 5) {
   elem.classList.add(`topmost`);
   MAGNIFIER_IMAGE = elem;
@@ -7435,13 +7329,6 @@ function mNode(o, dParent, title, isSized = false) {
   if (isDict(o)) d.style.textAlign = 'left';
   if (isSized) addClass(d, 'centered');
   return d;
-}
-function modifyStat(name, prop, val) {
-  let id = `stat_${name}_${prop}`;
-  console.log('id', id)
-  let ui = mBy(id);
-  console.log('ui', ui)
-  if (isdef(ui)) ui.innerHTML = val;
 }
 function mOnEnter(elem, handler) {
   elem.addEventListener('keydown', ev => {
@@ -7841,6 +7728,215 @@ function mUnselect(elem) { mClassRemove(elem, 'framedPicture'); }
 function mYaml(d, js) {
   d.innerHTML = '<pre>' + jsonToYaml(js) + '</pre>';
 }
+function makeArrayWithParts(keys) {
+  let arr = []; keys[0].split('_').map(x => arr.push([]));
+  for (const key of keys) {
+    let parts = key.split('_');
+    for (let i = 0; i < parts.length; i++) arr[i].push(parts[i]);
+  }
+  return arr;
+}
+function makeDefaultPool(fromData) {
+  if (nundef(fromData) || isEmpty(fromData.table) && isEmpty(fromData.players)) return {};
+  if (nundef(fromData.table)) fromData.table = {};
+  let data = jsCopy(fromData.table);
+  for (const k in fromData.players) {
+    data[k] = jsCopy(fromData.players[k]);
+  }
+  return data;
+}
+function makePool(cond, source, R) {
+  if (nundef(cond)) return [];
+  else if (cond == 'all') return source;
+  let pool = [];
+  for (const oid of source) {
+    let o = R.getO(oid);
+    if (!evalConds(o, cond)) continue;
+    pool.push(oid);
+  }
+  return pool;
+}
+function makeSVG(tag, attrs) {
+  var el = "<" + tag;
+  for (var k in attrs)
+    el += " " + k + "=\"" + attrs[k] + "\"";
+  return el + "/>";
+}
+function makeUnitString(nOrString, unit = 'px', defaultVal = '100%') {
+  if (nundef(nOrString)) return defaultVal;
+  if (isNumber(nOrString)) nOrString = '' + nOrString + unit;
+  return nOrString;
+}
+function mapRange(value, inMin, inMax, outMin, outMax) {
+  return Math.round((value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin);
+}
+function measureElement(el) {
+  let info = window.getComputedStyle(el, null);
+  return { w: info.width, h: info.height };
+}
+function measureFieldset(fs) {
+  let legend = fs.firstChild;
+  let r = getRect(legend);
+  let labels = fs.getElementsByTagName('label');
+  let wmax = 0;
+  for (const l of labels) {
+    let r1 = getRect(l);
+    wmax = Math.max(wmax, r1.w);
+  }
+  let wt = r.w;
+  let wo = wmax + 24;
+  let diff = wt - wo;
+  if (diff >= 10) {
+    for (const l of labels) { let d = l.parentNode; mStyle(d, { maleft: diff / 2 }); }
+  }
+  let wneeded = Math.max(wt, wo) + 10;
+  mStyle(fs, { wmin: wneeded });
+  for (const l of labels) { let d = l.parentNode; mStyle(l, { display: 'inline-block', wmin: 50 }); mStyle(d, { wmin: wneeded - 40 }); }
+}
+function measureHeight(elem) { return mGetStyle(elem, 'h') }
+function measureHeightOfTextStyle(dParent, styles = {}) {
+  let d = mDom(dParent, styles, { html: 'Hql' });
+  let s = measureElement(d);
+  d.remove();
+  return firstNumber(s.h);
+}
+function measureWidth(elem) { return mGetStyle(elem, 'w') }
+function menuCloseCalendar() { closePopup(); delete DA.calendar; clearMain(); }
+function menuCloseCurrent(menu) {
+  let curKey = lookup(menu, ['cur']);
+  if (curKey) {
+    let cur = menu.commands[curKey];
+    if (nundef(cur)) return;
+    mClassRemove(iDiv(cur), 'activeLink'); //unselect cur command
+    cur.close();
+  }
+}
+function menuCloseGames() { clearMain(); }
+function menuCloseHome() { closeLeftSidebar(); clearMain(); }
+async function menuCloseSettings() { delete DA.settings; closeLeftSidebar(); clearMain(); }
+function menuCloseSimple() { closeLeftSidebar(); clearMain(); }
+function menuCloseTable() { if (T) Tid = T.id; T = null; delete DA.pendingChanges; clearMain(); mClass('dExtra', 'p10hide'); }
+function menuCommand(dParent, menuKey, key, html, open, close) {
+  let cmd = mCommand(dParent, key, html, { open, close });
+  let a = iDiv(cmd);
+  a.setAttribute('key', `${menuKey}_${key}`);
+  a.onclick = onclickMenu;
+  cmd.menuKey = menuKey;
+  return cmd;
+}
+function menuDisable(menu, key) { mClass(iDiv(menu.commands[key]), 'disabled') }
+function menuEnable(menu, key) { mClassRemove(iDiv(menu.commands[key]), 'disabled') }
+async function menuOpen(menu, key, defaultKey = 'settings') {
+  let cmd = menu.commands[key];
+  if (nundef(cmd)) { console.log('abandon', key); await switchToMainMenu(defaultKey); return; }
+  menu.cur = key;
+  mClass(iDiv(cmd), 'activeLink'); //console.log('cmd',cmd)
+  if (isdef(mBy('dExtra'))) await updateExtra();
+  await cmd.open();
+}
+function mergeArrays(target, source) {
+  function getKey(item) { return item.key || item.id || item.name; }
+  const merged = Array.from(target);
+  const keyMap = {};
+  target.forEach((item, index) => {
+    const k = getKey(item);
+    if (k) keyMap[k] = index;
+  });
+  source.forEach((item) => {
+    const k = getKey(item);
+    if (k && keyMap[k] !== undefined) {
+      merged[keyMap[k]] = deepMerge(target[keyMap[k]], item);
+    } else {
+      merged.push(item);
+    }
+  });
+  return merged;
+}
+function mergeDynSetNodes(o) {
+  let merged = {};
+  let interpool = null;
+  for (const nodeId in o.RSG) {
+    let node = jsCopy(dynSpec[nodeId]);
+    let pool = node.pool;
+    if (pool) {
+      if (!interpool) interpool = pool;
+      else interpool = intersection(interpool, pool);
+    }
+    merged = deepmerge(merged, node);
+  }
+  merged.pool = interpool;
+  return merged;
+}
+function mergeIncludingPrototype(oid, o) {
+  let merged = mergeDynSetNodes(o);
+  merged.oid = oid;
+  let t = merged.type;
+  let info;
+  if (t && PROTO[t]) {
+    info = deepmerge(merged, jsCopy(PROTO[t]));
+  } else info = merged;
+  return info;
+}
+function mergeObject(target, source, optionsArgument) {
+  var destination = {}
+  if (isMergeableObject(target)) {
+    Object.keys(target).forEach(function (key) {
+      destination[key] = cloneIfNecessary(target[key], optionsArgument)
+    })
+  }
+  Object.keys(source).forEach(function (key) {
+    if (!isMergeableObject(source[key]) || !target[key]) {
+      destination[key] = cloneIfNecessary(source[key], optionsArgument)
+    } else {
+      destination[key] = deepmerge(target[key], source[key], optionsArgument)
+    }
+  })
+  return destination;
+}
+function mergeOverride(base, drueber) { return _deepMerge(base, drueber, { arrayMerge: _overwriteMerge }); }
+function mergeOverrideArrays(base, drueber) {
+  return deepmerge(base, drueber, { arrayMerge: overwriteMerge });
+}
+function mimali(c, m) {
+  let seasonColors = 'winter_blue midnightblue light_azure capri spring_frost light_green deep_green summer_sky yellow_pantone orange pale_fallen_leaves timberwolf'.split(' ');
+  let c2 = seasonColors[m - 1];
+  let colors = paletteMix(c, c2, 6).slice();
+  let wheel = [];
+  for (const x of colors) {
+    let pal1 = paletteShades(x);
+    for (const i of range(7)) wheel.push(pal1[i + 2]);
+  }
+  return wheel;
+}
+function minTrialsForSuccess(x, p) {
+  console.log(x,p);
+  const xDecimal = x; 
+  const trials = Math.ceil(Math.log(1 - xDecimal) / Math.log(1 - p));
+  return trials;
+}
+function mixColors(c1, c2, c2Weight01) {
+  let [color1, color2] = [colorFrom(c1), colorFrom(c2)]
+  const hex1 = color1.substring(1);
+  const hex2 = color2.substring(1);
+  const r1 = parseInt(hex1.substring(0, 2), 16);
+  const g1 = parseInt(hex1.substring(2, 4), 16);
+  const b1 = parseInt(hex1.substring(4, 6), 16);
+  const r2 = parseInt(hex2.substring(0, 2), 16);
+  const g2 = parseInt(hex2.substring(2, 4), 16);
+  const b2 = parseInt(hex2.substring(4, 6), 16);
+  const r = Math.floor(r1 * (1 - c2Weight01) + r2 * c2Weight01);
+  const g = Math.floor(g1 * (1 - c2Weight01) + g2 * c2Weight01);
+  const b = Math.floor(b1 * (1 - c2Weight01) + b2 * c2Weight01);
+  const hex = colorRgbArgsToHex79(r, g, b);
+  return hex;
+}
+function modifyStat(name, prop, val) {
+  let id = `stat_${name}_${prop}`;
+  console.log('id', id)
+  let ui = mBy(id);
+  console.log('ui', ui)
+  if (isdef(ui)) ui.innerHTML = val;
+}
 function name2id(name) { return 'd_' + name.split(' ').join('_'); }
 function nextBar(ctx, rest, color) {
   list = rest;
@@ -7893,12 +7989,6 @@ function normalGreaterThan(x, mean, stdev) {
   let res = jStat.normal.cdf(x, mean, stdev);
   return 1 - res;
 }
-function normalizeString(s, sep = '_', keep = []) {
-  s = s.toLowerCase().trim();
-  let res = '';
-  for (let i = 0; i < s.length; i++) { if (isAlphaNum(s[i]) || keep.includes(s[i])) res += s[i]; else if (last(res) != sep) res += sep; }
-  return res;
-}
 function normalPdf(x, mean, stdDev) {
   const exponent = -0.5 * Math.pow((x - mean) / stdDev, 2);
   const coefficient = 1 / (stdDev * Math.sqrt(2 * Math.PI));
@@ -7907,7 +7997,46 @@ function normalPdf(x, mean, stdDev) {
 function normalVariance(stdDev) {
   return Math.pow(stdDev, 2); 
 }
+function normalizeString(s, sep = '_', keep = []) {
+  s = s.toLowerCase().trim();
+  let res = '';
+  for (let i = 0; i < s.length; i++) { if (isAlphaNum(s[i]) || keep.includes(s[i])) res += s[i]; else if (last(res) != sep) res += sep; }
+  return res;
+}
 function nundef(x) { return x === null || x === undefined || x === 'undefined'; }
+async function onEventEdited(id, text, time) {
+  console.log('onEventEdited', id, text, time)
+  let e = Items[id];
+  if (nundef(time)) {
+    [time, text] = extractTime(text);
+  }
+  e.time = time;
+  e.text = text;
+  let result = await simpleUpload('postUpdateEvent', e);
+  console.log('result', result)
+  Items[id] = lookupSetOverride(Serverdata, ['events', id], e);
+  mBy(id).firstChild.value = getEventValue(e);
+  closePopup();
+}
+function onMouseMoveLine(ev) {
+  let d = mBy('dCanvas'); //ev.target;
+  let b = mGetStyle(d, 'border-width'); //console.log(b);
+  const mouseX = ev.clientX - d.offsetLeft - b;
+  const mouseY = ev.clientY + 2 - d.offsetTop - b;
+  B.lines.forEach(line => {
+    const x1 = parseFloat(iDiv(line).dataset.x1);
+    const y1 = parseFloat(iDiv(line).dataset.y1);
+    const x2 = parseFloat(iDiv(line).dataset.x2);
+    const y2 = parseFloat(iDiv(line).dataset.y2);
+    const thickness = B.triggerThreshold;
+    const distance = pointToLineDistance(mouseX, mouseY, x1, y1, x2, y2);
+    if (distance <= thickness / 2) {
+      mStyle(iDiv(line), { opacity: 1, bg: 'red' });
+    } else {
+      mStyle(iDiv(line), { opacity: .1, bg: 'white' });
+    }
+  });
+}
 async function onchangeAutoSwitch() {
   if (DA.autoSwitch === true) {
     DA.autoSwitch = false
@@ -7970,6 +8099,8 @@ async function onclickAll(ev) {
   mBy('inp_npercent').value = 90; 
   mBy('inp_nmean').value = 320; 
   mBy('inp_nstdev').value = 156;
+}
+async function onclickArchive(ev){
 }
 async function onclickBinomial(ev) {
   hToggleClassMenu(ev); mClear('dTable');
@@ -8192,6 +8323,10 @@ async function onclickHome(ev) {
   let names = hPrepUi(ev, ` 'dSide dTable' `, 'auto 1fr', '1fr', 'skyblue');
   mShadeLight(names)
   mRemoveClass(ev.target, 'active'); //just set other top menu buttons inactive!
+  let d=mBy('dSide');
+  for(const name in {new:onclickNew,archive:onclickArchive}){
+    mDom(d,{},{tag:'button',html:name})
+  }
 }
 async function onclickHomeNew() {
   let d = mDom('dMain'); mCenterCenterFlex(d);
@@ -8280,6 +8415,12 @@ async function onclickNATIONS() {
       d.onclick = () => selectCivSpot(d);
     }
   }
+}
+async function onclickNew(ev){
+  let a=mBy('dTable');
+  let b=mDom(a,{},{});
+  mFlex(b);
+  let c=mDom(b,{},{})
 }
 async function onclickNormal(ev) {
   hToggleClassMenu(ev); mClear('dTable');
@@ -8736,43 +8877,10 @@ async function ondropShowImage(url, dDrop) {
 function onenterHex(item, board) {
   colorSample(board.dSample, item.color);
 }
-async function onEventEdited(id, text, time) {
-  console.log('onEventEdited', id, text, time)
-  let e = Items[id];
-  if (nundef(time)) {
-    [time, text] = extractTime(text);
-  }
-  e.time = time;
-  e.text = text;
-  let result = await simpleUpload('postUpdateEvent', e);
-  console.log('result', result)
-  Items[id] = lookupSetOverride(Serverdata, ['events', id], e);
-  mBy(id).firstChild.value = getEventValue(e);
-  closePopup();
-}
 function onleaveHex(item, board) {
   let selitem = board.items.find(x => x.isSelected == true);
   if (nundef(selitem)) return;
   colorSample(board.dSample, selitem.color);
-}
-function onMouseMoveLine(ev) {
-  let d = mBy('dCanvas'); //ev.target;
-  let b = mGetStyle(d, 'border-width'); //console.log(b);
-  const mouseX = ev.clientX - d.offsetLeft - b;
-  const mouseY = ev.clientY + 2 - d.offsetTop - b;
-  B.lines.forEach(line => {
-    const x1 = parseFloat(iDiv(line).dataset.x1);
-    const y1 = parseFloat(iDiv(line).dataset.y1);
-    const x2 = parseFloat(iDiv(line).dataset.x2);
-    const y2 = parseFloat(iDiv(line).dataset.y2);
-    const thickness = B.triggerThreshold;
-    const distance = pointToLineDistance(mouseX, mouseY, x1, y1, x2, y2);
-    if (distance <= thickness / 2) {
-      mStyle(iDiv(line), { opacity: 1, bg: 'red' });
-    } else {
-      mStyle(iDiv(line), { opacity: .1, bg: 'white' });
-    }
-  });
 }
 async function onsockConfig(x) {
   console.log('SOCK::config', x)
@@ -8829,6 +8937,57 @@ function openPopup(name = 'dPopup') {
   return popup;
 }
 function overwriteMerge(destinationArray, sourceArray, options) { return sourceArray }
+function pListOf(what) { return 'list of 100 ' + what.toLowerCase(); }
+function pSBC(p, c0, c1, l) {
+  let r, g, b, P, f, t, h, i = parseInt, m = Math.round, a = typeof c1 == 'string';
+  if (typeof p != 'number' || p < -1 || p > 1 || typeof c0 != 'string' || (c0[0] != 'r' && c0[0] != '#') || (c1 && !a)) return null;
+  h = c0.length > 9;
+  h = a ? (c1.length > 9 ? true : c1 == 'c' ? !h : false) : h;
+  f = pSBCr(c0);
+  P = p < 0;
+  t = c1 && c1 != 'c' ? pSBCr(c1) : P ? { r: 0, g: 0, b: 0, a: -1 } : { r: 255, g: 255, b: 255, a: -1 };
+  p = P ? p * -1 : p;
+  P = 1 - p;
+  if (!f || !t) return null;
+  if (l) { r = m(P * f.r + p * t.r); g = m(P * f.g + p * t.g); b = m(P * f.b + p * t.b); }
+  else { r = m((P * f.r ** 2 + p * t.r ** 2) ** 0.5); g = m((P * f.g ** 2 + p * t.g ** 2) ** 0.5); b = m((P * f.b ** 2 + p * t.b ** 2) ** 0.5); }
+  a = f.a;
+  t = t.a;
+  f = a >= 0 || t >= 0;
+  a = f ? (a < 0 ? t : t < 0 ? a : a * P + t * p) : 0;
+  if (h) return 'rgb' + (f ? 'a(' : '(') + r + ',' + g + ',' + b + (f ? ',' + m(a * 1000) / 1000 : '') + ')';
+  else return '#' + (4294967296 + r * 16777216 + g * 65536 + b * 256 + (f ? m(a * 255) : 0)).toString(16).slice(1, f ? undefined : -2);
+}
+function pSBCr(d) {
+  let i = parseInt, m = Math.round, a = typeof c1 == 'string';
+  let n = d.length,
+    x = {};
+  if (n > 9) {
+    ([r, g, b, a] = d = d.split(',')), (n = d.length);
+    if (n < 3 || n > 4) return null;
+    (x.r = parseInt(r[3] == 'a' ? r.slice(5) : r.slice(4))), (x.g = parseInt(g)), (x.b = parseInt(b)), (x.a = a ? parseFloat(a) : -1);
+  } else {
+    if (n == 8 || n == 6 || n < 4) return null;
+    if (n < 6) d = '#' + d[1] + d[1] + d[2] + d[2] + d[3] + d[3] + (n > 4 ? d[4] + d[4] : '');
+    d = parseInt(d.slice(1), 16);
+    if (n == 9 || n == 5) (x.r = (d >> 24) & 255), (x.g = (d >> 16) & 255), (x.b = (d >> 8) & 255), (x.a = m((d & 255) / 0.255) / 1000);
+    else (x.r = d >> 16), (x.g = (d >> 8) & 255), (x.b = d & 255), (x.a = -1);
+  }
+  return x;
+}
+function pYamlDetails(keyword, type, props) {
+  if (nundef(props)) {
+    switch (type) {
+      case 'animal': props = 'class, color, food, habitat, lifespan, name, offsprings, reproduction, size, species, weight'; break;
+      case 'location': props = 'population, size, longitude, latitude'; break;
+      default: props = 'definition, synonyms, antonyms, german, spanish, french'; break;
+    }
+  }
+  let p = `information about ${keyword}, formatted as yaml object with the following properties: `;
+  p += props + '.';
+  p += `property values should if possible contain numeric information in scientific (European) metrics.`
+  return p;
+}
 function paletteAddDistanceTo(pal, color, key, distfunc = colorGetContrast) {
   let opal = isDict(pal[0]) ? pal : paletteToObjects(pal);
   for (let i = 0; i < pal.length; i++) {
@@ -9124,7 +9283,6 @@ function playerStatCount(key, n, dParent, styles = {}, opts = {}) {
   d.innerHTML += `<span ${isdef(opts.id) ? `id='${opts.id}'` : ''} style="font-weight:bold;color:inherit">${n}</span>`;
   return d;
 }
-function pListOf(what) { return 'list of 100 ' + what.toLowerCase(); }
 function pluralOf(s, n) {
   di = { food: '', child: 'ren' };
   return s + (n == 0 || n > 1 ? valf(di[s.toLowerCase()], 's') : '');
@@ -9174,6 +9332,13 @@ function polyPointsFrom(w, h, x, y, pointArr) {
   let sPoints = pts.map(p => '' + p.X + ',' + p.Y).join(' ');
   return sPoints;
 }
+function posXY(d1, dParent, x, y, unit = 'px', position = 'absolute') {
+  if (nundef(position)) position = 'absolute';
+  if (dParent && !dParent.style.position) dParent.style.setProperty('position', 'relative');
+  d1.style.setProperty('position', position);
+  if (isdef(x)) d1.style.setProperty('left', makeUnitString(x, unit));
+  if (isdef(y)) d1.style.setProperty('top', makeUnitString(y, unit));
+}
 async function postEventChange(data) {
   return Serverdata.events[data.id] = await mPostRoute('postEvent', data);
 }
@@ -9209,13 +9374,6 @@ async function postPHP(data, cmd) {
 async function postUserChange(data, override = false) {
   data = valf(data, U);
   return Serverdata.users[data.name] = override ? await mPostRoute('overrideUser', data) : await mPostRoute('postUser', data);
-}
-function posXY(d1, dParent, x, y, unit = 'px', position = 'absolute') {
-  if (nundef(position)) position = 'absolute';
-  if (dParent && !dParent.style.position) dParent.style.setProperty('position', 'relative');
-  d1.style.setProperty('position', position);
-  if (isdef(x)) d1.style.setProperty('left', makeUnitString(x, unit));
-  if (isdef(y)) d1.style.setProperty('top', makeUnitString(y, unit));
 }
 async function preloadImages(imageUrls) {
   const promises = imageUrls.map(async (url) => {
@@ -9322,77 +9480,10 @@ function proceed(nextLevel) {
   } else if (LevelChange) startLevel(nextLevel);
   else startRound();
 }
-function pSBC(p, c0, c1, l) {
-  let r, g, b, P, f, t, h, i = parseInt, m = Math.round, a = typeof c1 == 'string';
-  if (typeof p != 'number' || p < -1 || p > 1 || typeof c0 != 'string' || (c0[0] != 'r' && c0[0] != '#') || (c1 && !a)) return null;
-  h = c0.length > 9;
-  h = a ? (c1.length > 9 ? true : c1 == 'c' ? !h : false) : h;
-  f = pSBCr(c0);
-  P = p < 0;
-  t = c1 && c1 != 'c' ? pSBCr(c1) : P ? { r: 0, g: 0, b: 0, a: -1 } : { r: 255, g: 255, b: 255, a: -1 };
-  p = P ? p * -1 : p;
-  P = 1 - p;
-  if (!f || !t) return null;
-  if (l) { r = m(P * f.r + p * t.r); g = m(P * f.g + p * t.g); b = m(P * f.b + p * t.b); }
-  else { r = m((P * f.r ** 2 + p * t.r ** 2) ** 0.5); g = m((P * f.g ** 2 + p * t.g ** 2) ** 0.5); b = m((P * f.b ** 2 + p * t.b ** 2) ** 0.5); }
-  a = f.a;
-  t = t.a;
-  f = a >= 0 || t >= 0;
-  a = f ? (a < 0 ? t : t < 0 ? a : a * P + t * p) : 0;
-  if (h) return 'rgb' + (f ? 'a(' : '(') + r + ',' + g + ',' + b + (f ? ',' + m(a * 1000) / 1000 : '') + ')';
-  else return '#' + (4294967296 + r * 16777216 + g * 65536 + b * 256 + (f ? m(a * 255) : 0)).toString(16).slice(1, f ? undefined : -2);
-}
-function pSBCr(d) {
-  let i = parseInt, m = Math.round, a = typeof c1 == 'string';
-  let n = d.length,
-    x = {};
-  if (n > 9) {
-    ([r, g, b, a] = d = d.split(',')), (n = d.length);
-    if (n < 3 || n > 4) return null;
-    (x.r = parseInt(r[3] == 'a' ? r.slice(5) : r.slice(4))), (x.g = parseInt(g)), (x.b = parseInt(b)), (x.a = a ? parseFloat(a) : -1);
-  } else {
-    if (n == 8 || n == 6 || n < 4) return null;
-    if (n < 6) d = '#' + d[1] + d[1] + d[2] + d[2] + d[3] + d[3] + (n > 4 ? d[4] + d[4] : '');
-    d = parseInt(d.slice(1), 16);
-    if (n == 9 || n == 5) (x.r = (d >> 24) & 255), (x.g = (d >> 16) & 255), (x.b = (d >> 8) & 255), (x.a = m((d & 255) / 0.255) / 1000);
-    else (x.r = d >> 16), (x.g = (d >> 8) & 255), (x.b = d & 255), (x.a = -1);
-  }
-  return x;
-}
-function pYamlDetails(keyword, type, props) {
-  if (nundef(props)) {
-    switch (type) {
-      case 'animal': props = 'class, color, food, habitat, lifespan, name, offsprings, reproduction, size, species, weight'; break;
-      case 'location': props = 'population, size, longitude, latitude'; break;
-      default: props = 'definition, synonyms, antonyms, german, spanish, french'; break;
-    }
-  }
-  let p = `information about ${keyword}, formatted as yaml object with the following properties: `;
-  p += props + '.';
-  p += `property values should if possible contain numeric information in scientific (European) metrics.`
-  return p;
-}
-function randomColor() { return rColor(); }
-function randomIndex(array) { return randomRange(0, array.length) | 0 }
-function randomNumber(min = 0, max = 100) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-function randomRange(min, max) { return min + Math.random() * (max - min) }
-function range(f, t, st = 1) {
-  if (nundef(t)) {
-    t = f - 1;
-    f = 0;
-  }
-  let arr = [];
-  for (let i = f; i <= t; i += st) {
-    arr.push(i);
-  }
-  return arr;
-}
 function rBgFor() { for (const d of Array.from(arguments)) { mStyle(d, { bg: rColor() }) } }
 function rBlend() { return rBlendCanvas(); }
-function rBlendCanvas() { return rChoose(getBlendModesCanvas()); }
 function rBlendCSS() { return rChoose(getBlendModesCSS()); }
+function rBlendCanvas() { return rChoose(getBlendModesCanvas()); }
 function rChoose(arr, n = 1, func = null, exceptIndices = null) {
   if (isDict(arr)) arr = dict2list(arr, 'key');
   let indices = arrRange(0, arr.length - 1);
@@ -9420,6 +9511,41 @@ function rColor(lum100OrAlpha01 = 1, alpha01 = 1, hueVari = 60) {
     c = colorHsl360ArgsToHex79(hue, sat, b);
   }
   return alpha01 < 1 ? colorTrans(c, alpha01) : c;
+}
+function rHue(vari = 36) { return (rNumber(0, vari) * Math.round(360 / vari)) % 360; }
+function rLetter(except) { return rLetters(1, except)[0]; }
+function rLetters(n, except = []) {
+  let all = 'abcdefghijklmnopqrstuvwxyz';
+  for (const l of except) all = all.replace(l, '');
+  return rChoose(toLetters(all), n);
+}
+function rNumber(min = 0, max = 100) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function rTexture() { return rChoose(valf(M.textures, [])); }
+function rUniqueId(n = 10, prefix = '') { return prefix + rChoose(toLetters('0123456789abcdefghijklmnopqABCDEFGHIJKLMNOPQRSTUVWXYZ_'), n).join(''); }
+function rWord(n = 6) { return rLetters(n).join(''); }
+function rWords(n = 1) {
+  let words = getColorNames().map(x => x.toLowerCase());
+  let arr = rChoose(words, n);
+  return arr;
+}
+function randomColor() { return rColor(); }
+function randomIndex(array) { return randomRange(0, array.length) | 0 }
+function randomNumber(min = 0, max = 100) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function randomRange(min, max) { return min + Math.random() * (max - min) }
+function range(f, t, st = 1) {
+  if (nundef(t)) {
+    t = f - 1;
+    f = 0;
+  }
+  let arr = [];
+  for (let i = f; i <= t; i += st) {
+    arr.push(i);
+  }
+  return arr;
 }
 function recFlatten(o) {
   if (isLiteral(o)) return o;
@@ -9579,16 +9705,6 @@ function resizeTo(tool, wnew, hnew) {
   }
   redrawImage(img, dParent, 0, 0, img.width, img.height, wnew, hnew, () => setRect(0, 0, wnew, hnew))
 }
-function rHue(vari = 36) { return (rNumber(0, vari) * Math.round(360 / vari)) % 360; }
-function rLetter(except) { return rLetters(1, except)[0]; }
-function rLetters(n, except = []) {
-  let all = 'abcdefghijklmnopqrstuvwxyz';
-  for (const l of except) all = all.replace(l, '');
-  return rChoose(toLetters(all), n);
-}
-function rNumber(min = 0, max = 100) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 function root(areaName) {
   setTableSize(areaName, 400, 300);
   UIROOT = jsCopy(SPEC.staticSpec.root);
@@ -9624,14 +9740,6 @@ function roundToNearestMultiples(n, x = 10) {
   const lower = Math.floor(n / x) * x;
   const higher = Math.ceil(n / x) * x;
   return { lower, higher };
-}
-function rTexture() { return rChoose(valf(M.textures, [])); }
-function rUniqueId(n = 10, prefix = '') { return prefix + rChoose(toLetters('0123456789abcdefghijklmnopqABCDEFGHIJKLMNOPQRSTUVWXYZ_'), n).join(''); }
-function rWord(n = 6) { return rLetters(n).join(''); }
-function rWords(n = 1) {
-  let words = getColorNames().map(x => x.toLowerCase());
-  let arr = rChoose(words, n);
-  return arr;
 }
 function sameList(l1, l2) {
   if (l1.length != l2.length) return false;
@@ -9701,6 +9809,9 @@ function scaleAnimation(elem) {
   });
   return ani;
 }
+function selPrep(fen, autosubmit = false) {
+  A = { level: 0, di: {}, ll: [], items: [], selected: [], tree: null, breadcrumbs: [], sib: [], command: null, autosubmit: autosubmit };
+}
 function selectAddItems(items, callback = null, instruction = null) {
   let fen = T.fen;
   A.level++; A.items = items; A.callback = callback; A.selected = []; A.di = {};
@@ -9756,9 +9867,6 @@ function selectText(el) {
     }
   }
 }
-function selPrep(fen, autosubmit = false) {
-  A = { level: 0, di: {}, ll: [], items: [], selected: [], tree: null, breadcrumbs: [], sib: [], command: null, autosubmit: autosubmit };
-}
 function setColors(bg, fg) {
   let [realBg, bgContrast, bgNav, fgNew, fgContrast] = calculateGoodColors(bg, fg);
   setCssVar('--bgBody', realBg);
@@ -9790,6 +9898,176 @@ function setDropPosition(ev, elem, targetElem, dropPos) {
   } else {
     dropPos(ev, elem, targetElem);
   }
+}
+function setGoal(index) {
+  if (nundef(index)) {
+    let rnd = G.numPics < 2 ? 0 : randomNumber(0, G.numPics - 2);
+    if (G.numPics >= 2 && rnd == lastPosition && coin(70)) rnd = G.numPics - 1;
+    index = rnd;
+  }
+  lastPosition = index;
+  Goal = Pictures[index];
+}
+function setInstruction(s) { mBy('dInstructionText').innerHTML = s; }
+function setKeys({ allowDuplicates, nMin = 25, lang, key, keySets, filterFunc, param, confidence, sortByFunc } = {}) {
+  let keys = jsCopy(keySets[key]);
+  if (isdef(nMin)) {
+    let diff = nMin - keys.length;
+    let additionalSet = diff > 0 ? nMin > 100 ? firstCondDictKeys(keySets, k => k != key && keySets[k].length > diff) : 'best100' : null;
+    if (additionalSet) KeySets[additionalSet].map(x => addIf(keys, x));
+  }
+  let primary = [];
+  let spare = [];
+  for (const k of keys) {
+    let info = Syms[k];
+    info.best = info[lang];
+    if (nundef(info.best)) {
+      let ersatzLang = (lang == 'D' ? 'D' : 'E');
+      let klang = 'best' + ersatzLang;
+      if (nundef(info[klang])) info[klang] = lastOfLanguage(k, ersatzLang);
+    }
+    let isMatch = true;
+    if (isdef(filterFunc)) isMatch = isMatch && filterFunc(param, k, info.best);
+    if (isdef(confidence)) isMatch = info[klang + 'Conf'] >= confidence;
+    if (isMatch) { primary.push(k); } else { spare.push(k); }
+  }
+  if (isdef(nMin)) {
+    let len = primary.length;
+    let nMissing = nMin - len;
+    if (nMissing > 0) { let list = choose(spare, nMissing); spare = arrMinus(spare, list); primary = primary.concat(list); }
+  }
+  if (isdef(sortByFunc)) { sortBy(primary, sortByFunc); }
+  if (isdef(nMin)) console.assert(primary.length >= nMin);
+  if (nundef(allowDuplicates)) {
+    primary = removeDuplicates(primary);
+  }
+  return primary;
+}
+function setLanguage(x) { currentLanguage = x; startLevel(); }
+async function setPlayerNotPlaying(item, gamename) {
+  await saveDataFromPlayerOptionsUI(gamename);
+  removeInPlace(DA.playerList, item.name);
+  mRemoveIfExists('dPlayerOptions');
+  unselectPlayerItem(item);
+}
+async function setPlayerPlaying(allPlItem, gamename) {
+  let [name, da] = [allPlItem.name, allPlItem.div];
+  addIf(DA.playerList, name);
+  highlightPlayerItem(allPlItem);
+  await saveDataFromPlayerOptionsUI(gamename);
+  let id = 'dPlayerOptions';
+  DA.lastAllPlayerItem = allPlItem;
+  let poss = getGamePlayerOptions(gamename);
+  if (nundef(poss)) return;
+  let dParent = mBy('dGameMenu');
+  let bg = getUserColor(name);
+  let rounding = 6;
+  let d1 = mDom(dParent, { bg: colorLight(bg, 50), border: `solid 2px ${bg}`, rounding, display: 'inline-block', hpadding: 3, rounding }, { id });
+  mDom(d1, {}, { html: `${name}` }); //title
+  d = mDom(d1, {}); mCenterFlex(d);
+  mCenterCenter(d);
+  for (const p in poss) {
+    let key = p;
+    let val = poss[p];
+    if (isString(val)) {
+      let list = val.split(',');
+      let legend = formatLegend(key);
+      let fs = mRadioGroup(d, {}, `d_${key}`, legend);
+      let handler = key == 'playmode' ? updateUserImageToBotHuman(name) : null;
+      for (const v of list) { let r = mRadio(v, isNumber(v) ? Number(v) : v, key, fs, { cursor: 'pointer' }, handler, key, false); }
+      let userval = lookup(DA.allPlayers, [name, p]);
+      let chi = fs.children;
+      for (const ch of chi) {
+        let id = ch.id;
+        if (nundef(id)) continue;
+        let radioval = stringAfterLast(id, '_');
+        if (isNumber(radioval)) radioval = Number(radioval);
+        if (userval == radioval) ch.firstChild.checked = true;
+        else if (nundef(userval) && `${radioval}` == arrLast(list)) ch.firstChild.checked = true;
+      }
+      measureFieldset(fs);
+    }
+  }
+  let r = getRectInt(da, mBy('dGameMenu'));
+  let rp = getRectInt(d1);
+  let [y, w, h] = [r.y - rp.h - 4, rp.w, rp.h];
+  let x = r.x - rp.w / 2 + r.w / 2;
+  if (x < 0) x = r.x - 22;
+  if (x > window.innerWidth - w - 100) x = r.x - w + r.w + 14;
+  mIfNotRelative(dParent);
+  mPos(d1, x, y);
+  mButtonX(d1, ev => saveAndUpdatePlayerOptions(allPlItem, gamename), 18, 3, 'dimgray');
+}
+function setPlayersToMulti() {
+  for (const name in DA.allPlayers) {
+    lookupSetOverride(DA.allPlayers, [name, 'playmode'], 'human');
+    updateUserImageToBotHuman(name, 'human');
+  }
+  setRadioValue('playmode', 'human');
+}
+function setPlayersToSolo() {
+  for (const name in DA.allPlayers) {
+    if (name == getUname()) continue;
+    lookupSetOverride(DA.allPlayers, [name, 'playmode'], 'bot');
+    updateUserImageToBotHuman(name, 'bot');
+  }
+  let popup = mBy('dPlayerOptions');
+  if (isdef(popup) && popup.firstChild.innerHTML.includes(getUname())) return;
+  setRadioValue('playmode', 'bot');
+}
+function setRadioValue(prop, val) {
+  let input = mBy(`i_${prop}_${val}`);
+  if (nundef(input)) return;
+  input.checked = true;
+}
+function setRect(elem, options) {
+  let r = getRect(elem);
+  elem.rect = r;
+  elem.setAttribute('rect', `${r.w} ${r.h} ${r.t} ${r.l} ${r.b} ${r.r}`);
+  if (isDict(options)) {
+    if (options.hgrow) mStyle(elem, { hmin: r.h });
+    else if (options.hfix) mStyle(elem, { h: r.h });
+    else if (options.hshrink) mStyle(elem, { hmax: r.h });
+    if (options.wgrow) mStyle(elem, { wmin: r.w });
+    else if (options.wfix) mStyle(elem, { w: r.w });
+    else if (options.wshrink) mStyle(elem, { wmax: r.w });
+  }
+  return r;
+}
+function setScoresSameOrHigher(told, tnew) {
+  if (nundef(told)) return true;
+  let [plold, plnew] = [told.players, tnew.players];
+  for (const name in plnew) {
+    if (plold[name].score + plold[name].incScore != plnew[name].score) return false;
+    plnew[name].incScore = 0;
+  }
+  return true;
+}
+function setTableSize(w, h, unit = 'px') {
+  let d = mBy('areaTable');
+  mStyle(d, { 'min-width': w, 'min-height': h }, unit);
+}
+function setTableToStarted(table) {
+  table.status = 'started';
+  table.step = 0;
+  table.moves = [];
+  table.fen = DA.funcs[table.game].setup(table);
+  return table;
+}
+function setTexture(item) {
+  let d = document.body;
+  let bgImage = valf(item.bgImage, bgImageFromPath(item.texture), '');
+  let bgBlend = valf(item.bgBlend, item.blendMode, '');
+  d.style.backgroundColor = valf(item.color, item.bg, '');
+  d.style.backgroundImage = bgImage;
+  d.style.backgroundSize = bgImage.includes('marble') || bgImage.includes('wall') ? '100vw 100vh' : '';
+  d.style.backgroundRepeat = 'repeat';
+  d.style.backgroundBlendMode = bgBlend;
+}
+function setUserTheme() {
+  setColors(U.color, U.fg);
+  setTexture(U);
+  settingsCheck();
 }
 function setgame() {
   function setup(table) {
@@ -10022,171 +10300,6 @@ function setgame() {
   }
   return { setup, present, stats, activate, hasInstruction: false };
 }
-function setGoal(index) {
-  if (nundef(index)) {
-    let rnd = G.numPics < 2 ? 0 : randomNumber(0, G.numPics - 2);
-    if (G.numPics >= 2 && rnd == lastPosition && coin(70)) rnd = G.numPics - 1;
-    index = rnd;
-  }
-  lastPosition = index;
-  Goal = Pictures[index];
-}
-function setInstruction(s) { mBy('dInstructionText').innerHTML = s; }
-function setKeys({ allowDuplicates, nMin = 25, lang, key, keySets, filterFunc, param, confidence, sortByFunc } = {}) {
-  let keys = jsCopy(keySets[key]);
-  if (isdef(nMin)) {
-    let diff = nMin - keys.length;
-    let additionalSet = diff > 0 ? nMin > 100 ? firstCondDictKeys(keySets, k => k != key && keySets[k].length > diff) : 'best100' : null;
-    if (additionalSet) KeySets[additionalSet].map(x => addIf(keys, x));
-  }
-  let primary = [];
-  let spare = [];
-  for (const k of keys) {
-    let info = Syms[k];
-    info.best = info[lang];
-    if (nundef(info.best)) {
-      let ersatzLang = (lang == 'D' ? 'D' : 'E');
-      let klang = 'best' + ersatzLang;
-      if (nundef(info[klang])) info[klang] = lastOfLanguage(k, ersatzLang);
-    }
-    let isMatch = true;
-    if (isdef(filterFunc)) isMatch = isMatch && filterFunc(param, k, info.best);
-    if (isdef(confidence)) isMatch = info[klang + 'Conf'] >= confidence;
-    if (isMatch) { primary.push(k); } else { spare.push(k); }
-  }
-  if (isdef(nMin)) {
-    let len = primary.length;
-    let nMissing = nMin - len;
-    if (nMissing > 0) { let list = choose(spare, nMissing); spare = arrMinus(spare, list); primary = primary.concat(list); }
-  }
-  if (isdef(sortByFunc)) { sortBy(primary, sortByFunc); }
-  if (isdef(nMin)) console.assert(primary.length >= nMin);
-  if (nundef(allowDuplicates)) {
-    primary = removeDuplicates(primary);
-  }
-  return primary;
-}
-function setLanguage(x) { currentLanguage = x; startLevel(); }
-async function setPlayerNotPlaying(item, gamename) {
-  await saveDataFromPlayerOptionsUI(gamename);
-  removeInPlace(DA.playerList, item.name);
-  mRemoveIfExists('dPlayerOptions');
-  unselectPlayerItem(item);
-}
-async function setPlayerPlaying(allPlItem, gamename) {
-  let [name, da] = [allPlItem.name, allPlItem.div];
-  addIf(DA.playerList, name);
-  highlightPlayerItem(allPlItem);
-  await saveDataFromPlayerOptionsUI(gamename);
-  let id = 'dPlayerOptions';
-  DA.lastAllPlayerItem = allPlItem;
-  let poss = getGamePlayerOptions(gamename);
-  if (nundef(poss)) return;
-  let dParent = mBy('dGameMenu');
-  let bg = getUserColor(name);
-  let rounding = 6;
-  let d1 = mDom(dParent, { bg: colorLight(bg, 50), border: `solid 2px ${bg}`, rounding, display: 'inline-block', hpadding: 3, rounding }, { id });
-  mDom(d1, {}, { html: `${name}` }); //title
-  d = mDom(d1, {}); mCenterFlex(d);
-  mCenterCenter(d);
-  for (const p in poss) {
-    let key = p;
-    let val = poss[p];
-    if (isString(val)) {
-      let list = val.split(',');
-      let legend = formatLegend(key);
-      let fs = mRadioGroup(d, {}, `d_${key}`, legend);
-      let handler = key == 'playmode' ? updateUserImageToBotHuman(name) : null;
-      for (const v of list) { let r = mRadio(v, isNumber(v) ? Number(v) : v, key, fs, { cursor: 'pointer' }, handler, key, false); }
-      let userval = lookup(DA.allPlayers, [name, p]);
-      let chi = fs.children;
-      for (const ch of chi) {
-        let id = ch.id;
-        if (nundef(id)) continue;
-        let radioval = stringAfterLast(id, '_');
-        if (isNumber(radioval)) radioval = Number(radioval);
-        if (userval == radioval) ch.firstChild.checked = true;
-        else if (nundef(userval) && `${radioval}` == arrLast(list)) ch.firstChild.checked = true;
-      }
-      measureFieldset(fs);
-    }
-  }
-  let r = getRectInt(da, mBy('dGameMenu'));
-  let rp = getRectInt(d1);
-  let [y, w, h] = [r.y - rp.h - 4, rp.w, rp.h];
-  let x = r.x - rp.w / 2 + r.w / 2;
-  if (x < 0) x = r.x - 22;
-  if (x > window.innerWidth - w - 100) x = r.x - w + r.w + 14;
-  mIfNotRelative(dParent);
-  mPos(d1, x, y);
-  mButtonX(d1, ev => saveAndUpdatePlayerOptions(allPlItem, gamename), 18, 3, 'dimgray');
-}
-function setPlayersToMulti() {
-  for (const name in DA.allPlayers) {
-    lookupSetOverride(DA.allPlayers, [name, 'playmode'], 'human');
-    updateUserImageToBotHuman(name, 'human');
-  }
-  setRadioValue('playmode', 'human');
-}
-function setPlayersToSolo() {
-  for (const name in DA.allPlayers) {
-    if (name == getUname()) continue;
-    lookupSetOverride(DA.allPlayers, [name, 'playmode'], 'bot');
-    updateUserImageToBotHuman(name, 'bot');
-  }
-  let popup = mBy('dPlayerOptions');
-  if (isdef(popup) && popup.firstChild.innerHTML.includes(getUname())) return;
-  setRadioValue('playmode', 'bot');
-}
-function setRadioValue(prop, val) {
-  let input = mBy(`i_${prop}_${val}`);
-  if (nundef(input)) return;
-  input.checked = true;
-}
-function setRect(elem, options) {
-  let r = getRect(elem);
-  elem.rect = r;
-  elem.setAttribute('rect', `${r.w} ${r.h} ${r.t} ${r.l} ${r.b} ${r.r}`);
-  if (isDict(options)) {
-    if (options.hgrow) mStyle(elem, { hmin: r.h });
-    else if (options.hfix) mStyle(elem, { h: r.h });
-    else if (options.hshrink) mStyle(elem, { hmax: r.h });
-    if (options.wgrow) mStyle(elem, { wmin: r.w });
-    else if (options.wfix) mStyle(elem, { w: r.w });
-    else if (options.wshrink) mStyle(elem, { wmax: r.w });
-  }
-  return r;
-}
-function setScoresSameOrHigher(told, tnew) {
-  if (nundef(told)) return true;
-  let [plold, plnew] = [told.players, tnew.players];
-  for (const name in plnew) {
-    if (plold[name].score + plold[name].incScore != plnew[name].score) return false;
-    plnew[name].incScore = 0;
-  }
-  return true;
-}
-function setTableSize(w, h, unit = 'px') {
-  let d = mBy('areaTable');
-  mStyle(d, { 'min-width': w, 'min-height': h }, unit);
-}
-function setTableToStarted(table) {
-  table.status = 'started';
-  table.step = 0;
-  table.moves = [];
-  table.fen = DA.funcs[table.game].setup(table);
-  return table;
-}
-function setTexture(item) {
-  let d = document.body;
-  let bgImage = valf(item.bgImage, bgImageFromPath(item.texture), '');
-  let bgBlend = valf(item.bgBlend, item.blendMode, '');
-  d.style.backgroundColor = valf(item.color, item.bg, '');
-  d.style.backgroundImage = bgImage;
-  d.style.backgroundSize = bgImage.includes('marble') || bgImage.includes('wall') ? '100vw 100vh' : '';
-  d.style.backgroundRepeat = 'repeat';
-  d.style.backgroundBlendMode = bgBlend;
-}
 function settingsCheck() {
   if (isdef(DA.settings)) {
     cmdDisable(UI.commands.settResetAll.key);
@@ -10221,11 +10334,6 @@ function settingsSidebar() {
   UI.commands.settResetAll = mCommand(d, 'settResetAll', 'Revert Settings'); mNewline(d, gap);
   UI.commands.settAddYourTheme = mCommand(d, 'settAddYourTheme', 'Add Your Theme'); mNewline(d, gap);
   UI.commands.settDeleteTheme = mCommand(d, 'settDeleteTheme', 'Delete Theme'); mNewline(d, gap);
-}
-function setUserTheme() {
-  setColors(U.color, U.fg);
-  setTexture(U);
-  settingsCheck();
 }
 function show(elem, isInline = false) {
   if (isString(elem)) elem = document.getElementById(elem);
@@ -10505,14 +10613,6 @@ async function showGameOptions(dParent, gamename) {
   if (isdef(inpsolo)) inpsolo.onclick = setPlayersToSolo;
   if (isdef(inpmulti)) inpmulti.onclick = setPlayersToMulti;
 }
-function showGameover(table, dParent) {
-  let winners = table.winners;
-  let msg = winners.length > 1 ? `GAME OVER - The winners are ${winners.join(', ')}!!!` : `GAME OVER - The winner is ${winners[0]}!!!`;
-  let d = showRibbon(dParent, msg);
-  updateTestButtonsLogin(table.playerNames);
-  mDom(d, { h: 12 }, { html: '<br>' })
-  mButton('PLAY AGAIN', () => onclickStartTable(table.id), d, { className: 'button', fz: 24 });
-}
 async function showGamePlayers(dParent, users) {
   let me = getUname();
   mStyle(dParent, { wrap: true });
@@ -10528,6 +10628,14 @@ async function showGamePlayers(dParent, users) {
     DA.allPlayers[name] = item;
   }
   await clickOnPlayer(me);
+}
+function showGameover(table, dParent) {
+  let winners = table.winners;
+  let msg = winners.length > 1 ? `GAME OVER - The winners are ${winners.join(', ')}!!!` : `GAME OVER - The winner is ${winners[0]}!!!`;
+  let d = showRibbon(dParent, msg);
+  updateTestButtonsLogin(table.playerNames);
+  mDom(d, { h: 12 }, { html: '<br>' })
+  mButton('PLAY AGAIN', () => onclickStartTable(table.id), d, { className: 'button', fz: 24 });
 }
 function showGames(ms = 500) {
   let dParent = mBy('dGameList'); if (isdef(dParent)) { mClear(dParent); } else dParent = mDom('dMain', {}, { className: 'section', id: 'dGameList' });
@@ -10990,36 +11098,6 @@ function simpleLocked(collname) {
   if (!collname) return true;
   return getUname() != '_unsafe' && ['all', 'emo', 'fa6', 'icon', 'nations', 'users'].includes(collname);
 }
-async function simpleOnclickItem(ev) {
-  let id = evToId(ev);
-  let item = UI.simple.items[id]; if (nundef(item)) return;
-  let selkey = item.key;
-  toggleSelectionOfPicture(iDiv(item), selkey, UI.selectedImages);
-  simpleCheckCommands();
-}
-async function simpleOnclickLabel(ev) {
-  evNoBubble(ev);
-  let id = evToId(ev); console.log('id', id)
-  let o = lookup(UI.simple, ['items', id]);
-  if (!o) return;
-  console.log('clicked label of', o);
-  let [key, elem, collname] = [o.key, o.name, iDiv(o)];
-  let newfriendly = await mGather(ev.target);
-  if (!newfriendly) return;
-  if (isEmpty(newfriendly)) {
-    showMessage(`ERROR: name invalid: ${newfriendly}`);
-    return;
-  }
-  console.log('rename friendly to', newfriendly)
-  let item = M.superdi[key];
-  item.friendly = newfriendly;
-  let di = {};
-  di[key] = item;
-  let res = await mPostRoute('postUpdateSuperdi', { di });
-  console.log('postUpdateSuperdi', res)
-  await loadAssets();
-  ev.target.innerHTML = newfriendly;
-}
 async function simpleOnDropImage(ev, elem) {
   let dt = ev.dataTransfer;
   if (dt.types.includes('itemkey')) {
@@ -11081,6 +11159,36 @@ async function simpleOnDroppedUrl(src, sisi) {
   let db2 = mDom(dPopup, { padding: 10, display: 'flex', gap: 10, 'justify-content': 'end' });
   mButton('Cancel', () => dPopup.remove(), db2, { w: 70 }, 'input');
   mButton('Save', () => simpleFinishEditing(canvas, dPopup, inpFriendly, inpCats, sisi), db2, { w: 70 }, 'input');
+}
+async function simpleOnclickItem(ev) {
+  let id = evToId(ev);
+  let item = UI.simple.items[id]; if (nundef(item)) return;
+  let selkey = item.key;
+  toggleSelectionOfPicture(iDiv(item), selkey, UI.selectedImages);
+  simpleCheckCommands();
+}
+async function simpleOnclickLabel(ev) {
+  evNoBubble(ev);
+  let id = evToId(ev); console.log('id', id)
+  let o = lookup(UI.simple, ['items', id]);
+  if (!o) return;
+  console.log('clicked label of', o);
+  let [key, elem, collname] = [o.key, o.name, iDiv(o)];
+  let newfriendly = await mGather(ev.target);
+  if (!newfriendly) return;
+  if (isEmpty(newfriendly)) {
+    showMessage(`ERROR: name invalid: ${newfriendly}`);
+    return;
+  }
+  console.log('rename friendly to', newfriendly)
+  let item = M.superdi[key];
+  item.friendly = newfriendly;
+  let di = {};
+  di[key] = item;
+  let res = await mPostRoute('postUpdateSuperdi', { di });
+  console.log('postUpdateSuperdi', res)
+  await loadAssets();
+  ev.target.innerHTML = newfriendly;
 }
 async function simpleSetAvatar(key) {
   U.imgKey = key;
@@ -11415,6 +11523,11 @@ function startRound() {
   G.instance.startRound();
   TOMain = setTimeout(() => prompt(), 300);
 }
+function start_simple_timer(dtimer, msInterval, onTick, msTotal, onElapsed) {
+  if (isdef(DA.timer)) { DA.timer.clear(); DA.timer = null; }
+  let timer = DA.timer = new SimpleTimer(dtimer, msInterval, onTick, msTotal, onElapsed);
+  timer.start();
+}
 function startsWith(s, sSub) {
   return s.substring(0, sSub.length) == sSub;
 }
@@ -11451,6 +11564,11 @@ function stopPulsing(idExcept = []) {
     d.classList.remove('pulseFastInfinite');
   }
 }
+function stop_simple_timer() { if (isdef(DA.timer)) { DA.timer.clear(); DA.timer = null; } }
+function strRemoveTrailing(s, sub) {
+  return s.endsWith(sub) ? stringBeforeLast(s, sub) : s;
+}
+function strSameCaseInsensitive(s1, s2) { return s1.toLowerCase() == s2.toLowerCase(); }
 function stringAfter(sFull, sSub) {
   let idx = sFull.indexOf(sSub);
   if (idx < 0) return '';
@@ -11472,6 +11590,12 @@ function stringBeforeLast(sFull, sSub) {
 function stringBetween(sFull, sStart, sEnd) {
   return stringBefore(stringAfter(sFull, sStart), isdef(sEnd) ? sEnd : sStart);
 }
+function stringCSSToCamelCase(s) {
+  let parts = s.split('-');
+  let res = parts[0];
+  for (let i = 1; i < parts.length; i++) { res += capitalize(parts[i]) }
+  return res;
+}
 function stringCount(s, sSub, caseInsensitive = true) {
   let n = 0;
   for (let i = 0; i < s.length; i++) {
@@ -11482,19 +11606,9 @@ function stringCount(s, sSub, caseInsensitive = true) {
   let s1 = s.match(m);
   return s1 ? s1.length : 0;
 }
-function stringCSSToCamelCase(s) {
-  let parts = s.split('-');
-  let res = parts[0];
-  for (let i = 1; i < parts.length; i++) { res += capitalize(parts[i]) }
-  return res;
-}
 function stringSplit(input) {
   return input.split(/[\s,]+/);
 }
-function strRemoveTrailing(s, sub) {
-  return s.endsWith(sub) ? stringBeforeLast(s, sub) : s;
-}
-function strSameCaseInsensitive(s1, s2) { return s1.toLowerCase() == s2.toLowerCase(); }
 function styleBgFg(elem, bg, fg) {
   let st = mGetStyles(elem, ['bg', 'fg']);
   console.log('styles', st);
@@ -11678,32 +11792,6 @@ function toFlatObject(o) {
   for (const k in o) { let val = o[k]; o[k] = recFlatten(val); }
   return o;
 }
-function toggleItemSelection(item, classSelected = 'framedPicture', selectedItems = null) {
-  if (nundef(item)) return;
-  let ui = iDiv(item);
-  item.isSelected = nundef(item.isSelected) ? true : !item.isSelected;
-  if (item.isSelected) mClass(ui, classSelected); else mRemoveClass(ui, classSelected);
-  if (isdef(selectedItems)) {
-    if (item.isSelected) {
-      console.assert(!selectedItems.includes(item), 'UNSELECTED PIC IN PICLIST!!!!!!!!!!!!')
-      selectedItems.push(item);
-    } else {
-      console.assert(selectedItems.includes(item), 'PIC NOT IN PICLIST BUT HAS BEEN SELECTED!!!!!!!!!!!!')
-      removeInPlace(selectedItems, item);
-    }
-  }
-}
-function toggleItemSelectionUnique(item, items) {
-  let selitems = items.filter(x => x.isSelected == true); selitems.map(x => toggleItemSelection(x))
-  toggleItemSelection(item);
-}
-function toggleSelectionOfPicture(elem, selkey, selectedPics, className = 'framedPicture') {
-  if (selectedPics.includes(selkey)) {
-    removeInPlace(selectedPics, selkey); mUnselect(elem);
-  } else {
-    selectedPics.push(selkey); mSelect(elem);
-  }
-}
 function toLetters(s) { return [...s]; }
 function toNameValueList(any) {
   if (isEmpty(any)) return [];
@@ -11732,6 +11820,32 @@ function toPercent(n, total) { return Math.round(n * 100 / total); }
 function toWords(s, allow_ = false) {
   let arr = allow_ ? s.split(/[\W]+/) : s.split(/[\W|_]+/);
   return arr.filter(x => !isEmpty(x));
+}
+function toggleItemSelection(item, classSelected = 'framedPicture', selectedItems = null) {
+  if (nundef(item)) return;
+  let ui = iDiv(item);
+  item.isSelected = nundef(item.isSelected) ? true : !item.isSelected;
+  if (item.isSelected) mClass(ui, classSelected); else mRemoveClass(ui, classSelected);
+  if (isdef(selectedItems)) {
+    if (item.isSelected) {
+      console.assert(!selectedItems.includes(item), 'UNSELECTED PIC IN PICLIST!!!!!!!!!!!!')
+      selectedItems.push(item);
+    } else {
+      console.assert(selectedItems.includes(item), 'PIC NOT IN PICLIST BUT HAS BEEN SELECTED!!!!!!!!!!!!')
+      removeInPlace(selectedItems, item);
+    }
+  }
+}
+function toggleItemSelectionUnique(item, items) {
+  let selitems = items.filter(x => x.isSelected == true); selitems.map(x => toggleItemSelection(x))
+  toggleItemSelection(item);
+}
+function toggleSelectionOfPicture(elem, selkey, selectedPics, className = 'framedPicture') {
+  if (selectedPics.includes(selkey)) {
+    removeInPlace(selectedPics, selkey); mUnselect(elem);
+  } else {
+    selectedPics.push(selkey); mSelect(elem);
+  }
 }
 function transformColorName(s) {
   let res = replaceAll(s, ' ', '_');
@@ -11765,10 +11879,6 @@ function turtle() {
     else if (x == '[') push();
     else if (x == ']') pop();
   }
-}
-function uid() {
-  UID += 1;
-  return 'a' + UID;
 }
 function uiGadgetTypeCheckList(dParent, content, resolve, styles = {}, opts = {}) {
   addKeys({ hmax: 500, wmax: 200, bg: 'white', fg: 'black', padding: 10, rounding: 10, box: true }, styles)
@@ -12115,6 +12225,10 @@ function uiTypeSelect(any, dParent, styles = {}, opts = {}) {
   for (const el of list) { mDom(dselect, {}, { tag: 'option', html: el.name, value: el.value }); }
   dselect.value = '';
   return dselect;
+}
+function uid() {
+  UID += 1;
+  return 'a' + UID;
 }
 function unionOfArrays() {
   let arrs = arguments[0];
