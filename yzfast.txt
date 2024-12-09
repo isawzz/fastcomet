@@ -14,11 +14,6 @@ done 5:41 AM 12/9/2024
 5:41 AM 12/9/2024 challenge open todo on fastcomet 5:42 AM 12/9/2024
 6:14 AM 12/9/2024 challenge: show all users 6:18 AM 12/9/2024
 =>moechte config storen koennen am server (als admin)
-
-
-
-
-
 um superdi in phph zu laden brauch ich ein loadassets oder ich muss es als text file abspeichern dann kann es static sein!
 _______ 5:18 AM 12/8/2024
 Sarah: alle beispiele ab Trinkflaschen!
