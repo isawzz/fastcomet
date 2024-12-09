@@ -7,6 +7,9 @@
     "." 
   ],
   "exclude": [
+    "**/codebig.js",
+    "**/_*.js",
+    "coding",
     "basejs",
     "codingnew",
     "combu",

@@ -1,29 +1,25 @@
 13.12. lib renew
 
+
+P(X<=mu-sigma) = P(X>=mu+sigma)
+F(mu-sigma)=1-F(mu+sigma)
+Nussbaum
+ab obsthaendler
+stichprobenmittelwert
+_______ 5:10 AM 12/9/2024
+5:31 AM 12/9/2024 challenge: 
+ssh to fastcomet!
+step 1: terminal
+done 5:41 AM 12/9/2024
+5:41 AM 12/9/2024 challenge open todo on fastcomet 5:42 AM 12/9/2024
+
+
+
+
+
+um superdi in phph zu laden brauch ich ein loadassets oder ich muss es als text file abspeichern dann kann es static sein!
 _______ 5:18 AM 12/8/2024
 Sarah: alle beispiele ab Trinkflaschen!
-
-here is someone who is not even able to cry and tortures himself and rendered full of repressed emotions, self-hatred and hatred of the feminine which he considers as weak, maybe even as evil 
-here is someone who struggles with a suicidal daughter, in constant fear that she might succomb, and in constant pain about the suffering that she cannot help, helplessly having to watch the most loved one to suffer. someone who is struggling with fear, self-doubt and crippling inability to live or make even the smallest decisions.
-here is someone who has lost half his brain and is still upbeat, full of energy and optimism even if lacking somebasic understanding of his social environment. unbroken spirit, unbroken courage and the joy of life.
-here is my advice for you: HALT DICH RAUS 
-do not engage in any way
-only with your children and as someone who still cares for that high-spirited one, when he truly is in need.
-because you do not know what is really being played here.
-stick to your little world even if it is just an illusion - so are all other possible worlds - remember that.
-bring peace and order into your little world, which is in your mind.
-and engage only to the absolute minimum possible, not worrying about anything - anything at all - leave that to the higher forces who know more.
-she has hurt you but it was the greatest gift! let not pettiness cloud your gratitude! She has given you the ultimate gift, a ticket to liberation - take it, use it, take refuge in it, and celebrate it, do not lose sight of this feeling of bliss and gratitude that she has given you.
-there is the exit sign and this is your chance!
-even when he continues her work, this should only remind you of the exit sign right in front of you - let the ego aside, it has brought you to this point, now its time to slip it off and jump into the water.
-_______ 7:25 AM 12/7/2024
-i do realize that i am still operating out of fear most of the time
-when fear is transcended, freedom, boldness, unlimited love remains as only all-encompassing feeling - this is bliss
-but most of the time, sun is still hiding behind the clouds...
-ja, m family sind auch nur menschen die mehr oder weniger traumatisiert sind - so be careful!
-only aim: make them feel good and safe!
-trauma = angst = defensiveness & suche nach bestaetigung
-ffff m ist fawn so wie ich, sh auch, sa auch, an eher flight - sie hat eine gute art sich zu schuetzen
 _______ 2:22 PM 12/6/2024
 ich will so eine gute library dass ich literally alles in no time machen kann
 loadColors: braucht w3color.js aus alibs defines dicolor

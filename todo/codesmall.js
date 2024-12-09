@@ -192,13 +192,14 @@ function colorToHex79(c) {
 }
 function colorTrans(cAny, alpha = 0.5) { return colorFrom(cAny, alpha); }
 function detectSessionType() {
-	let loc = window.location.href; console.log('loc', loc);
+	let loc = window.location.href; //console.log('loc', loc);
 	DA.sessionType =
 		loc.includes('moxito.online') ? 'fastcomet' :
 			loc.includes('vidulus') ? 'vps' :
-				loc.includes('telecave') ? 'telecave' : loc.includes('8080') ? 'php'
-					: loc.includes(':40') ? 'nodejs'
-						: loc.includes(':60') ? 'flask' : 'live';
+				loc.includes('telecave') ? 'telecave' 
+				:	loc.includes('8080') ? 'php'
+					: loc.includes(':40') || loc.includes(':3000') ? 'nodejs'
+						: loc.includes(':60') || loc.includes(':5000') ? 'flask' : 'live';
 	return DA.sessionType;
 }
 function dict2list(d, keyName = 'id') {
@@ -810,6 +811,7 @@ function mKey(imgKey, d, styles = {}, opts = {}) {
 	let o = lookup(M.superdi, [imgKey]);
 	let src;
 	if (nundef(o) && imgKey.includes('.')) src = imgKey;
+	else if (nundef(o)) src = `../assets/img/emo/${imgKey}.png`;
 	else if (isdef(o) && isdef(opts.prefer)) src = valf(o[opts.prefer], o.img);
 	else if (isdef(o)) src = valf(o.img, o.photo)
 	if (nundef(src)) src = rChoose(M.allImages).path;

@@ -1,5 +1,6 @@
 
 _______ FASTCOMET
+- fastcomet kann static .yaml files laden!!!!!!! (aus public_html)
 ____ created test0/app.js: www.moxito.online/test0
 (not secure!) https://de11.fcomet.com:2083/cpsess0328552022/frontend/jupiter/lveversion/nodejs-selector.html.tt#/applications/test0
 ____ added IP address to ssh tool

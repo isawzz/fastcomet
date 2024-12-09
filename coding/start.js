@@ -11,8 +11,9 @@ async function test2_coding(){
 }
 async function test2_todo(){
 	let project='../todo';
-	let names = ['closure','bau1','bau2','bau3','bau4'];
-	let di = await codeDictForFiles(names.map(x=>`${project}/${x}.js`));
+	names=['../coding/codebig.js'];
+	let names = names.concat(['codebig','bau1','bau2','bau3','bau4'].map(x=>`${project}/${x}.js`));
+	let di = await codeDictForFiles(names);
 	console.log(di);
 	codeDictToText(di,'codebig.txt');
 	let keys = findFunctionClosure(di, ['loadAssets','loadColors','mBy','mDom','mKey','mShade',"mStyle"]);
