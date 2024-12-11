@@ -1,12 +1,46 @@
-13.12. lib renew
+23.12. lib renew
 
+mi 15h taGe
+so 15h bei dolli
+$mueller kuli!!!
 
+_______ 6:06 AM 12/11/2024
+station 1: 11:08 AM 12/11/2024-1:00 PM 12/11/2024
+station 2: 1:00 PM 12/11/2024-
+https://moxito.online/todo/php/phpinfo.php
+https://moxito.online/todo/php/socket_test.php 
+YEAH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! sockets gehen auf fastcomet!
+jetzt moecjt ich derivative of quotient
+a/b = a * 1/b
+a' (1/b) + (1/b)' a
+a' (1/b) + b^(-1)' * a
+-b^(-2) * a
+(a' * b)/b^2 - (a * b')/b^2
+wenn b eine zahl ist dann ist b' = 1 deshalb!
+aber die chain rule gilt immer noch!
+challenge: kleines sockets example in php
+=>real time game mit php host
+was passiert am host?
+1. when pressing 'start game' an object should be created at host representing the table
+solo player: 
+
+_______ 5:09 AM 12/10/2024
+heute um 9h hol ich mir mein paket ab
+ok um 10h esse ich
+um 11h gehe ich los und komme nicht vor 7h zurueck
+1. station lesesaal AKH 10:31 AM 12/10/2024-11:03 AM 12/10/2024
+2. station buecherei 11:32 AM 12/10/2024-1:29 PM 12/10/2024
+3. station ikea 2:17 PM 12/10/2024-
+- challenge:
+ok - 1. challenge: write to file using php
+16h bei dolli sein, internet key eingeben und hier aufschreiben
+_______ 5:10 AM 12/9/2024
 P(X<=mu-sigma) = P(X>=mu+sigma)
 F(mu-sigma)=1-F(mu+sigma)
 Nussbaum
 ab obsthaendler
 stichprobenmittelwert
-_______ 5:10 AM 12/9/2024
+linienbus, getraenke
 5:31 AM 12/9/2024 challenge: 
 ssh to fastcomet!
 step 1: terminal
@@ -14,7 +48,7 @@ done 5:41 AM 12/9/2024
 5:41 AM 12/9/2024 challenge open todo on fastcomet 5:42 AM 12/9/2024
 6:14 AM 12/9/2024 challenge: show all users 6:18 AM 12/9/2024
 =>moechte config storen koennen am server (als admin)
-um superdi in phph zu laden brauch ich ein loadassets oder ich muss es als text file abspeichern dann kann es static sein!
+
 _______ 5:18 AM 12/8/2024
 Sarah: alle beispiele ab Trinkflaschen!
 _______ 2:22 PM 12/6/2024
@@ -23,13 +57,11 @@ loadColors: braucht w3color.js aus alibs defines dicolor
 
 
 
+5E6HA2E647
 
-
-
-
-
-
-
-
-
-
+9x16x2
++9*12
++8*12
++8*9
+sqrt(9^2+8^2)*12
+16*12*2

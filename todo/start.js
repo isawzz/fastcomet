@@ -1,9 +1,48 @@
 onload = start;
 DA.FASTCOMET = 'php';
 
-async function start() { await test1(); }
+async function start() { await test1_php_echowritepostyaml(); } //_php_echowritepostyaml(); }
 
-async function test1() {
+async function test2_php_writesimple() {
+	await loadAssetsStatic();
+
+	let res = await mPostPhp({ text: 'hello' }, `../../saves/f2.yaml`);
+	console.log(res);
+}
+async function test1_yaml_dump() {
+	let text = jsyaml.dump({ a: 1, b: 2 });
+	console.log(text, typeof text)
+	//let di={a:1,b:2,c:3}; let text=JSON.stringify(di); console.log(text);
+	// let res = await fetch('http://localhost:8080/fastcomet/todo/php/echo.php', 
+	// 	{ method: 'POST', mode: 'no-cors', body: {text,path:'aaaaa.txt' }});
+	// 	console.log(res)
+	// let text2 = await res.text(); console.log(text2);
+}
+async function test1_php_echowritepostyaml() {
+	await loadAssetsStatic();
+
+	let res = await mPostPhp({ text: 'hello' }, `../../saves/${getUID('f')}.yaml`);
+	console.log(res);
+}
+async function test1_php_echowritepost() {
+	let res = await fetch('http://localhost:8080/fastcomet/todo/php/echowritepost.php',
+		{
+			method: 'POST',
+			//mode: 'no-cors', // DOES NOT WORK ON FASTCOMET!!!!!!!!!!!!!!!!!! need to set access headers in php script!
+			body: new URLSearchParams({ text: 'Hello, World!', path: `../../saves/${getUID('f')}.txt` })
+		}
+	);
+	console.log(await res.text());
+}
+async function test1_php_echowrite() {
+	let res = await fetch('http://localhost:8080/fastcomet/todo/php/echowrite.php');
+	console.log(await res.text());
+}
+async function test1_php_echo() {
+	let res = await fetch('http://localhost:8080/fastcomet/todo/php/echo.php');
+	console.log(await res.text());
+}
+async function test1_loadStaticYaml() {
 	//ich hab 1 dPage sonst nix
 	//mKey('frog', dPage, { w: 100, h: 100 });
 	M = await loadStaticYaml('y/m.yaml');
@@ -13,7 +52,7 @@ async function test1() {
 	loadColors(); console.log(M);
 	mKey('camel', dPage, { w: 100, h: 100 });
 	//console.log(Object.keys(M.superdi));
-	for(const uname of M.config.users) {
+	for (const uname of M.config.users) {
 		let data = await loadStaticYaml(`y/users/${uname}.yaml`);
 		console.log(data);
 		mKey(data.imgKey, dPage, { w: 100, h: 100 });

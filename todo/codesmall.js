@@ -196,10 +196,10 @@ function detectSessionType() {
 	DA.sessionType =
 		loc.includes('moxito.online') ? 'fastcomet' :
 			loc.includes('vidulus') ? 'vps' :
-				loc.includes('telecave') ? 'telecave' 
-				:	loc.includes('8080') ? 'php'
-					: loc.includes(':40') || loc.includes(':3000') ? 'nodejs'
-						: loc.includes(':60') || loc.includes(':5000') ? 'flask' : 'live';
+				loc.includes('telecave') ? 'telecave'
+					: loc.includes('8080') ? 'php'
+						: loc.includes(':40') || loc.includes(':3000') ? 'nodejs'
+							: loc.includes(':60') || loc.includes(':5000') ? 'flask' : 'live';
 	return DA.sessionType;
 }
 function dict2list(d, keyName = 'id') {
@@ -625,6 +625,7 @@ function getListAndDictsForDicolors() {
 	return [dicolorlist, byhex, byname];
 }
 function getStyleProp(elem, prop) { return getComputedStyle(elem).getPropertyValue(prop); }
+function getUID(pref = '') { UIDCounter += 1; return pref + '_' + UIDCounter; }
 function isDict(d) { let res = (d !== null) && (typeof (d) == 'object') && !isList(d); return res; }
 function isEmpty(arr) {
 	return arr === undefined || !arr
@@ -684,24 +685,23 @@ async function loadAssets(sessionType) {
 	M.categories = Object.keys(byCat); M.categories.sort();
 	M.collections = Object.keys(byColl); M.collections.sort();
 	M.names = Object.keys(byFriendly); M.names.sort();
-	[M.colorList, M.colorByHex, M.colorByName] = getListAndDictsForDicolors();
 }
 function loadColors(bh = 18, bs = 20, bl = 20) {
 	if (nundef(M.dicolor)) {
 		M.dicolor = dicolor;
 		[M.colorList, M.colorByHex, M.colorByName] = getListAndDictsForDicolors();
 		M.colorNames = Object.keys(M.colorByName); M.colorNames.sort();
+		let list = M.colorList;
+		for (const x of list) {
+			let fg = colorIdealText(x.hex);
+			x.fg = fg;
+			x.sorth = Math.round(x.hue / bh) * bh;
+			x.sortl = Math.round(x.lightness * 100 / bl) * bl;
+			x.sorts = Math.round(x.sat * 100 / bs) * bs;
+		}
+		list = sortByMultipleProperties(list, 'fg', 'sorth', 'sorts', 'sortl', 'hue');
+		return list;
 	}
-	let list = M.colorList;
-	for (const x of list) {
-		let fg = colorIdealText(x.hex);
-		x.fg = fg;
-		x.sorth = Math.round(x.hue / bh) * bh;
-		x.sortl = Math.round(x.lightness * 100 / bl) * bl;
-		x.sorts = Math.round(x.sat * 100 / bs) * bs;
-	}
-	list = sortByMultipleProperties(list, 'fg', 'sorth', 'sorts', 'sortl', 'hue');
-	return list;
 }
 function lookup(dict, keys) {
 	if (nundef(dict)) return null;

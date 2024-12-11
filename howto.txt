@@ -8,20 +8,30 @@ ____ added IP address to ssh tool
 ____ https://cloud.fastcomet.com/
 
 ssh -p 17177 moxitoon@de11.fcomet.com
+
 (alles sehr komisch aber ich bin drin!)
 wenn ssh nicht geht dann liegt es an der IP die nicht geadded wurde!
 goto what's my ip und adde sie mit dem fastcomet ssh tool
+_______ FASTCOMET php capabilities!!!!!
+file content: <?php phpinfo(); ?>
+https://moxito.online/todo/php/phpinfo.php
+
+result: PHP Version 8.2.26
+
 
 _______ Ubuntu (see OneNote ubuntu linux)
 move file or dir: mv source target
 delete file: rm -r target
 
-
-
-
-
-
-
+_______ php POST to fastcomet	
+	let res = await fetch('http://localhost:8080/fastcomet/todo/php/echowritepost.php',
+		{
+			method: 'POST',
+			//mode: 'no-cors', // DOES NOT WORK ON FASTCOMET!!!!!!!!!!!!!!!!!! need to set access headers in php script!
+			body: new URLSearchParams({ text: jsyaml.dump(M.config), path: `../../saves/${getUID('f')}.yaml` })
+		}
+	);
+	console.log(await res.text());
 _______ MATH
 Jemand wuerfelt mit 3 wuerfeln und notiert die anzahl der wuerfel die eine gerade augenzahl zeigen.
 1) berechne den Erwartungswert und die Varianz.
