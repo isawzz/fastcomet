@@ -5,8 +5,13 @@ so 15h bei dolli
 $mueller kuli!!!
 
 _______ 6:06 AM 12/11/2024
+challenge: web socket server in php
+
+php/php htdocs/fastcomet/todo/php/socketserver.php
+
+
 station 1: 11:08 AM 12/11/2024-1:00 PM 12/11/2024
-station 2: 1:00 PM 12/11/2024-
+station 2: 1:00 PM 12/11/2024-2:53 PM 12/11/2024
 https://moxito.online/todo/php/phpinfo.php
 https://moxito.online/todo/php/socket_test.php 
 YEAH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! sockets gehen auf fastcomet!
