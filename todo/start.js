@@ -6,7 +6,7 @@ async function start() { await test1_php_echowritepostyaml(); } //_php_echowrite
 async function test2_php_writesimple() {
 	await loadAssetsStatic();
 
-	let res = await mPostPhp({ text: 'hello' }, `../../saves/f2.yaml`);
+	let res = await mPostPhp({ text: 'hello' }, `../../zdata/f2.yaml`);
 	console.log(res);
 }
 async function test1_yaml_dump() {
@@ -21,7 +21,7 @@ async function test1_yaml_dump() {
 async function test1_php_echowritepostyaml() {
 	await loadAssetsStatic();
 
-	let res = await mPostPhp({ text: 'hello' }, `../../saves/${getUID('f')}.yaml`);
+	let res = await mPostPhp({ text: 'hello' }, `../../zdata/${getUID('f')}.yaml`);
 	console.log(res);
 }
 async function test1_php_echowritepost() {
@@ -29,7 +29,7 @@ async function test1_php_echowritepost() {
 		{
 			method: 'POST',
 			//mode: 'no-cors', // DOES NOT WORK ON FASTCOMET!!!!!!!!!!!!!!!!!! need to set access headers in php script!
-			body: new URLSearchParams({ text: 'Hello, World!', path: `../../saves/${getUID('f')}.txt` })
+			body: new URLSearchParams({ text: 'Hello, World!', path: `../../zdata/${getUID('f')}.txt` })
 		}
 	);
 	console.log(await res.text());

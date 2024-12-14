@@ -1,0 +1,20 @@
+.card{
+	/* filter: drop-shadow(4px 4px 4px #111); */
+	filter: drop-shadow(4px 5px 2px #111);
+}
+.hoverScale{
+	cursor: pointer;
+}
+.hoverScale:hover{
+	transform-origin: bottom right;
+	transform: scale(1.05);
+}
+.hoverPointer{
+	cursor: none;
+}
+.hoverPointer:hover{
+	cursor: pointer;
+}
+/* div{z-index: -0;opacity:.99;} */
+
+

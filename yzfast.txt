@@ -1,15 +1,27 @@
 23.12. lib renew
 
-mi 15h taGe
 so 15h bei dolli
 $mueller kuli!!!
 
+_______ 6:23 AM 12/14/2024
+wenn f12 nicht geht: look at jsconfig.json
+dazu brauch ich ein altes file von nodemaster
+noc start again und mach meine library dafuer!
+_______ 6:59 AM 12/13/2024
+1: akh 3:07 PM 12/13/2024-
+859 odim2
+_______ 5:39 AM 12/12/2024
+vorbereitung schularbeit Theo
+1: 3:58 PM 12/12/2024-5:11 PM 12/12/2024
+challenge: kleine chat app auf fastcomet
+ja, geht!!!
+teste ob socket extension auch bei fastcomet on ist!
+weil wenn nicht dann weiss ich nicht was machen!
+glueck gehabt! es geht!
+jetzt hab ich sockets auf fastcomet in php!
 _______ 6:06 AM 12/11/2024
 challenge: web socket server in php
-
 php/php htdocs/fastcomet/todo/php/socketserver.php
-
-
 station 1: 11:08 AM 12/11/2024-1:00 PM 12/11/2024
 station 2: 1:00 PM 12/11/2024-2:53 PM 12/11/2024
 https://moxito.online/todo/php/phpinfo.php
@@ -28,7 +40,6 @@ challenge: kleines sockets example in php
 was passiert am host?
 1. when pressing 'start game' an object should be created at host representing the table
 solo player: 
-
 _______ 5:09 AM 12/10/2024
 heute um 9h hol ich mir mein paket ab
 ok um 10h esse ich

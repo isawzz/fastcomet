@@ -1,0 +1,45 @@
+<script type="text/javascript">
+	function onClickFloppy() {
+		savedb();
+	}
+</script>
+
+<div id="md" style="display: flex">
+	<div id="sidebar" style="align-self: stretch;min-height:100vh"></div>
+	<div id="rightSide">
+		<div id="table" class="flexWrap"></div>
+	</div>
+</div>
+
+<div id="divControls" style="display: none">
+	<div id="bNext" onclick="onClickNextButton()">Next</div>
+	<div id="bRunStop" onclick="onClickRunStopButton(this)">Run</div>
+</div>
+<div id="dLevelComplete" style="display: none" class="centered">LEVEL COMPLETE!!!</div>
+
+<div id="dAux" style="display: none; text-align: center"></div>
+
+<div id="dButtons">
+	<div id="dGo" onclick="onClickGo()" style="display: none">PLAY!</div>
+	<div id="dFloppy" onclick="onClickFloppy()">💾</div>
+	<div id="dComputer" onclick="onClickComputer()" style="display: none">🖥️</div>
+	<div id="dCalibrate" onclick="onClickCalibrate()" style="display: none">⚖️</div>
+	<div id="dGear" onclick="onClickGear()">⚙️</div>
+	<div id="dTemple" onclick="onClickTemple()">🏛️</div>
+	<button id="dummy" style="width: 0px; padding: 0; margin: 0; border: none; outline: none; background-color: transparent; color: transparent"></button>
+</div>
+
+<div id="freezer" onclick="onClickFreezer()" style="display: none">
+	<div class="centerCentered">Click to Start!</div>
+</div>
+<div id="dBanner" style="display: none"></div>
+<div id="freezer2" onclick="onClickFreezer2(event)" style="display: none">
+	<div class="centerCentered" style="margin-top: -5%">
+		<p id="dCommentFreezer2">Great Job!</p>
+		<p id="dMessageFreezer2" style="font-size: 56px">Time for a Break...</p>
+		<div id="dContentFreezer2"></div>
+	</div>
+</div>
+<div id='dShield' onclick='onClickShield(event)' style='display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;' ></div>
+
+<div id="dPopup" style="text-align: center; position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; background: white; display: none"></div>

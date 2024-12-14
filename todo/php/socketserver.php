@@ -3,8 +3,8 @@ error_reporting(E_ALL);
 set_time_limit(0);
 ob_implicit_flush();
 
-$host = '127.0.0.1'; // Server host
-$port = 8080;        // Server port
+$host = 'moxito.online'; // Server host
+$port = 50005;        // Server port
 $clients = [];
 
 // Create a TCP/IP stream socket
