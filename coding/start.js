@@ -1,7 +1,34 @@
 onload = start;
 
-async function start() { await test0(); }
+async function start() { return;project_p5(); }
 
+async function project_p5(){
+	codePacker('../p5',['codesmall','done','bau1','bau2','bau3','bau4','start'],['test3']);
+}
+async function project_coding(){
+	codePacker('../coding',['codesmall','done','bau1','bau2','start'],['codePacker']);
+}
+async function test2_p5(){
+	let project='../p5';
+	let names=['../codebig.js'];
+	names = names.concat(['bau1','bau2','bau3','bau4','codebig', 'start'].map(x=>`${project}/${x}.js`));
+	let di = await codeDictForFiles(names);
+	console.log(di); 
+	codeDictToText(di,'codebig.txt');
+	return;
+	// let keys = findFunctionClosure(di, ['loadAssetsStatic','loadColors','mBy','mClear','mDom','mKey','mPostPhp','mShade',"mStyle", 'test0']);
+	let keys = findFunctionClosure(di, ['test1','test3']);
+	console.log(keys);
+	let sorted=Array.from(keys).sort();
+	for(const k of sorted){
+		di[k].code = `\n${di[k].code}`;
+	}
+	const closureCode = sorted.map((name) => di[name].code).join('\n');
+	downloadAsText(closureCode,'codesmall.txt');
+
+	//fs.writeFileSync(outputFile, closureCode, 'utf-8');
+
+}
 async function test2_coding(){
 	let project='../coding';
 	let names = ['codebig','bau1','bau2','done'];
@@ -11,12 +38,12 @@ async function test2_coding(){
 }
 async function test2_todo(){
 	let project='../todo';
-	names=['../coding/codebig.js'];
-	let names = names.concat(['codebig','bau1','bau2','bau3','bau4'].map(x=>`${project}/${x}.js`));
+	let names=['../codebig.js'];
+	names = names.concat(['bau1','bau2','bau3','bau4','done'].map(x=>`${project}/${x}.js`));
 	let di = await codeDictForFiles(names);
 	console.log(di);
 	codeDictToText(di,'codebig.txt');
-	let keys = findFunctionClosure(di, ['loadAssets','loadColors','mBy','mDom','mKey','mShade',"mStyle"]);
+	let keys = findFunctionClosure(di, ['loadAssetsStatic','loadColors','mBy','mClear','mDom','mKey','mPostPhp','mShade',"mStyle"]);
 	console.log(keys);
 	const closureCode = Array.from(keys).sort().map((name) => di[name].code).join('\r\n');
 	downloadAsText(closureCode,'codesmall.txt');
@@ -55,7 +82,7 @@ async function test1_codeDictForFiles() {
 	//	downloadAsText(result,'output.txt');
 }
 async function test0() {
-	let res = await codeParseFile('../todo/closure.js');
+	let res = await codeParseFile('../todo/codesmall.js');
 	console.log('res', res);
 
 }

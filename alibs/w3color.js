@@ -719,7 +719,7 @@ const dicolor = {
     medium_blue: "#0000cc",
     mediumblue: "#0000cd",
     midnightblue: "#191970",
-    navy_blue: "#000066",
+    navy: "#000066",
     navy_blue_bellflower: "#191f45",
     new_car: "#214fc6",
     palatinate_blue: "#273be2",

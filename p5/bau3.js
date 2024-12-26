@@ -1,0 +1,258 @@
+
+function findSym(s) {
+	s = normalizeString(s);
+	let o = M.superdi[s]; if (isdef(o)) return o;
+	let list = M.byFriendly[s]; if (isdef(list)) return rChoose(list);
+
+	for (const k in M.superdi) {
+		if (k.includes(s)) return M.superdi[k];
+	}
+	for (const k in M.names) {
+		if (k.includes(s)) { list = M.byFriendly[k]; return rChoose(list); }
+	}
+	for (const k in M.categories) {
+		if (k.includes(s)) { list = M.byCat[k]; return rChoose(list); }
+	}
+
+	return null;
+}
+function getRect(elem, relto) {
+	if (isString(elem)) elem = document.getElementById(elem);
+	let res = elem.getBoundingClientRect();
+	if (isdef(relto)) {
+		let b2 = relto.getBoundingClientRect();
+		let b1 = res;
+		res = {
+			x: b1.x - b2.x,
+			y: b1.y - b2.y,
+			left: b1.left - b2.left,
+			top: b1.top - b2.top,
+			right: b1.right - b2.right,
+			bottom: b1.bottom - b2.bottom,
+			width: b1.width,
+			height: b1.height
+		};
+	}
+	let r = { x: res.left, y: res.top, w: res.width, h: res.height };
+	addKeys({ l: r.x, t: r.y, r: r.x + r.w, b: r.y + r.h }, r);
+	return r;
+}
+function hPrepUi(ev, areas, cols, rows, bg, dParent) {
+	hToggleClassMenu(ev); mClear(dParent);
+	let d = mDom(dParent, { w: '100%', h: '100%' });
+	let names = mAreas(d, areas, cols, rows);
+	M.divNames = Array.from(new Set(M.divNames.concat(names))); console.log(M.divNames);
+	mStyle('dPage', { bg });
+}
+function hToggleClassMenu(a) {
+	a = a.target;
+	let menu = a.getAttribute('menu');
+	let others = mBy(`[menu='${menu}']`, 'query');
+	for (const o of others) {
+		mClassRemove(o, 'active')
+	}
+	mClassToggle(a, 'active');
+}
+function isAlphaNum(s) { query = /^[a-zA-Z0-9]+$/; return query.test(s); }
+
+function isLetter(s) { return /^[a-zA-Z]$/i.test(s); }
+
+function isLiteral(x) { return isString(x) || isNumber(x); }
+
+function mAreas(dParent, areas, gridCols, gridRows) {
+	mClear(dParent); mStyle(dParent, { padding: 0 })
+	let names = arrNoDuplicates(toWords(areas));
+	let dg = mDom(dParent);
+	for (const name of names) {
+		let d = mDom(dg, { family: 'opensans' }, { id: name });
+		d.style.gridArea = name;
+	}
+	mStyle(dg, { display: 'grid', gridCols, gridRows, h: '100%' });
+	dg.style.gridTemplateAreas = areas;
+	return names;
+}
+function mBy(id, what, elem) {
+	if (nundef(elem)) elem = document;
+	if (nundef(what)) return elem.getElementById(id);
+	switch (what) {
+		case 'class': return Array.from(elem.getElementsByClassName(id)); break;
+		case 'tag': return Array.from(elem.getElementsByTagName(id)); break;
+		case 'name': return Array.from(elem.getElementsByName(id)); break;
+		case 'query': return Array.from(elem.querySelectorAll(id)); break;
+		default: return elem.getElementById(id);
+	}
+}
+function measureText(text, styles = {}, cx = null) { //mit canvas
+	function getTextWidth(text, font) { //mit canvas
+		// re-use canvas object for better performance
+		var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement('canvas'));
+		var context = canvas.getContext('2d');
+		context.font = font;
+		var metrics = context.measureText(text);
+		return metrics.width;
+	}
+	// re-use canvas object for better performance
+	if (!cx) {
+		var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement('canvas'));
+		cx = canvas.getContext('2d');
+	}
+	cx.font = isdef(styles.font) ? styles.font : `${styles.fz}px ${styles.family}`;
+	//cx.font = `${}`; //font;
+	var metrics = cx.measureText(text);
+	//console.log('metrics:',metrics)
+	return [metrics.width, metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent];
+}
+function measureText(text, styles = {}, cx = null) {
+	// Helper function to ensure font style is correctly formed
+	function getFontString(styles) {
+			const fontSize = styles.fz || 16; // Default font size to 16px
+			const fontFamily = styles.family || 'sans-serif'; // Default font family
+			return styles.font || `${fontSize}px ${fontFamily}`; // Prefer full font string if available
+	}
+
+	// Create or reuse canvas for better performance
+	if (!cx) {
+			const canvas = measureText.canvas || (measureText.canvas = document.createElement('canvas'));
+			cx = canvas.getContext('2d');
+	}
+
+	// Set font style
+	cx.font = getFontString(styles);
+
+	// Measure text
+	const metrics = cx.measureText(text);
+
+	// Calculate height using bounding box properties (with fallback)
+	const ascent = metrics.actualBoundingBoxAscent || 0;
+	const descent = metrics.actualBoundingBoxDescent || 0;
+
+	return {
+			width: metrics.width,
+			height: ascent + descent,
+			ascent: ascent,
+			descent: descent,
+	};
+}
+function measureActualTextWidth(text, styles = {}) {
+	// Create a canvas element for measuring
+	const canvas = document.createElement('canvas');
+	const context = canvas.getContext('2d');
+
+	// Helper to build font string
+	function getFontString(styles) {
+			const fontSize = styles.fz || 16; // Default to 16px font size
+			const fontFamily = styles.family || 'sans-serif'; // Default font family
+			return styles.font || `${fontSize}px ${fontFamily}`; // Use full font if available
+	}
+
+	// Set font on the canvas context
+	context.font = getFontString(styles);
+
+	// Calculate text dimensions
+	const metrics = context.measureText(text);
+	const textWidth = metrics.width;
+
+	// Create a temporary canvas to render the text
+	canvas.width = Math.ceil(textWidth);
+	canvas.height = Math.ceil(metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent);
+
+	// Redraw text for pixel-perfect measurement
+	context.font = getFontString(styles);
+	context.textBaseline = 'top'; // Align text to the top for simplicity
+	context.fillText(text, 0, 0);
+
+	// Analyze the pixels to determine the actual bounds
+	const imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+
+	// Find the first and last non-transparent pixels horizontally
+	let startX = canvas.width;
+	let endX = 0;
+	for (let y = 0; y < canvas.height; y++) {
+			for (let x = 0; x < canvas.width; x++) {
+					const alpha = imageData[(y * canvas.width + x) * 4 + 3];
+					if (alpha > 0) {
+							startX = Math.min(startX, x);
+							endX = Math.max(endX, x);
+					}
+			}
+	}
+
+	// Calculate the actual width
+	const actualWidth = endX - startX + 1;
+
+	return actualWidth;
+}
+function mHomeLogo(d, key, styles = {}, handler = null, menu = null) {
+	addKeys({ display: 'flex', align: 'center', justify: 'center' }, styles);
+	let ui = mKey(key, d, { maright: 12, fz: 30, cursor: 'pointer' }, { onclick: handler, menu });
+	return ui;
+}
+function mImg(src, d, styles = {}, opts = {}) {
+	let [w, h] = mSizeSuccession(styles, 40);
+	addKeys({ w, h, 'object-fit': 'cover', 'object-position': 'center center' }, styles);
+	addKeys({ tag: 'img', src }, opts)
+	let img = mDom(d, styles, opts);
+	return img;
+}
+function mMenuV(d, text, styles = {}, handler = null, menu = null, kennzahl = null) {
+	if (nundef(kennzahl)) kennzahl = getUID();
+	addKeys({ display: 'block', deco: 'none', className: 'a', rounding: 10, margin: 4, align: 'center' }, styles)
+	let ui = mDom(d, styles, { tag: 'a', html: text, href: '#', onclick: handler, kennzahl, menu });
+	return ui;
+}
+function mMenuH(d, text, styles = {}, handler = null, menu = null, kennzahl = null) {
+	if (nundef(kennzahl)) kennzahl = getUID();
+	addKeys({ deco: 'none', className: 'a', rounding: 10, wmin: 100, margin: 4, align: 'center' }, styles)
+	let ui = mDom(d, styles, { tag: 'a', html: text, href: '#', onclick: handler, kennzahl, menu });
+	return ui;
+}
+function mTooltip(d, text) {
+
+	d.addEventListener('mouseenter', (event) => {
+		if (DA.tooltip.innerHTML == 'text') return;
+		TO.showTooltipTimeout = setTimeout(() => {
+			
+			DA.tooltip.innerHTML = text;
+			DA.tooltip.style.visibility = 'visible';
+			DA.tooltip.style.opacity = '1';
+
+			// Position the tooltip
+			const rect = d.getBoundingClientRect();
+			DA.tooltip.style.left = `${rect.left + rect.width * 2 / 3 + window.scrollX}px`;
+			DA.tooltip.style.top = `${rect.top + window.scrollY + 4}px`; // Add 5px spacing
+		}, 1000); // 1-second delay
+	});
+
+	// Hide tooltip immediately on mouseleave
+	d.addEventListener('mouseleave', () => {
+		clearTimeout(TO.showTooltipTimeout); TO.showTooltipTimeout=null;// Clear timeout if mouse leaves early
+		DA.tooltip.style.visibility = 'hidden';
+		DA.tooltip.style.opacity = '0';
+		DA.tooltip.innerHTML = '';
+	});
+}
+function normalizeString(s, sep = '_', keep = []) {
+	s = s.toLowerCase().trim();
+	let res = '';
+	for (let i = 0; i < s.length; i++) { if (isAlphaNum(s[i]) || keep.includes(s[i])) res += s[i]; else if (last(res) != sep) res += sep; }
+	return res;
+}
+async function onclickCalc(ev) {
+	hPrepUi(ev, ` 'dSide dMain' `, 'auto 1fr', '1fr', rColor(), 'dMain');
+	let dSide = mBy('dSide'); mStyle(dSide, { padding: 10, wbox: true });
+	return;
+	let dMenu = mDom('dSide', { display: 'flex', dir: 'column' }); //side menu
+	let gencase = mLinkMenu(dMenu, 'Manual', {}, onclickStatistik, 'side');
+	let x = mLinkMenu(dMenu, 'Binomial', {}, onclickBinomial, 'side');
+	let normal = mLinkMenu(dMenu, 'Normal', {}, onclickNormal, 'side');
+	let all = mLinkMenu(dMenu, 'Alles', {}, onclickAll, 'side');
+}
+function recFlatten(o) {
+	if (isLiteral(o)) return o;
+	else if (isList(o)) return o.map(x => recFlatten(x)).join(', ');
+	else if (isDict(o)) {
+		let valist = [];
+		for (const k in o) { let val1 = recFlatten(o[k]); valist.push(`${k}: ${val1}`); }
+		return valist.join(', ');
+	}
+}

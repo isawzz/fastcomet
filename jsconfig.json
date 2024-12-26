@@ -4,11 +4,12 @@
     "target": "es6"
   },
   "include": [
-    "." 
+    "p5" 
   ],
   "exclude": [
     "**/codebig.js",
     "**/_*.js",
+    "a*",
     "coding",
     "basejs",
     "codingnew",

@@ -192,14 +192,13 @@ function colorToHex79(c) {
 }
 function colorTrans(cAny, alpha = 0.5) { return colorFrom(cAny, alpha); }
 function detectSessionType() {
-	let loc = window.location.href; //console.log('loc', loc);
+	let loc = window.location.href; console.log('loc', loc);
 	DA.sessionType =
 		loc.includes('moxito.online') ? 'fastcomet' :
 			loc.includes('vidulus') ? 'vps' :
-				loc.includes('telecave') ? 'telecave'
-					: loc.includes('8080') ? 'php'
-						: loc.includes(':40') || loc.includes(':3000') ? 'nodejs'
-							: loc.includes(':60') || loc.includes(':5000') ? 'flask' : 'live';
+				loc.includes('telecave') ? 'telecave' : loc.includes('8080') ? 'php'
+					: loc.includes(':40') ? 'nodejs'
+						: loc.includes(':60') ? 'flask' : 'live';
 	return DA.sessionType;
 }
 function dict2list(d, keyName = 'id') {
@@ -268,10 +267,6 @@ function ensureColorDict() {
 		if (cnew.hex[0] != '#' && isdef(ColorDi[k])) cnew.hex = ColorDi[k].hex;
 		ColorDi[k] = cnew;
 	}
-}
-function error(msg) {
-	let fname = getFunctionsNameThatCalledThisFunction();
-	console.log(fname, 'ERROR!!!!! ', msg);
 }
 function firstNumber(s) {
 	if (s) {
@@ -599,13 +594,6 @@ function getColorNames() {
 		'YellowGreen'
 	];
 }
-function getFunctionsNameThatCalledThisFunction() {
-	let c1 = getFunctionsNameThatCalledThisFunction.caller;
-	if (nundef(c1)) return 'no caller!';
-	let c2 = c1.caller;
-	if (nundef(c2)) return 'no caller!';
-	return c2.name;
-}
 function getListAndDictsForDicolors() {
 	let bucketlist = Object.keys(M.dicolor);
 	bucketlist = arrCycle(bucketlist, 8);
@@ -625,7 +613,10 @@ function getListAndDictsForDicolors() {
 	return [dicolorlist, byhex, byname];
 }
 function getStyleProp(elem, prop) { return getComputedStyle(elem).getPropertyValue(prop); }
-function getUID(pref = '') { UIDCounter += 1; return pref + '_' + UIDCounter; }
+function getUID(pref = '') {
+	UIDCounter += 1;
+	return pref + '_' + UIDCounter;
+}
 function isDict(d) { let res = (d !== null) && (typeof (d) == 'object') && !isList(d); return res; }
 function isEmpty(arr) {
 	return arr === undefined || !arr
@@ -647,25 +638,16 @@ function list2dict(arr, keyprop = 'id', uniqueKeys = true) {
 	}
 	return di;
 }
-async function loadAssets(sessionType) {
+async function loadAssetsStatic() {
 	if (nundef(M)) M = {};
-	if (nundef(sessionType)) sessionType = detectSessionType();
-	console.log('in loadAssets:', sessionType)
-	if (sessionType == 'telecave') {
-		let res = await postPHP({}, 'assets'); //console.log(res);
-		let jsonObject = JSON.parse(res);
-		let di = {};
-		for (const k in jsonObject) {
-			di[k] = jsyaml.load(jsonObject[k]);
-		}
-		for (const k in di.m) M[k] = di.m[k];
-		for (const k in di) if (k != 'm') M[k] = di[k];
-	} else {
-		let m = await mGetYaml('../y/m.yaml');
-		for (const k in m) M[k] = m[k];
-		M.superdi = await mGetYaml('../y/superdi.yaml');
-		M.details = await mGetYaml('../y/details.yaml');
-		M.dicolor = await mGetYaml(`../assets/dicolor.yaml`);
+	M = await loadStaticYaml('y/m.yaml');
+	M.superdi = await loadStaticYaml('y/superdi.yaml');
+	M.details = await loadStaticYaml('y/details.yaml');
+	M.config = await loadStaticYaml('y/config.yaml');
+	loadColors();
+	M.users = {};
+	for (const uname of M.config.users) {
+		M.users[uname] = await loadStaticYaml(`y/users/${uname}.yaml`);
 	}
 	let [di, byColl, byFriendly, byCat, allImages] = [M.superdi, {}, {}, {}, {}];
 	for (const k in di) {
@@ -685,23 +667,30 @@ async function loadAssets(sessionType) {
 	M.categories = Object.keys(byCat); M.categories.sort();
 	M.collections = Object.keys(byColl); M.collections.sort();
 	M.names = Object.keys(byFriendly); M.names.sort();
+	[M.colorList, M.colorByHex, M.colorByName] = getListAndDictsForDicolors();
 }
 function loadColors(bh = 18, bs = 20, bl = 20) {
 	if (nundef(M.dicolor)) {
 		M.dicolor = dicolor;
 		[M.colorList, M.colorByHex, M.colorByName] = getListAndDictsForDicolors();
 		M.colorNames = Object.keys(M.colorByName); M.colorNames.sort();
-		let list = M.colorList;
-		for (const x of list) {
-			let fg = colorIdealText(x.hex);
-			x.fg = fg;
-			x.sorth = Math.round(x.hue / bh) * bh;
-			x.sortl = Math.round(x.lightness * 100 / bl) * bl;
-			x.sorts = Math.round(x.sat * 100 / bs) * bs;
-		}
-		list = sortByMultipleProperties(list, 'fg', 'sorth', 'sorts', 'sortl', 'hue');
-		return list;
 	}
+	let list = M.colorList;
+	for (const x of list) {
+		let fg = colorIdealText(x.hex);
+		x.fg = fg;
+		x.sorth = Math.round(x.hue / bh) * bh;
+		x.sortl = Math.round(x.lightness * 100 / bl) * bl;
+		x.sorts = Math.round(x.sat * 100 / bs) * bs;
+	}
+	list = sortByMultipleProperties(list, 'fg', 'sorth', 'sorts', 'sortl', 'hue');
+	return list;
+}
+async function loadStaticYaml(path) {
+	let sessionType = detectSessionType();
+	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : '../';
+	let ditext = await fetch(server + path).then(res => res.text());
+	return jsyaml.load(ditext);
 }
 function lookup(dict, keys) {
 	if (nundef(dict)) return null;
@@ -801,17 +790,10 @@ function mGetStyle(elem, prop) {
 	if (nundef(val)) val = getStyleProp(elem, prop);
 	if (val.endsWith('px')) return firstNumber(val); else return val;
 }
-async function mGetYaml(path = '../base/assets/m.txt') {
-	let res = await fetch(path);
-	let text = await res.text();
-	let di = jsyaml.load(text);
-	return di;
-}
 function mKey(imgKey, d, styles = {}, opts = {}) {
 	let o = lookup(M.superdi, [imgKey]);
 	let src;
 	if (nundef(o) && imgKey.includes('.')) src = imgKey;
-	else if (nundef(o)) src = `../assets/img/emo/${imgKey}.png`;
 	else if (isdef(o) && isdef(opts.prefer)) src = valf(o[opts.prefer], o.img);
 	else if (isdef(o)) src = valf(o.img, o.photo)
 	if (nundef(src)) src = rChoose(M.allImages).path;
@@ -820,6 +802,27 @@ function mKey(imgKey, d, styles = {}, opts = {}) {
 	addKeys({ tag: 'img', src }, opts)
 	let img = mDom(d, styles, opts);
 	return img;
+}
+async function mPostPhp(o, path) {
+	let sessionType = detectSessionType();
+	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
+	let res = await fetch(server + 'todo/php/echowritepost.php',
+		{
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ filePath: 'output.txt', text: 'Hello, world!', }),
+		}
+	);
+	if (res.ok) {
+		const data = await res.text();
+		try {
+			return JSON.parse(data);
+		} catch (e) {
+			return data;
+		}
+	} else {
+		return res;
+	}
 }
 function mShade(names, offset = 1, contrast = 1) {
 	let palette = paletteTransWhiteBlack(names.length * contrast + 2 * offset).slice(offset);
@@ -896,29 +899,6 @@ function paletteTransWhiteBlack(n = 9) {
 	}
 	pal.push(c);
 	return pal;
-}
-async function postPHP(data, cmd) {
-	let o = {};
-	o.data = valf(data, {});
-	o.cmd = cmd;
-	o = JSON.stringify(o);
-	try {
-		const response = await fetch("api.php", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: o
-		});
-		if (response.ok) {
-			const responseText = await response.text();
-			return responseText;
-		} else {
-			console.error('Error in response:', response.status, response.statusText);
-		}
-	} catch (error) {
-		console.error('Error during fetch:', error);
-	}
 }
 function rChoose(arr, n = 1, func = null, exceptIndices = null) {
 	if (isDict(arr)) arr = dict2list(arr, 'key');
