@@ -1,4 +1,9 @@
 
+
+
+
+
+
 function addKeys(ofrom, oto) { for (const k in ofrom) if (nundef(oto[k])) oto[k] = ofrom[k]; return oto; }
 function alphaToHex(a01) {
 	a01 = Math.round(a01 * 100) / 100;
@@ -46,81 +51,6 @@ function assertion(cond) {
 		}
 		throw new Error('TERMINATING!!!')
 	}
-}
-function binomialCdf(n, p, lb, ub) {
-	let cumulativeProbability = 0;
-	for (let k = lb; k <= ub; k++) {
-		cumulativeProbability += binomialPdf(n, p, k);
-	}
-	return cumulativeProbability;
-}
-function binomialCoefficient(n, k) {
-	return factorial(n) / (factorial(k) * factorial(n - k));
-}
-function binomialPdf(n, p, k) {
-	if (k < 0 || k > n) {
-		return 0;
-	}
-	const binomCoeff = binomialCoefficient(n, k);
-	return binomCoeff * Math.pow(p, k) * Math.pow(1 - p, n - k);
-}
-function calculateCDF(xValues, probabilities) {
-	if (xValues.length !== probabilities.length) {
-		throw new Error("The lengths of xValues and probabilities must be equal.");
-	}
-	const totalProbability = probabilities.reduce((sum, prob) => sum + prob, 0);
-	const normalizedProbabilities = probabilities.map(prob => prob / totalProbability);
-	let cumulativeSum = 0;
-	const cdf = normalizedProbabilities.map((prob, index) => {
-		cumulativeSum += prob;
-		return {
-			x: xValues[index],
-			cumulativeProbability: cumulativeSum
-		};
-	});
-	return cdf;
-}
-function calculateInterval(mu, sigma, percent) {
-	if (percent <= 0 || percent >= 100) {
-		throw new Error("Percent must be between 0 and 100.");
-	}
-	const p = percent / 100;
-	const z = inverseCDF((1 + p) / 2);
-	const lowerBound = mu - z * sigma;
-	const upperBound = mu + z * sigma;
-	return [lowerBound, upperBound];
-}
-function calculateStatistics(xlist, ylist) {
-	let n = xlist.length;
-	let mu = 0;
-	for (let i = 0; i < n; i++) {
-		mu += xlist[i] * ylist[i];
-	}
-	let v = 0;
-	for (let i = 0; i < n; i++) {
-		v += ylist[i] * (xlist[i] - mu) ** 2;
-	}
-	let stdev = Math.sqrt(v);
-	const mean = xlist.reduce((sum, value) => sum + value, 0) / xlist.length;
-	const sortedValues = [...xlist].sort((a, b) => a - b);
-	const mid = Math.floor(sortedValues.length / 2);
-	const median = sortedValues.length % 2 === 0 ?
-		(sortedValues[mid - 1] + sortedValues[mid]) / 2 :
-		sortedValues[mid];
-	const frequencyMap = {};
-	let maxFreq = 0;
-	let mode = [];
-	xlist.forEach(value => {
-		frequencyMap[value] = (frequencyMap[value] || 0) + 1;
-		if (frequencyMap[value] > maxFreq) {
-			maxFreq = frequencyMap[value];
-			mode = [value];
-		} else if (frequencyMap[value] === maxFreq) {
-			mode.push(value);
-		}
-	});
-	mode = [...new Set(mode)];
-	return { mu, v, stdev, mean, median, mode };
 }
 function capitalize(s) {
 	if (typeof s !== 'string') return '';
@@ -268,9 +198,8 @@ function colorToHex79(c) {
 	assertion(false, `NO COLOR FOUND FOR ${c}`);
 }
 function colorTrans(cAny, alpha = 0.5) { return colorFrom(cAny, alpha); }
-function contains(s, sSub) { return s.toLowerCase().includes(sSub.toLowerCase()); }
 function detectSessionType() {
-	let loc = window.location.href; //console.log('loc', loc);
+	let loc = window.location.href;
 	DA.sessionType =
 		loc.includes('moxito.online') ? 'fastcomet' :
 			loc.includes('vidulus') ? 'vps' :
@@ -345,25 +274,6 @@ function ensureColorDict() {
 		if (cnew.hex[0] != '#' && isdef(ColorDi[k])) cnew.hex = ColorDi[k].hex;
 		ColorDi[k] = cnew;
 	}
-}
-function erf(x) {
-	const a1 = 0.254829592;
-	const a2 = -0.284496736;
-	const a3 = 1.421413741;
-	const a4 = -1.453152027;
-	const a5 = 1.061405429;
-	const p = 0.3275911;
-	const sign = x < 0 ? -1 : 1;
-	x = Math.abs(x);
-	const t = 1 / (1 + p * x);
-	const y = ((((((a5 * t + a4) * t) + a3) * t + a2) * t) + a1) * t;
-	return sign * (1 - y * Math.exp(-x * x));
-}
-function factorial(x) {
-	if (x === 0 || x === 1) {
-		return 1;
-	}
-	return x * factorial(x - 1);
 }
 function firstNumber(s) {
 	if (s) {
@@ -691,6 +601,20 @@ function getColorNames() {
 		'YellowGreen'
 	];
 }
+function getKeyLists() {
+	if (isdef(M.byKeyType)) return M.byKeyType;
+	let types = getKeyTypes();
+	let di = {};
+	let keys = M.symKeys = Object.keys(M.superdi);
+	for (const k of keys) {
+		let o = M.superdi[k];
+		for (const t of types) if (isdef(o[t])) lookupAddToList(di, [t], k);
+	}
+	di.plain = jsCopy(commandWords);
+	M.byKeyType = di;
+	return di;
+}
+function getKeyTypes() { return ['plain', 'fa', 'ga', 'fa6', 'img', 'text', 'photo']; }
 function getListAndDictsForDicolors() {
 	let bucketlist = Object.keys(M.dicolor);
 	bucketlist = arrCycle(bucketlist, 8);
@@ -709,58 +633,28 @@ function getListAndDictsForDicolors() {
 	let byname = list2dict(dicolorlist, 'name');
 	return [dicolorlist, byhex, byname];
 }
-function getStyleProp(elem, prop) { return getComputedStyle(elem).getPropertyValue(prop); }
-function getUID(pref = '') {
-	UIDCounter += 1;
-	return pref + '_' + UIDCounter;
-}
-function getValuesFromInput(id) {
-	let input = document.getElementById(id).value;
-	input = replaceCommasWithDots(input);
-	let values = input.split(' ').map(s => eval(s.trim())).map(num => parseFloat(num)).filter(num => !isNaN(num));
-	console.log(values);
-	return values;
-}
-function inverseCDF(p) {
-	const a1 = -3.969683028665376e+01;
-	const a2 = 2.209460984245205e+02;
-	const a3 = -2.759285104469687e+02;
-	const a4 = 1.383577518672690e+02;
-	const a5 = -3.066479806614716e+01;
-	const a6 = 2.506628277459239e+00;
-	const b1 = -5.447609879822406e+01;
-	const b2 = 1.615858368580409e+02;
-	const b3 = -1.556989798598866e+02;
-	const b4 = 6.680131188771972e+01;
-	const b5 = -1.328068155288572e+01;
-	const c1 = -7.784894002430293e-03;
-	const c2 = -3.223964580411365e-01;
-	const c3 = -2.400758277161838e+00;
-	const c4 = -2.549732539343734e+00;
-	const c5 = 4.374664141464968e+00;
-	const c6 = 2.938163982698783e+00;
-	const d1 = 7.784695709041462e-03;
-	const d2 = 3.224671290700398e-01;
-	const d3 = 2.445134137142996e+00;
-	const d4 = 3.754408661907416e+00;
-	const pLow = 0.02425;
-	const pHigh = 1 - pLow;
-	let q, r;
-	if (p < pLow) {
-		q = Math.sqrt(-2 * Math.log(p));
-		return (((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) /
-			((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
-	} else if (p <= pHigh) {
-		q = p - 0.5;
-		r = q * q;
-		return (((((a1 * r + a2) * r + a3) * r + a4) * r + a5) * r + a6) * q /
-			(((((b1 * r + b2) * r + b3) * r + b4) * r + b5) * r + 1);
-	} else {
-		q = Math.sqrt(-2 * Math.log(1 - p));
-		return -(((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) /
-			((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
+function getRect(elem, relto) {
+	if (isString(elem)) elem = document.getElementById(elem);
+	let res = elem.getBoundingClientRect();
+	if (isdef(relto)) {
+		let b2 = relto.getBoundingClientRect();
+		let b1 = res;
+		res = {
+			x: b1.x - b2.x,
+			y: b1.y - b2.y,
+			left: b1.left - b2.left,
+			top: b1.top - b2.top,
+			right: b1.right - b2.right,
+			bottom: b1.bottom - b2.bottom,
+			width: b1.width,
+			height: b1.height
+		};
 	}
+	let r = { x: res.left, y: res.top, w: res.width, h: res.height };
+	addKeys({ l: r.x, t: r.y, r: r.x + r.w, b: r.y + r.h }, r);
+	return r;
 }
+function getStyleProp(elem, prop) { return getComputedStyle(elem).getPropertyValue(prop); }
 function isDict(d) { let res = (d !== null) && (typeof (d) == 'object') && !isList(d); return res; }
 function isEmpty(arr) {
 	return arr === undefined || !arr
@@ -768,11 +662,19 @@ function isEmpty(arr) {
 		|| (Array.isArray(arr) && arr.length == 0)
 		|| Object.entries(arr).length === 0;
 }
+function isKeyDown(key) { return lookup(DA.keysToCheck, [key]); }
 function isList(arr) { return Array.isArray(arr); }
 function isNumber(x) { return x !== ' ' && x !== true && x !== false && isdef(x) && (x == 0 || !isNaN(+x)); }
 function isString(param) { return typeof param == 'string'; }
 function isdef(x) { return x !== null && x !== undefined && x !== 'undefined'; }
 function jsCopy(o) { return JSON.parse(JSON.stringify(o)); }
+function keyDownHandler(ev) {
+	if (nundef(DA.keysToCheck)) DA.keysToCheck = {};
+	DA.keysToCheck[ev.key] = true;
+}
+function keyUpHandler(ev) {
+	DA.keysToCheck[ev.key] = false;
+}
 function last(arr) {
 	return arr.length > 0 ? arr[arr.length - 1] : null;
 }
@@ -896,6 +798,29 @@ function lookupSet(dict, keys, val) {
 	return d;
 }
 function mAppend(d, child) { toElem(d).appendChild(child); return child; }
+function mAreas(dParent, areas, gridCols, gridRows) {
+	mClear(dParent); mStyle(dParent, { padding: 0 })
+	let names = arrNoDuplicates(toWords(areas));
+	let dg = mDom(dParent);
+	for (const name of names) {
+		let d = mDom(dg, { family: 'opensans' }, { id: name });
+		d.style.gridArea = name;
+	}
+	mStyle(dg, { display: 'grid', gridCols, gridRows, h: '100%' });
+	dg.style.gridTemplateAreas = areas;
+	return names;
+}
+function mBy(id, what, elem) {
+	if (nundef(elem)) elem = document;
+	if (nundef(what)) return elem.getElementById(id);
+	switch (what) {
+		case 'class': return Array.from(elem.getElementsByClassName(id)); break;
+		case 'tag': return Array.from(elem.getElementsByTagName(id)); break;
+		case 'name': return Array.from(elem.getElementsByName(id)); break;
+		case 'query': return Array.from(elem.querySelectorAll(id)); break;
+		default: return elem.getElementById(id);
+	}
+}
 function mClass(d) {
 	d = toElem(d);
 	if (arguments.length == 2) {
@@ -909,19 +834,8 @@ function mClass(d) {
 		}
 	} else for (let i = 1; i < arguments.length; i++) d.classList.add(arguments[i]);
 }
-function mClassRemove(d) { d = toElem(d); for (let i = 1; i < arguments.length; i++) d.classList.remove(arguments[i]); }
-function mClassToggle(d, classes) {
-	let wlist = toWords(classes);
-	d = toElem(d);
-	for (const c of wlist) if (d.classList.contains(c)) mClassRemove(d, c); else mClass(d, c);
-}
 function mClear(d) {
 	toElem(d).innerHTML = '';
-}
-function mCreateFrom(htmlString) {
-	var div = document.createElement('div');
-	div.innerHTML = htmlString.trim();
-	return div.firstChild;
 }
 function mDom(dParent, styles = {}, opts = {}) {
 	let tag = valf(opts.tag, 'div');
@@ -932,12 +846,6 @@ function mDom(dParent, styles = {}, opts = {}) {
 	applyOpts(d, opts);
 	return d;
 }
-function mFlex(d, or = 'h') {
-	d = toElem(d);
-	d.style.display = 'flex';
-	d.style.flexFlow = (or == 'v' ? 'column' : 'row') + ' ' + (or == 'w' ? 'wrap' : 'nowrap');
-}
-function mFlexV(d) { mStyle(d, { display: 'flex', 'align-items': 'center' }); }
 function mGetStyle(elem, prop) {
 	let val;
 	elem = toElem(elem);
@@ -956,34 +864,57 @@ function mGetStyle(elem, prop) {
 	if (nundef(val)) val = getStyleProp(elem, prop);
 	if (val.endsWith('px')) return firstNumber(val); else return val;
 }
-function mInput(dParent, styles, id, placeholder, classtr = 'input', tabindex = null, value = '', selectOnClick = false, type = "text") {
-	let html = `<input type="${type}" autocomplete="off" ${selectOnClick ? 'onclick="this.select();"' : ''} id=${id} class="${classtr}" placeholder="${valf(placeholder, '')}" tabindex="${tabindex}" value="${value}">`;
-	let d = mAppend(dParent, mCreateFrom(html));
-	if (isdef(styles)) mStyle(d, styles);
-	return d;
+function mImg(src, d, styles = {}, opts = {}) {
+	let [w, h] = mSizeSuccession(styles, 40);
+	addKeys({ w, h, 'object-fit': 'cover', 'object-position': 'center center' }, styles);
+	addKeys({ tag: 'img', src }, opts)
+	let img = mDom(d, styles, opts);
+	return img;
 }
-function mLinebreak(dParent, gap = 0) {
-	dParent = toElem(dParent);
-	let display = getComputedStyle(dParent).display;
-	if (display == 'flex') {
-		d = mDom(dParent, { 'flex-basis': '100%', h: gap, hline: gap, w: '100%' }, { html: '' });
-	} else {
-		d = mDom(dParent, { hline: gap, h: gap }, { html: '&nbsp;' });
+function mKey(key, type, dParent, styles = {}, opts = {}) {
+	let o = M.superdi[key];
+	let d1, sz = 40;
+	let d = mDom(dParent, { wbox: true, className: ['a'], cursor: 'pointer', rounding: 4, wmin: sz, hmin: sz, w: sz, h: sz, display: 'flex', aitems: 'center', justify: 'center' }); //continue; //return;
+	if (type == 'img') { d1 = mImg(o[type], d, { sz }); }
+	else if (type == 'photo') { d1 = mImg(o[type], d, { rounding: 4, sz: sz - 8 }); }
+	else if (type == 'plain') {
+		mStyle(d, { w: 'auto', hpadding: 10 })
+		d1 = mDom(d, {}, { html: key });
+	}
+	else {
+		let family = type == 'text' ? 'emoNoto' : type == 'fa6' ? 'fa6' : type == 'fa' ? 'pictoFa' : 'pictoGame';
+		let html = type == 'text' ? o.text : String.fromCharCode('0x' + o[type]);
+		sz -= 4;
+		d1 = mDom(d, { family, fz: sz, hline: sz }, { html });//console.log(getRect(d1));
+		let r = getRect(d1);
+		let [w, h] = [r.w, r.h];
+		let scale = Math.min(sz / w, sz / h);
+		d1.style.transformOrigin = 'center center';
+		d1.style.transform = `scale(${scale})`;
+		d1.style.transform = `scale(${scale})`;
 	}
 	return d;
 }
-function mRemoveClass(d) { for (let i = 1; i < arguments.length; i++) d.classList.remove(arguments[i]); }
+function mLayout(bg, dParent, rowlist, colt, rowt) {
+	dParent = toElem(dParent);
+	mStyle(dParent, { w: '100%', h: '100%', bg, 'caret-color': '#ffffff00' });
+	let areas = `'${rowlist.join("' '")}'`;
+	if (dParent.id == 'dPage') M.divNames = [];
+	let newNames = mAreas(dParent, areas, colt, rowt);
+	let names = M.divNames = Array.from(new Set(M.divNames.concat(newNames)));
+	mShade(newNames);
+	return names.map(x => mBy(x));
+}
+function mLayoutTLMRS(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
+	let rowlist = [`dTop${suffix} dTop${suffix} dTop${suffix}`, `dLeft${suffix} dMain${suffix} dRight${suffix}`, `dStatus${suffix} dStatus${suffix} dStatus${suffix}`];
+	let colt = `minmax(${wcol}px, auto) 1fr minmax(${wcol}px, auto)`;
+	let rowt = `minmax(${hrow}px, auto) 1fr minmax(${hrow}px, auto)`;
+	return mLayout(bg, dParent, rowlist, colt, rowt);
+}
 function mShade(names, offset = 1, contrast = 1) {
 	let palette = paletteTransWhiteBlack(names.length * contrast + 2 * offset).slice(offset);
 	for (const name of names) {
-		let d = mBy(name);
-		mStyle(d, { bg: palette.shift(), fg: 'contrast', wbox: true });
-	}
-}
-function mShadeLight(names, offset = 1, contrast = 1) {
-	let palette = paletteTransWhite(names.length * contrast + 2 * offset).slice(offset);
-	for (const name of names) {
-		let d = mBy(name);
+		let d = toElem(name);
 		mStyle(d, { bg: palette.shift(), fg: 'contrast', wbox: true });
 	}
 }
@@ -1037,351 +968,29 @@ function mStyle(elem, styles = {}, opts = {}) {
 	}
 	applyOpts(elem, opts);
 }
-function minTrialsForSuccess(x, p) {
-	console.log(x, p);
-	const xDecimal = x;
-	const trials = Math.ceil(Math.log(1 - xDecimal) / Math.log(1 - p));
-	return trials;
-}
-function normalBetween(x1, x2, mean, stdev) {
-	let res = jStat.normal.cdf(x2, mean, stdev) - jStat.normal.cdf(x1, mean, stdev);
-	return res;
-}
-function normalCdf(x, mean, stdDev) {
-	return 0.5 * (1 + erf((x - mean) / (stdDev * Math.sqrt(2))));
-}
-function normalPdf(x, mean, stdDev) {
-	const exponent = -0.5 * Math.pow((x - mean) / stdDev, 2);
-	const coefficient = 1 / (stdDev * Math.sqrt(2 * Math.PI));
-	return coefficient * Math.exp(exponent);
-}
 function nundef(x) { return x === null || x === undefined || x === 'undefined'; }
-async function onclickAll(ev) {
-	hToggleClassMenu(ev); mClear('dTable');
-	let dTable = mBy('dTable'); mStyle('dTable', { padding: 10, display: 'flex', wrap: 'true', acontent: 'start', gap: 10 });
-	let d1 = mDom(dTable, { display: 'flex', dir: 'column', padding: 10, gap: 10, className: 'input' });
-	mDom(d1, {}, { html: 'normal:' })
-	let inputs = ['xmin', 'xmax', 'percent', 'mean', 'stdev'];
-	for (const name of inputs) {
-		mInput(d1, { hpadding: 10, vpadding: 2 }, `inp_n${name}`, `<Enter ${name}>`, 'input', 0, '', true, 'number');
-	}
-	mDom(d1, { hpadding: 10, vpadding: 2, className: 'input' }, { tag: 'button', html: `GO!`, onclick: onclickNormalAlles });
-	mDom(d1, { hpadding: 10, vpadding: 2, className: 'input' }, { tag: 'button', html: `clear`, onclick: onclickNormalClear });
-	mDom(d1, {}, { html: 'min:' })
-	mDom(d1, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_min`, html: '&nbsp;' });
-	mDom(d1, {}, { html: 'max:' })
-	mDom(d1, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_max`, html: '&nbsp;' });
-	mDom(d1, {}, { html: 'f(x):' })
-	mDom(d1, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_pdf`, html: '&nbsp;' });
-	mDom(d1, {}, { html: 'F(x):' })
-	mDom(d1, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_cdf`, html: '&nbsp;' });
-	mBy('inp_nxmin').value = 0;
-	mBy('inp_nxmax').value = 0;
-	mBy('inp_npercent').value = 90;
-	mBy('inp_nmean').value = 320;
-	mBy('inp_nstdev').value = 156;
-}
-async function onclickArchive(ev) {
-}
-async function onclickBinomial(ev) {
-	hToggleClassMenu(ev); mClear('dTable');
-	let dTable = mBy('dTable'); mStyle('dTable', { padding: 10, display: 'flex', wrap: 'true', acontent: 'start', gap: 10 });
-	let d1 = mDom(dTable, { display: 'flex', dir: 'column', padding: 10, gap: 10, className: 'input' });
-	mDom(d1, {}, { html: 'Calculate binomialPdf:' })
-	let inputs = ['n', 'p', 'k'];
-	for (const name of inputs) {
-		mInput(d1, { hpadding: 10, vpadding: 2 }, `inp_${name}`, `<Enter ${name}>`, 'input', 0, '', true, 'number');
-	}
-	mDom(d1, { hpadding: 10, vpadding: 2, className: 'input' }, { tag: 'button', id: `b_pdf`, html: `GO!`, onclick: onclickBinomialPdf });
-	mDom(d1, {}, { html: 'Result:' })
-	mDom(d1, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_pdf`, html: '&nbsp;' });
-	let d2 = mDom(dTable, { display: 'flex', dir: 'column', padding: 10, gap: 10, className: 'input' });
-	mDom(d2, {}, { html: 'Calculate binomialCdf:' })
-	inputs = ['n', 'p', 'from', 'to'];
-	for (const name of inputs) {
-		mInput(d2, { hpadding: 10, vpadding: 2 }, `inp_c${name}`, `<Enter ${name}>`, 'input', 0, '', true, 'number');
-	}
-	mDom(d2, { hpadding: 10, vpadding: 2, className: 'input' }, { tag: 'button', id: `b_cdf`, html: `GO!`, onclick: onclickBinomialCdf });
-	mDom(d2, {}, { html: 'Result:' })
-	mDom(d2, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_cdf`, html: '&nbsp;' });
-	let d3 = mDom(dTable, { display: 'flex', dir: 'column', padding: 10, gap: 10, className: 'input' });
-	mDom(d3, {}, { html: 'binomial Erwartungswert:' })
-	inputs = ['n', 'p'];
-	for (const name of inputs) {
-		mInput(d3, { hpadding: 10, vpadding: 2 }, `inp_mu${name}`, `<Enter ${name}>`, 'input', 0, '', true, 'number');
-	}
-	mDom(d3, { hpadding: 10, vpadding: 2, className: 'input' }, { tag: 'button', id: `b_mu`, html: `GO!`, onclick: onclickBinomialMu });
-	mDom(d3, {}, { html: 'Erwartungswert:' })
-	mDom(d3, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_mu`, html: '&nbsp;' });
-	let d4 = mDom(dTable, { display: 'flex', dir: 'column', padding: 10, gap: 10, className: 'input' });
-	mDom(d4, {}, { html: 'binomial Varianz / Standardabweichung:' })
-	inputs = ['n', 'p'];
-	for (const name of inputs) {
-		mInput(d4, { hpadding: 10, vpadding: 2 }, `inp_v${name}`, `<Enter ${name}>`, 'input', 0, '', true, 'number');
-	}
-	mDom(d4, { hpadding: 10, vpadding: 2, className: 'input' }, { tag: 'button', id: `b_v`, html: `GO!`, onclick: onclickBinomialVar });
-	mDom(d4, {}, { html: 'Varianz:' })
-	mDom(d4, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_var`, html: '&nbsp;' });
-	mDom(d4, {}, { html: 'Standardabweichung:' })
-	mDom(d4, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_stdev`, html: '&nbsp;' });
-	let d5 = mDom(dTable, { display: 'flex', dir: 'column', padding: 10, gap: 10, className: 'input' });
-	mDom(d5, {}, { html: 'Min trials for success with probability x:' })
-	inputs = ['x', 'p'];
-	for (const name of inputs) {
-		mInput(d5, { hpadding: 10, vpadding: 2 }, `inp_mt${name}`, `<Enter ${name}>`, 'input', 0, '', true, 'number');
-	}
-	mDom(d5, { hpadding: 10, vpadding: 2, className: 'input' }, { tag: 'button', id: `b_mt`, html: `GO!`, onclick: onclickBinomialMinTrials });
-	mDom(d5, {}, { html: 'Result:' })
-	mDom(d5, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_mt`, html: '&nbsp;' });
-}
-async function onclickBinomialCdf(ev) {
-	let n = +mBy('inp_cn').value;
-	let p = +mBy('inp_cp').value;
-	let lb = +mBy('inp_cfrom').value;
-	let ub = +mBy('inp_cto').value;
-	let res = binomialCdf(n, p, lb, ub);
-	mBy('result_cdf').innerHTML = res;
-}
-async function onclickBinomialMinTrials(ev) {
-	let x = +mBy('inp_mtx').value;
-	let p = +mBy('inp_mtp').value;
-	let res = minTrialsForSuccess(x, p);
-	mBy('result_mt').innerHTML = res;
-}
-async function onclickBinomialMu(ev) {
-	let n = +mBy('inp_mun').value;
-	let p = +mBy('inp_mup').value;
-	let res = n * p;
-	mBy('result_mu').innerHTML = res;
-}
-async function onclickBinomialPdf(ev) {
-	let n = +mBy('inp_n').value;
-	let p = +mBy('inp_p').value;
-	let k = +mBy('inp_k').value;
-	let res = binomialPdf(n, p, k);
-	mBy('result_pdf').innerHTML = res;
-}
-async function onclickBinomialVar(ev) {
-	let n = +mBy('inp_vn').value;
-	let p = +mBy('inp_vp').value;
-	let v = n * p * (1 - p);
-	mBy('result_var').innerHTML = v;
-	mBy('result_stdev').innerHTML = Math.sqrt(v);
-}
-async function onclickCalc(ev) {
-	let names = hPrepUi(ev, ` 'dSide dTable' `, 'auto 1fr', '1fr', 'classic_rose');
-	mShadeLight(names)
-	let dSide = mBy('dSide'); mStyle(dSide, { padding: 10, wbox: true });
-	let dMenu = mDom('dSide', { display: 'flex', dir: 'column' }); //side menu
-	let gencase = mLinkMenu(dMenu, 'Manual', {}, onclickStatistik, 'side');
-	let x = mLinkMenu(dMenu, 'Binomial', {}, onclickBinomial, 'side');
-	let normal = mLinkMenu(dMenu, 'Normal', {}, onclickNormal, 'side');
-	let all = mLinkMenu(dMenu, 'Alles', {}, onclickAll, 'side');
-}
-async function onclickDay(ev) {
-	let names = hPrepUi(ev, ` 'dVormittag'  'dNachmittag' `, '1fr', '1fr 1fr', 'dark_powder_blue');
-	mShade(names)
-}
-async function onclickExample(ev) {
-	let names = hPrepUi(ev, ` 'dSide dTable' `, 'auto 1fr', '1fr', 'light_green');
-	mShadeLight(names)
-	let dSide = mBy('dSide');
-	mStyle(dSide, { padding: 10, wbox: true })
-	mDom(dSide, {}, { html: 'TODO:' });
-	mDom('dTable', {}, { html: 'dTable' });
-	let list = ['Nil github', 'get up v', 'get dressed', 'cleanup f', 'LG github', 'email check', 'stretching', 'plan', 'tune violin', 'schradiek'];
-	for (const item of list) {
-		mDom(dSide, { margin: 0 }, { tag: 'button', html: item, onclick: onclickExampleItem });
-		mLinebreak(dSide, 3);
-	}
-}
-async function onclickExampleItem(ev) {
-	mClear('dTable');
-	mDom('dTable', {}, { html: ev.target.innerHTML })
-}
-async function onclickFMuVar(ev) {
-	let xlist = getValuesFromInput('inp_x');
-	let ylist = getValuesFromInput('inp_y');
-	let cdfResult = calculateCDF(xlist, ylist); console.log(cdfResult);
-	mBy('res_F').innerHTML = cdfResult.map(x => x.cumulativeProbability).join(' ');
-	let res = calculateStatistics(xlist, ylist); console.log(res)
-	mBy('res_mu').innerHTML = res.mu;
-	mBy('res_var').innerHTML = res.v;
-	mBy('res_stdev').innerHTML = res.stdev;
-	mBy('res_mean').innerHTML = res.mean;
-	mBy('res_median').innerHTML = res.median;
-	mBy('res_mode').innerHTML = res.mode.join(' ');
-}
-async function onclickGame(ev) {
-	let names = hPrepUi(ev, ` 'dSide dTable' `, 'auto 1fr', '1fr', 'orange');
-	mShadeLight(names)
-}
-async function onclickHome(ev) {
-	let names = hPrepUi(ev, ` 'dSide dTable' `, 'auto 1fr', '1fr', 'skyblue');
-	mShadeLight(names)
-	mRemoveClass(ev.target, 'active'); //just set other top menu buttons inactive!
-	let d = mBy('dSide');
-	for (const name in { new: onclickNew, archive: onclickArchive }) {
-		mDom(d, {}, { tag: 'button', html: name })
-	}
-}
-async function onclickNew(ev) {
-	let a = mBy('dTable');
-	let b = mDom(a, {}, {});
-	mFlex(b);
-	let c = mDom(b, {}, {})
-}
-async function onclickNormal(ev) {
-	hToggleClassMenu(ev); mClear('dTable');
-	let dTable = mBy('dTable'); mStyle('dTable', { padding: 10, display: 'flex', wrap: 'true', acontent: 'start', gap: 10 });
-	let d1 = mDom(dTable, { display: 'flex', dir: 'column', padding: 10, gap: 10, className: 'input' });
-	mDom(d1, {}, { html: 'Calculate normalPdf:' })
-	let inputs = ['x', 'mean', 'stdev'];
-	for (const name of inputs) {
-		mInput(d1, { hpadding: 10, vpadding: 2 }, `inp_${name}`, `<Enter ${name}>`, 'input', 0, '', true, 'number');
-	}
-	mDom(d1, { hpadding: 10, vpadding: 2, className: 'input' }, { tag: 'button', id: `b_pdf`, html: `GO!`, onclick: onclickNormalPdf });
-	mDom(d1, {}, { html: 'Result:' })
-	mDom(d1, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_pdf`, html: '&nbsp;' });
-	let d2 = mDom(dTable, { display: 'flex', dir: 'column', padding: 10, gap: 10, className: 'input' });
-	mDom(d2, {}, { html: 'Calculate normalCdf:' })
-	inputs = ['x', 'mean', 'stdev'];
-	for (const name of inputs) {
-		mInput(d2, { hpadding: 10, vpadding: 2 }, `inp_c${name}`, `<Enter ${name}>`, 'input', 0, '', true, 'number');
-	}
-	mDom(d2, { hpadding: 10, vpadding: 2, className: 'input' }, { tag: 'button', id: `b_cdf`, html: `GO!`, onclick: onclickNormalCdf });
-	mDom(d2, {}, { html: 'Result:' })
-	mDom(d2, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_cdf`, html: '&nbsp;' });
-	let d3 = mDom(dTable, { display: 'flex', dir: 'column', padding: 10, gap: 10, className: 'input' });
-	mDom(d3, {}, { html: 'normal Erwartungswert:' })
-	inputs = ['mean'];
-	for (const name of inputs) {
-		mInput(d3, { hpadding: 10, vpadding: 2 }, `inp_mu${name}`, `<Enter ${name}>`, 'input', 0, '', true, 'number');
-	}
-	mDom(d3, { hpadding: 10, vpadding: 2, className: 'input' }, { tag: 'button', id: `b_mu`, html: `GO!`, onclick: onclickNormalMu });
-	mDom(d3, {}, { html: 'Erwartungswert:' })
-	mDom(d3, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_mu`, html: '&nbsp;' });
-	let d4 = mDom(dTable, { display: 'flex', dir: 'column', padding: 10, gap: 10, className: 'input' });
-	mDom(d4, {}, { html: 'normal Varianz / Standardabweichung:' })
-	inputs = ['stdev'];
-	for (const name of inputs) {
-		mInput(d4, { hpadding: 10, vpadding: 2 }, `inp_v${name}`, `<Enter ${name}>`, 'input', 0, '', true, 'number');
-	}
-	mDom(d4, { hpadding: 10, vpadding: 2, className: 'input' }, { tag: 'button', id: `b_v`, html: `GO!`, onclick: onclickNormalVar });
-	mDom(d4, {}, { html: 'Varianz:' })
-	mDom(d4, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_var`, html: '&nbsp;' });
-	mDom(d4, {}, { html: 'Standardabweichung:' })
-	mDom(d4, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_stdev`, html: '&nbsp;' });
-	let d5 = mDom(dTable, { display: 'flex', dir: 'column', padding: 10, gap: 10, className: 'input' });
-	mDom(d5, {}, { html: 'Intervall in dem X mit p prozent wahrscheinlichkeit liegt:' })
-	inputs = ['percent', 'mu', 'sigma'];
-	for (const name of inputs) {
-		mInput(d5, { hpadding: 10, vpadding: 2 }, `inp_i${name}`, `<Enter ${name}>`, 'input', 0, '', true, 'number');
-	}
-	mDom(d5, { hpadding: 10, vpadding: 2, className: 'input' }, { tag: 'button', id: `b_v`, html: `GO!`, onclick: onclickNormalInterval });
-	mDom(d5, {}, { html: 'min:' })
-	mDom(d5, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_min`, html: '&nbsp;' });
-	mDom(d5, {}, { html: 'max:' })
-	mDom(d5, { hpadding: 10, vpadding: 2, className: 'input' }, { id: `result_max`, html: '&nbsp;' });
-}
-async function onclickNormalAlles(ev) {
-	let xmin = +mBy('inp_nxmin').value;
-	let xmax = +mBy('inp_nxmax').value;
-	let percent = +mBy('inp_npercent').value;
-	let mean = +mBy('inp_nmean').value;
-	let stdev = +mBy('inp_nstdev').value;
-	if (!isNaN(percent)) {
-		let res = calculateInterval(mean, stdev, percent);
-		mBy('result_min').innerHTML = res[0];
-		mBy('result_max').innerHTML = res[1];
-	} else {
-		if (isNaN(xmin)) xmin = -Infinity;
-		if (isNaN(xmax)) xmax = Infinity;
-		mBy('result_cdf').innerHTML = normalBetween(xmin, xmax, mean, stdev);
-	}
-}
-async function onclickNormalCdf(ev) {
-	let x = +mBy('inp_cx').value;
-	let mean = +mBy('inp_cmean').value;
-	let stdev = +mBy('inp_cstdev').value;
-	let res = normalCdf(x, mean, stdev);
-	mBy('result_cdf').innerHTML = res;
-}
-async function onclickNormalClear(ev) {
-	let inputs = ['xmin', 'xmax', 'percent', 'mean', 'stdev'];
-	for (const name of inputs) {
-		mBy(`inp_n${name}`).value = '';
-	}
-	let names = ['min', 'max', 'pdf', 'cdf'];
-	for (const name of names) {
-		mBy(`result_${name}`).innerHTML = '&nbsp;';
-	}
-}
-async function onclickNormalInterval(ev) {
-	let percent = +mBy('inp_ipercent').value;
-	let mean = +mBy('inp_imu').value;
-	let stdev = +mBy('inp_isigma').value;
-	let res = calculateInterval(mean, stdev, percent);
-	mBy('result_min').innerHTML = res[0];
-	mBy('result_max').innerHTML = res[1];
-}
-async function onclickNormalMu(ev) {
-	let mean = +mBy('inp_mumean').value;
-	let res = mean;
-	mBy('result_mu').innerHTML = res;
-}
-async function onclickNormalPdf(ev) {
-	let x = +mBy('inp_x').value;
-	let mean = +mBy('inp_mean').value;
-	let stdev = +mBy('inp_stdev').value;
-	let res = normalPdf(x, mean, stdev);
-	mBy('result_pdf').innerHTML = res;
-}
-async function onclickNormalVar(ev) {
-	let stdev = +mBy('inp_vstdev').value;
-	let v = stdev * stdev;
-	mBy('result_var').innerHTML = v;
-	mBy('result_stdev').innerHTML = stdev;
-}
-async function onclickStatistik(ev) {
-	hToggleClassMenu(ev); mClear('dTable');
-	let dTable = mBy('dTable'); //mStyle('dTable',{padding:10, display:'flex',wrap:'true',gap:10}); //,acontent:'start'});
-	let d1 = mDom(dTable, { w: '100%', margin: 10, display: 'flex', dir: 'column', padding: 10, gap: 10, className: 'input' });
-	mDom(d1, {}, { html: '<h1>Mit wenigen Daten:</h1>' })
-	let inputs = [['Werte fuer X:', 'x Werte', 'x'], ['Wahrscheinlichkeiten:', 'f(x) Werte', 'y']];
-	for (const list of inputs) {
-		let [title, name, id] = list;
-		mDom(d1, {}, { html: title })
-		mInput(d1, { hpadding: 10, vpadding: 6, matop: -5 }, `inp_${id}`, `<Enter ${name}> (separate by space)`, 'input', 0, '', true);
-	}
-	mDom(d1, { hpadding: 10, vpadding: 6, className: 'input', wmax: 140 }, { tag: 'button', id: `b_pdf`, html: `GO!`, onclick: onclickFMuVar });
-	let results = [['Verteilungsfunktion', 'F'], ['Erwartungswert', 'mu'], ['Varianz', 'var'], ['Standardabweichung', 'stdev']];
-	for (const list of results) {
-		let [title, id] = list;
-		mDom(d1, {}, { html: title + ':' })
-		mDom(d1, { hpadding: 10, vpadding: 2, matop: -5 }, { id: `res_${id}`, html: '&nbsp;' });
-	}
-	results = [['Mittelwert', 'mean'], ['Median', 'median'], ['Modus', 'mode']];
-	for (const list of results) {
-		let [title, id] = list;
-		mDom(d1, {}, { html: title + ':' })
-		mDom(d1, { hpadding: 10, vpadding: 2, matop: -5 }, { id: `res_${id}`, html: '&nbsp;' });
-	}
-}
-async function onclickZone(ev) {
-	let names = hPrepUi(ev, ` 'dSide dTable' `, 'auto 1fr', '1fr', 'indigo');
-	mShadeLight(names)
-}
-function paletteTransWhite(n = 9) {
-	let c = 'white';
-	let pal = [c];
-	let incw = 1 / (n - 1);
-	for (let i = 1; i < n - 1; i++) {
-		let alpha = 1 - i * incw;
-		pal.push(colorTrans(c, alpha));
-	}
-	pal.push('transparent');
-	return pal;
+function onHoverTooltip(d, text, controlkey = null, ms = 2000, xfactor = 0.7, yfactor = 0.5) {
+	d = toElem(d);
+	mClass(d.parentNode, 'tooltip-container');
+	if (nundef(DA.tooltip)) DA.tooltip = mDom('dPage', { className: 'tooltip' }, { tag: 'span', html: 'this is a tooltip' }); //return;
+	d.addEventListener('mouseenter', () => {
+		if (controlkey && !isKeyDown(controlkey)) return;
+		if (DA.tooltip.innerHTML == text) return;
+		TO.onhover = setTimeout(() => {
+			DA.tooltip.innerHTML = text;
+			DA.tooltip.style.visibility = 'visible';
+			DA.tooltip.style.opacity = '1';
+			const rect = d.getBoundingClientRect();
+			DA.tooltip.style.left = `${rect.left + rect.width * xfactor + window.scrollX}px`;
+			DA.tooltip.style.top = `${rect.top + rect.height * yfactor + window.scrollY}px`; // Add 5px spacing
+		}, ms);
+	});
+	d.addEventListener('mouseleave', () => {
+		clearTimeout(TO.onhover); TO.onhover = null;
+		DA.tooltip.style.visibility = 'hidden';
+		DA.tooltip.style.opacity = '0';
+		DA.tooltip.innerHTML = '';
+	});
 }
 function paletteTransWhiteBlack(n = 9) {
 	let c = 'white';
@@ -1430,14 +1039,25 @@ function rColor(lum100OrAlpha01 = 1, alpha01 = 1, hueVari = 60) {
 	return alpha01 < 1 ? colorTrans(c, alpha01) : c;
 }
 function rHue(vari = 36) { return (rNumber(0, vari) * Math.round(360 / vari)) % 360; }
+function rKeyType() {
+	return rChoose(getKeyTypes());
+}
 function rNumber(min = 0, max = 100) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+function range(f, t, st = 1) {
+	if (nundef(t)) {
+		t = f - 1;
+		f = 0;
+	}
+	let arr = [];
+	for (let i = f; i <= t; i += st) {
+		arr.push(i);
+	}
+	return arr;
+}
 function removeInPlace(arr, el) {
 	arrRemovip(arr, el);
-}
-function replaceCommasWithDots(inputString) {
-	return inputString.replace(/,/g, '.');
 }
 function sortByMultipleProperties(list) {
 	let props = Array.from(arguments).slice(1);
@@ -1449,7 +1069,6 @@ function sortByMultipleProperties(list) {
 		return 0;
 	});
 }
-async function start() { await test3(); }
 function startsWith(s, sSub) {
 	return s.substring(0, sSub.length) == sSub;
 }
@@ -1467,43 +1086,29 @@ function stringBefore(sFull, sSub) {
 	if (idx < 0) return sFull;
 	return sFull.substring(0, idx);
 }
-async function test3() {
+async function test8() {
 	await loadAssetsStatic();
-	let dPage = document.getElementById('dPage');
-	mStyle(dPage, { w: '100%', h: '100%', bg: 'sienna' }); //page coloring
-	let names = M.divNames = mAreas(dPage, ` 'dTop' 'dMain' 'dStatus' `, '1fr', 'auto 1fr auto');
-	mShade(names);
-	mStyle('dMain', { padding: 4, overy: 'auto' })
-	mFlexV('dTop');
-	mStyle('dTop', { padding: 4 })
-	mStyle('dStatus', { padding: 4 }, { html: '&nbsp;' })
-	let dTop = mDom('dTop'); //top menu
-	mDom(dTop, { fz: 30, display: 'inline' }, { html: `play!` })
-	mKey('baby', dTop, { h: 30 });
-	mKey('baby', dTop, { h: 30 });
-	let dHome = mHomeLogo(dTop, 'airplane', onclickHome, 'top'); //logo
-	let dCalc = mLinkMenu(dTop, 'CALC', {}, onclickCalc, 'top');
-	mLinkMenu(dTop, 'DAY', {}, onclickDay, 'top');
-	let dExample = mLinkMenu(dTop, 'EXAMPLE', {}, onclickExample, 'top');
-	mLinkMenu(dTop, 'GAME', {}, onclickGame, 'top');
-	mLinkMenu(dTop, 'ZONE', {}, onclickZone, 'top');
+	window.onkeydown = keyDownHandler;
+	window.onkeyup = keyUpHandler;
+	let di = getKeyLists();
+	let elems = mLayoutTLMRS(rColor(), dPage);
+	mStyle(dTop, { display: 'flex', padding: 4, wbox: true, gap: 4 });
+	let d = dTop;
+	for (const i of range(3)) {
+		let type = rKeyType();
+		let list = di[type];
+		let key = rChoose(list);
+		let elem = mKey(key, type, d);
+		onHoverTooltip(elem, `${key} (${type})`)
+	}
 }
 function toElem(d) { return isString(d) ? mBy(d) : d; }
 function toWords(s, allow_ = false) {
 	let arr = allow_ ? s.split(/[\W]+/) : s.split(/[\W|_]+/);
 	return arr.filter(x => !isEmpty(x));
 }
-function trim(str) {
-	return str.replace(/^\s+|\s+$/gm, '');
-}
 function valf() {
 	for (const arg of arguments) if (isdef(arg)) return arg;
 	return null;
 }
-
-
-
-
-
-
 

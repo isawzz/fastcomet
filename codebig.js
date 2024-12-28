@@ -10574,6 +10574,7 @@ function rColor(lum100OrAlpha01 = 1, alpha01 = 1, hueVari = 60) {
 	}
 	return alpha01 < 1 ? colorTrans(c, alpha01) : c;
 }
+function rCommand(n=1) {return rChoose(commandWords, n); }
 
 function rHue(vari = 36) { return (rNumber(0, vari) * Math.round(360 / vari)) % 360; }
 

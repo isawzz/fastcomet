@@ -16,6 +16,21 @@ function findSym(s) {
 
 	return null;
 }
+function getKeyLists(){
+	if (isdef(M.byKeyType)) return M.byKeyType;
+	let types = getKeyTypes();
+	let di={};
+	let keys = M.symKeys=Object.keys(M.superdi);
+	for(const k of keys){
+		let o=M.superdi[k];
+		for(const t of types) if (isdef(o[t])) lookupAddToList(di,[t], k); 
+
+	}
+	di.plain=jsCopy(commandWords);
+	M.byKeyType = di;
+	return di;
+}
+function getKeyTypes(){return ['plain','fa', 'ga', 'fa6', 'img', 'text', 'photo'];}
 function getRect(elem, relto) {
 	if (isString(elem)) elem = document.getElementById(elem);
 	let res = elem.getBoundingClientRect();
@@ -194,6 +209,46 @@ function mImg(src, d, styles = {}, opts = {}) {
 	let img = mDom(d, styles, opts);
 	return img;
 }
+function mLayout(bg,dParent,rowlist,colt,rowt){
+	dParent = toElem(dParent);
+	mStyle(dParent, { w: '100%', h: '100%', bg, 'caret-color': '#ffffff00' });
+	let areas = `'${rowlist.join("' '")}'`;
+	if (dParent.id == 'dPage') M.divNames = [];
+	let newNames = mAreas(dParent, areas, colt, rowt); 
+	let names = M.divNames = Array.from(new Set(M.divNames.concat(newNames)));
+	mShade(newNames);
+	return names.map(x=>mBy(x));
+}
+function mLayoutTLM(bg,dParent,suffix='',wcol=30,hrow=30){
+	let rowlist = [`dTop${suffix} dTop${suffix}`,`dLeft${suffix} dMain${suffix}`];
+	let colt = `minmax(${wcol}px, auto) 1fr`;
+	let rowt = `minmax(${hrow}px, auto) 1fr`;
+	return mLayout(bg,dParent,rowlist,colt,rowt);
+}
+function mLayoutTLMR(bg,dParent,suffix='',wcol=30,hrow=30){
+	let rowlist = [`dTop${suffix} dTop${suffix} dTop${suffix}`,`dLeft${suffix} dMain${suffix} dRight${suffix}`];
+	let colt = `minmax(${wcol}px, auto) 1fr minmax(${wcol}px, auto)`;
+	let rowt = `minmax(${hrow}px, auto) 1fr`;
+	return mLayout(bg,dParent,rowlist,colt,rowt);
+}
+function mLayoutTLMRS(bg,dParent,suffix='',wcol=30,hrow=30){
+	let rowlist = [`dTop${suffix} dTop${suffix} dTop${suffix}`,`dLeft${suffix} dMain${suffix} dRight${suffix}`,`dStatus${suffix} dStatus${suffix} dStatus${suffix}`];
+	let colt = `minmax(${wcol}px, auto) 1fr minmax(${wcol}px, auto)`;
+	let rowt = `minmax(${hrow}px, auto) 1fr minmax(${hrow}px, auto)`;
+	return mLayout(bg,dParent,rowlist,colt,rowt);
+}
+function mLayoutTM(bg,dParent,suffix='',hrow=30){
+	let rowlist = [`dTop${suffix}`,`dMain${suffix}`];
+	let colt = `1fr`;
+	let rowt = `minmax(${hrow}px, auto) 1fr`;
+	return mLayout(bg,dParent,rowlist,colt,rowt);
+}
+function mLayoutTMS(bg,dParent,suffix='',hrow=30){
+	let rowlist = [`dTop${suffix}`,`dMain${suffix}`,`dStatus${suffix}`];
+	let colt = `1fr`;
+	let rowt = `minmax(${hrow}px, auto) 1fr minmax(${hrow}px, auto)`;
+	return mLayout(bg,dParent,rowlist,colt,rowt);
+}
 function mMenuV(d, text, styles = {}, handler = null, menu = null, kennzahl = null) {
 	if (nundef(kennzahl)) kennzahl = getUID();
 	addKeys({ display: 'block', deco: 'none', className: 'a', rounding: 10, margin: 4, align: 'center' }, styles)
@@ -205,31 +260,6 @@ function mMenuH(d, text, styles = {}, handler = null, menu = null, kennzahl = nu
 	addKeys({ deco: 'none', className: 'a', rounding: 10, wmin: 100, margin: 4, align: 'center' }, styles)
 	let ui = mDom(d, styles, { tag: 'a', html: text, href: '#', onclick: handler, kennzahl, menu });
 	return ui;
-}
-function mTooltip(d, text) {
-
-	d.addEventListener('mouseenter', (event) => {
-		if (DA.tooltip.innerHTML == 'text') return;
-		TO.showTooltipTimeout = setTimeout(() => {
-			
-			DA.tooltip.innerHTML = text;
-			DA.tooltip.style.visibility = 'visible';
-			DA.tooltip.style.opacity = '1';
-
-			// Position the tooltip
-			const rect = d.getBoundingClientRect();
-			DA.tooltip.style.left = `${rect.left + rect.width * 2 / 3 + window.scrollX}px`;
-			DA.tooltip.style.top = `${rect.top + window.scrollY + 4}px`; // Add 5px spacing
-		}, 1000); // 1-second delay
-	});
-
-	// Hide tooltip immediately on mouseleave
-	d.addEventListener('mouseleave', () => {
-		clearTimeout(TO.showTooltipTimeout); TO.showTooltipTimeout=null;// Clear timeout if mouse leaves early
-		DA.tooltip.style.visibility = 'hidden';
-		DA.tooltip.style.opacity = '0';
-		DA.tooltip.innerHTML = '';
-	});
 }
 function normalizeString(s, sep = '_', keep = []) {
 	s = s.toLowerCase().trim();
@@ -247,6 +277,17 @@ async function onclickCalc(ev) {
 	let normal = mLinkMenu(dMenu, 'Normal', {}, onclickNormal, 'side');
 	let all = mLinkMenu(dMenu, 'Alles', {}, onclickAll, 'side');
 }
+function range(f, t, st = 1) {
+	if (nundef(t)) {
+		t = f - 1;
+		f = 0;
+	}
+	let arr = [];
+	for (let i = f; i <= t; i += st) {
+		arr.push(i);
+	}
+	return arr;
+}
 function recFlatten(o) {
 	if (isLiteral(o)) return o;
 	else if (isList(o)) return o.map(x => recFlatten(x)).join(', ');
@@ -256,3 +297,7 @@ function recFlatten(o) {
 		return valist.join(', ');
 	}
 }
+function rKeyType(){
+	return rChoose(getKeyTypes());
+}
+

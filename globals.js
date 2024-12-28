@@ -192,3 +192,36 @@ const STYLE_PARAMS_2 = {
   yover: 'overflow-y',
   z: 'z-index'
 };
+const commandWords = [
+  "Accept", "Achieve", "Add", "Adjust", "Agree", "Alert", "Allow", "Analyze", "Answer", "Apply",
+  "Arrange", "Ask", "Assemble", "Assign", "Assist", "Attach", "Attempt", "Avoid", "Begin", "Believe",
+  "Build", "Calculate", "Call", "Cancel", "Capture", "Change", "Choose", "Clear", "Collect", "Combine",
+  "Compare", "Complete", "Configure", "Confirm", "Connect", "Conquer", "Consult", "Continue", "Control", "Convert",
+  "Copy", "Count", "Create", "Cross", "Customize", "Cut", "Decide", "Declare", "Decode", "Deliver",
+  "Demonstrate", "Describe", "Design", "Detect", "Develop", "Diagnose", "Direct", "Discover", "Display", "Distribute",
+  "Divide", "Document", "Draw", "Drive", "Edit", "Eliminate", "Embrace", "Enable", "Engage", "Enhance",
+  "Ensure", "Enter", "Equalize", "Establish", "Evaluate", "Examine", "Execute", "Expand", "Explain", "Explore",
+  "Export", "Extract", "Facilitate", "Feed", "Fetch", "File", "Fill", "Filter", "Find", "Fix",
+  "Focus", "Follow", "Format", "Forward", "Generate", "Give", "Go", "Group", "Guide", "Handle",
+  "Hide", "Highlight", "Hold", "Identify", "Ignore", "Illustrate", "Implement", "Improve", "Include", "Indicate",
+  "Inform", "Initiate", "Insert", "Inspect", "Install", "Integrate", "Interpret", "Investigate", "Invite", "Join",
+  "Jump", "Justify", "Keep", "Kick", "Label", "Launch", "Lead", "Learn", "Leave", "Lend",
+  "Let", "Link", "Listen", "Locate", "Lock", "Log", "Look", "Maintain", "Manage", "Map",
+  "Mark", "Match", "Measure", "Merge", "Minimize", "Modify", "Monitor", "Move", "Name", "Navigate",
+  "Negotiate", "Notify", "Observe", "Obtain", "Offer", "Open", "Operate", "Optimize", "Organize", "Overcome",
+  "Override", "Own", "Paint", "Pair", "Pass", "Pause", "Perform", "Permit", "Plan", "Play",
+  "Point", "Position", "Post", "Prepare", "Present", "Prevent", "Print", "Proceed", "Process", "Produce",
+  "Program", "Protect", "Prove", "Provide", "Pull", "Push", "Question", "Quit", "Raise", "Reach",
+  "Read", "Realize", "Reboot", "Recall", "Receive", "Recommend", "Record", "Recover", "Reduce", "Reflect",
+  "Refuse", "Register", "Regulate", "Reinforce", "Reject", "Release", "Rely", "Remove", "Repair", "Repeat",
+  "Replace", "Report", "Request", "Require", "Research", "Reset", "Respond", "Restore", "Restrict", "Retrieve",
+  "Return", "Review", "Rewrite", "Run", "Save", "Scan", "Schedule", "Search", "Secure", "Select",
+  "Send", "Separate", "Serve", "Set", "Share", "Shift", "Show", "Simplify", "Solve", "Sort",
+  "Specify", "Split", "Start", "Stop", "Store", "Stream", "Submit", "Suggest", "Summarize", "Support",
+  "Supply", "Synchronize", "Tag", "Take", "Teach", "Tell", "Test", "Think", "Track", "Trade",
+  "Train", "Transfer", "Translate", "Trigger", "Trust", "Turn", "Type", "Undo", "Uninstall", "Unlock",
+  "Unpack", "Update", "Upgrade", "Upload", "Use", "Utilize", "Validate", "Verify", "View", "Visit",
+  "Wait", "Walk", "Warn", "Watch", "Work", "Write", "Yield", "Zoom", "Act", "Align",
+  "Amplify", "Balance", "Capture", "Check", "Click", "Compose", "Deduce", "Execute", "Highlight", "Trigger"
+];
+

@@ -1,13 +1,36 @@
-30.12. lib renew
-26.12. 11h30 christa
+2.1. lib renew
 
 just always always do math violin piano walk prog read tv game kids rest
 no thinking necessary!
 just go to the place of joy and gratitude and you will find freedom and love
 everything else is hell actually
+_______ 6:51 AM 12/28/2024 airport 0 daumen finger 4 etwas besser hmsgetgd
+say NO: 100pts
+ok - mLayout
+7:04 AM 12/28/2024 13
+ok - getKeyLists
+7:34 AM 12/28/2024 43
+7:51 AM 12/28/2024 60
+ok - mKey
+11:38 AM 12/28/2024-11:52 AM 12/28/2024 74
+ok - onHoverMagnify(elem,afterMs,scale)
+11:52 AM 12/28/2024-12:11 PM 12/28/2024 93
+ok - onHoverTooltip(elem,text,afterMs,posx,posy)
+12:19 PM 12/28/2024 101
+ab 12:20 PM 12/28/2024-2:19 PM 12/28/2024 200
+station 1: 2:20 PM 12/28/2024-2:52 PM 12/28/2024 230
+ok - remove all timeouts!!! clearTimeouts ist neu!
+ok - math problem!
+ok - math solutions zurueck David Hurst
+4:00 PM 12/28/2024 300
+
+
+soll ich wieder einen challenge starten?
+_______ 6:06 AM 12/27/2024 airport daumen finger 3
+_______ 7:00 AM 12/26/2024 airport daumen finger
+- was fuer eine funktion waere simpel?
+mKey(s,styles,opts)
 _______ 8:02 AM 12/25/2024 airport daumen finger
-
-
 _______ 1:26 PM 12/23/2024 airport
 was wollt ich besorgen? ich habs schon wieder vergessen!
 ==>summary anlegen!!!
@@ -26,7 +49,7 @@ mo=>1.118,
 ___potenzen: 
 ok sa=> 1.137 a, 
 mo=> 1.140, 
-1.142 c, 
+ok 1.142 c, 
 ok sa=> 1.145 lustig, 
 ___wurzeln: 
 1.153, 

@@ -1,3 +1,9 @@
+function findKeys(type) {
+	if (type == 'plain') return commandWords;
+	let list = dict2list(M.superdi);
+	return list.filter(x => isdef(x[type])).map(x => x.id);
+
+}
 function findUniqueSuperdiKey(friendly) {
 	console.log('friendly', friendly)
 	let name = friendly;
@@ -12,6 +18,28 @@ function findUniqueSuperdiKey(friendly) {
 		else { imgname = 'img'; break; }
 	}
 	return [name, imgname];
+}
+function isKeyPressedDown(controlKey) {
+	let isPressed = false;
+	window.addEventListener('keydown', (event) => {
+		if (event.key.toLowerCase() === controlKey.toLowerCase()) {
+			isPressed = true;
+		}
+	});
+	window.addEventListener('keyup', (event) => {
+		if (event.key.toLowerCase() === controlKey.toLowerCase()) {
+			isPressed = false;
+		}
+	});
+	return () => isPressed;
+}
+function isSpacePressed() {
+	const spacePressed = isKeyPressedDown('Space');
+	setInterval(() => {
+		if (isSpacePressed()) {
+			console.log('Space key is being pressed down');
+		}
+	}, 100);
 }
 function mCard52(key, d, styles = {}, opts = {}) { }
 function mKey2(item, d, styles = {}, opts = {}) {
@@ -29,6 +57,14 @@ function mKey2(item, d, styles = {}, opts = {}) {
 	mStyle(el, { cursor: 'pointer' })
 	el.id = getUID(); A.di[el.id] = item;
 	el.onclick = callback;
+}
+function _mLayoutTLM(bg,dParent){
+	mStyle(dParent, { w: '100%', h: '100%', bg, 'caret-color': '#ffffff00' });
+	let names = M.divNames = mAreas(dParent, ` 'dTop dTop' 'dLeft dMain' `, 'minmax(140px, auto) 1fr', 'minmax(40px, auto) 1fr'); 
+	mStyle(dTop, { display: 'flex', padding:4, wbox:true, gap:4 }); 
+	mShade(names);
+	return names.map(x=>mBy(x));
+
 }
 function _mS(s, d, styles = {}, opts = {}) {
 	let type = opts.type ?? isdef(M.superdi[s]) ? 'sym' : s.includes('.') ? 'img' : 'string';
@@ -80,6 +116,14 @@ function mSymSizeToFz(info, fz) { let f = fz / 100; return { fz: fz, w: info.w *
 function mSymSizeToH(info, h) { let f = h / info.h; return { fz: 100 * f, w: info.w * f, h: h }; }
 
 function mSymSizeToW(info, w) { let f = w / info.w; return { fz: 100 * f, w: w, h: info.h * f }; }
+function oneOfEachType(n = 1) {
+	let types = ['fa', 'ga', 'fa6', 'img', 'text', 'photo'];
+	let lists = types.map(x => [x, findKeys(x)]);
+	console.log('lists', lists);
+
+	//let res = recFlatten(lists.map(x=>rChoose(x,n))); console.log(res)
+	return lists;
+}
 function _mTooltip(d, text) {
 	d.addEventListener('mouseenter', (event) => {
 		console.log('hallo!!!!')
@@ -213,4 +257,27 @@ function _mTooltip(oid) {
     });
   });
 }
+function showDetailsAndMagnify(elem) {
+	let key = elem.firstChild.getAttribute('key'); //console.log('key',key)
+	if (nundef(key)) return;
+	let o = getDetailedSuperdi(key);
+	MAGNIFIER_IMAGE = elem;
+	if (nundef(o)) { mMagnify(elem); return; }
+	let d = mPopup(null, {}, { id: 'hallo' });
+	let title = fromNormalized(valf(o.name, o.friendly));
+	mDom(d, {}, { tag: 'h1', html: title });
+	mDom(d, {}, { tag: 'img', src: valf(o.photo, o.img) });
+	showDetailsPresentation(o, d);
+}
+
+
+
+
+
+
+
+
+
+
+
 

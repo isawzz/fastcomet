@@ -89,3 +89,7 @@ button:hover {
   display: inline-block;
   cursor: pointer;
 }
+
+.topmost {
+	z-index: 100000;
+}
