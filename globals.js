@@ -166,6 +166,7 @@ const STYLE_PARAMS_2 = {
   jcontent: 'justify-content',
   jitems: 'justify-items',
   justify: 'justify-content',
+  iplace:'place-items', //bei display:grid
   matop: 'margin-top',
   maleft: 'margin-left',
   mabottom: 'margin-bottom',

@@ -1,120 +1,126 @@
 
-
-
-function clearTimeouts() { for (const tok in TO) { clearTimeout(TO[tok]); TO[tok] = null; } }
-function keyDownHandler(ev) {
-	//console.log('down',ev.key)
-	if (nundef(DA.keysToCheck)) DA.keysToCheck = {};
-	DA.keysToCheck[ev.key] = true;
-}
-function keyUpHandler(ev) {
-	//console.log('up',ev.key)
-	DA.keysToCheck[ev.key] = false;
-}
-function isKeyDown(key) { return lookup(DA.keysToCheck, [key]); }
-function mHasClass(el, className) {
-	if (el.classList) return el.classList.contains(className);
-	else {
-		let x = !!el.className;
-		return isString(x) && !!el.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
+async function mPostPhp(cmd, o, jsonResult=true) {
+	let sessionType = detectSessionType();
+	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
+	let res = await fetch(server + `p5/php/${cmd}.php`,
+		{
+			method: 'POST',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: new URLSearchParams(o), // Send the line in POST request
+		}
+	);
+	let text;
+	try{
+		text = await res.text(); 
+		if (!jsonResult) {
+			console.log('!!!asking for plain text!!!');
+			return text;
+		}
+		let obj = JSON.parse(text);
+		return obj;
+		//return res.ok? await res.json(): res; //jsonResult ? await res.json() : await res.text() : res;
+	}catch(e){
+		return isString(text) ? text : e;
 	}
 }
-function mKey(key, type, dParent, styles = {}, opts = {}) {
-	let o = M.superdi[key];
-	let d1, sz = 40;
-	let d = mDom(dParent, { wbox: true, className: ['a'], cursor: 'pointer', rounding: 4, wmin: sz, hmin: sz, w: sz, h: sz, display: 'flex', aitems: 'center', justify: 'center' }); //continue; //return;
-	if (type == 'img') { d1 = mImg(o[type], d, { sz }); }
-	else if (type == 'photo') { d1 = mImg(o[type], d, { rounding: 4, sz: sz - 8 }); }
-	else if (type == 'plain') {
-		mStyle(d, { w: 'auto', hpadding: 10 })
-		d1 = mDom(d, {}, { html: key });
+async function mPhpGetFile(path) { return await mPostPhp('read_file', { path }, false); }
+async function mPhpPostFile(text, path) { return await mPostPhp('write_file', { text, path }, false); }
+async function mPhpPostLine(line, path) { return await mPostPhp('append_action', { line, path }, false); }
+async function deleteFile(path) { return await mPostPhp('delete_file', { path }); }
+async function onclickResetActions(ev){
+	let elem = hToggleClassMenu(ev);
+	let res = await deleteFile('../../zdata/action.txt'); //relative path
+	console.log(res);
+}
+async function onclickAction(ev) {
+	let elem = hToggleClassMenu(ev);
+	let html = getInnermostTextString(elem); //console.log(elem)
+	let words = toWords(html); //console.log(words)
+	let key = words[0];
+	let nlist = allNumbers(html); //console.log(nlist)
+
+	//start the stopwatch by clicking on it
+	let w = DA.stopwatch;
+
+	if (w.key) {
+		w.stop();
+		let secs = w.getElapsed();
+		//console.log('secs of',w.key,secs)
+		//save it at server (php)
+		let s = `${getNow()}: ${w.key}, ${secs}`;
+		// let res = await mPostPhp(s, `../../zdata/action.txt`); //,{ text:`${getNow()}: ${w.key}, ${secs}`,time:getNow(),key:w.key,secs });
+		let res = await mPhpPostLine(s, '../../zdata/action.txt'); //,{ text:`${getNow()}: ${w.key}, ${secs}`,time:getNow(),key:w.key,secs });
+		console.log(res);
+		w.reset();
 	}
-	else {
-		let family = type == 'text' ? 'emoNoto' : type == 'fa6' ? 'fa6' : type == 'fa' ? 'pictoFa' : 'pictoGame';
-		let html = type == 'text' ? o.text : String.fromCharCode('0x' + o[type]);
+	w.key = key;
+	w.start();
 
-		//let st=jsCopy(styles);st.fz=40;st.family=family;
 
-		// let x=measureActualTextWidth(html, { family, fz: 40 });console.log(x);
-		//let x=measureActualTextWidth(html, {'max-width':'40px',width:'40px',height:'40px',fz:36,family});console.log(x);
-		//x=measureText(html, {'max-width':'40px',width:'40px',height:'40px','font-size':'36px','font-family':family});console.log(x);
-		//x=measureEmojiWidth(html, 36);console.log(x);
-		sz -= 4;
-		d1 = mDom(d, { family, fz: sz, hline: sz }, { html });//console.log(getRect(d1));
-		let r = getRect(d1);
-		let [w, h] = [r.w, r.h];
-		//console.log(w, h);
-		//scale it so that it fits the container
-		let scale = Math.min(sz / w, sz / h); //console.log('scale', scale);
+}
+function onclickWatch(ev) {
+	let elem = hToggleClassMenu(ev);
+	clearTimeouts(); mClear('dMain');
+	//jetzt soll er eine stopwatch machen
+	let d0 = mDom(dMain);
+	let styles = { fz: 50, hpadding: 10, rounding: 10, margin: 10, align: 'center', hline: 50, 'user-select': 'none' };
+	let d = mDom(d0, styles);
+	DA.stopwatch = createStopwatch(d);
 
-		d1.style.transformOrigin = 'center center';
-		d1.style.transform = `scale(${scale})`;
-		d1.style.transform = `scale(${scale})`;
-		//console.log('final size',getRect(d1));
+	copyKeys({ h: 50, fz: 40 }, styles)
+	let d1 = mKey('prog 1+', d0, styles, { onclick: onclickAction, menu: 'main', buttonType: 'anime' });
+	let d2 = mKey('walk 1+', d0, styles, { onclick: onclickAction, menu: 'main', buttonType: 'anime' });
+
+	//d1.click();
+	//drunter eine liste von activities, jede davon mit time sofar,wieviele times
+	//die current activity soll haben: started
+}
+
+
+
+
+function getInnermostTextString(div) {
+	if (!div || !div.children.length) {
+		return div && div.innerHTML.trim() && !/<[^>]+>/.test(div.innerHTML) ? div.innerHTML.trim() : null;
 	}
-	return d;
-
+	for (let child of div.children) {
+		let result = getInnermostTextString(child);
+		if (result) return result;
+	}
+	return null;
 }
-function mMagnify(elem, scale = 5) {
-	elem.classList.add(`topmost`);
-	MAGNIFIER_IMAGE = elem;
-	const rect = elem.getBoundingClientRect();
-	let [w, h] = [rect.width * scale, rect.height * scale];
-	let [cx, cy] = [rect.width / 2 + rect.left, rect.height / 2 + rect.top];
-	let [l, t, r, b] = [cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2];
-	let originX = 'center';
-	let originY = 'center';
-	let [tx, ty] = [0, 0];
-	if (l < 0) { tx = -l / scale; }
-	if (t < 0) { ty = -t / scale; }
-	if (r > window.innerWidth) { tx = -(r - window.innerWidth) / scale; }
-	if (b > window.innerHeight) { ty = -(b - window.innerHeight) / scale; }
-	elem.style.transform = `scale(${scale}) translate(${tx}px,${ty}px)`;
-	elem.style.transformOrigin = `${originX} ${originY}`;
+function getNow() { return Date.now(); }
+
+
+
+function isToggleState(key, nword) {
+	let toggle = DA.toggle[key];
+	return toggle.state == n || toggle.seq[toggle.state] == nword;
 }
-function mMagnifyOff() {
-	if (!MAGNIFIER_IMAGE) return;
-	let elem = MAGNIFIER_IMAGE;
-	MAGNIFIER_IMAGE = null;
-	elem.classList.remove(`topmost`);
-	elem.style.transform = null;
+function mToggle(ev) {
+	let key = ev.target.getAttribute('data-toggle');
+	let t = DA.toggle[key];
+	let prev = t.state;
+	t.state = (t.state + 1) % t.seq.length;
+	let html = t.seq[t.state];
+	mStyle(t.elem, { bg: t.states[html] }, { html });
+	if (isdef(t.handler)) t.handler(key, prev, t.state);
 }
-function onHoverMagnify(elem, controlkey = null, ms = 1000, scale = 5) {
-	elem = toElem(elem);
-	elem.onmouseenter = function () { if (controlkey && !isKeyDown(controlkey)) return; clearTimeout(TO.onhover); TO.onhover = setTimeout(() => mMagnify(elem, scale), ms); };
-	elem.onmouseleave = function () { clearTimeout(TO.onhover); TO.onhover = null; mMagnifyOff(); };
+function mToggleElem(elem, key, states, seq, i, handler) {
+	//states is a dictionary attributing a color to each state word
+	//seq is a list of states how they change when toggle is triggered
+	//i is index in seq that should be the initial state
+	if (nundef(DA.toggle)) DA.toggle = {};
+
+	let t = DA.toggle[key] = { handler, key, elem, state: i, states, seq };
+
+	elem.setAttribute('data-toggle', key);
+	mStyle(elem, { cursor: 'pointer' });
+	let html = seq[i];
+	mStyle(elem, { bg: states[html] }, { html });
+	elem.onclick = mToggle;
+	return t;
 }
-function onHoverTooltip(d, text, controlkey = null, ms = 2000, xfactor = 0.7, yfactor = 0.5) {
-
-	d = toElem(d);
-	mClass(d.parentNode, 'tooltip-container');
-	if (nundef(DA.tooltip)) DA.tooltip = mDom('dPage', { className: 'tooltip' }, { tag: 'span', html: 'this is a tooltip' }); //return;
-
-	d.addEventListener('mouseenter', () => {
-		if (controlkey && !isKeyDown(controlkey)) return;
-		if (DA.tooltip.innerHTML == text) return;
-		TO.onhover = setTimeout(() => {
-
-			DA.tooltip.innerHTML = text;
-			DA.tooltip.style.visibility = 'visible';
-			DA.tooltip.style.opacity = '1';
-
-			// Position the tooltip
-			const rect = d.getBoundingClientRect();
-			DA.tooltip.style.left = `${rect.left + rect.width * xfactor + window.scrollX}px`;
-			DA.tooltip.style.top = `${rect.top + rect.height * yfactor + window.scrollY}px`; // Add 5px spacing
-		}, ms);
-	});
-
-	// Hide tooltip immediately on mouseleave
-	d.addEventListener('mouseleave', () => {
-		clearTimeout(TO.onhover); TO.onhover = null;// Clear timeout if mouse leaves early
-		DA.tooltip.style.visibility = 'hidden';
-		DA.tooltip.style.opacity = '0';
-		DA.tooltip.innerHTML = '';
-	});
-}
-
 
 
 

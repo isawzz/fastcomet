@@ -1,9 +1,79 @@
-2.1. lib renew
-
+13.1. lib renew
+dieses jahr will ich disziplin lernen! 
+d in letting go
+d in planning and acting accordingly, without any outcome
+d in sparing words and setting boundaries
+d in refraining from entertaining or catering to the opinion people have about me (eg., people pleasing, bragging, making myself look good, volunteering explanations for my behavior)
+d in refraining from hurting anyone
+d in not engaging when triggered
+d in just being there for A and fe
+d in handling all other people gracefully, in silence, leaving them in peace
 just always always do math violin piano walk prog read tv game kids rest
 no thinking necessary!
 just go to the place of joy and gratitude and you will find freedom and love
-everything else is hell actually
+_______  7:47 AM 1/3/2025 airport 6000
+6:13 AM 1/3/2025
+- do NOT allow posting anywhere except in zdata or in y
+- clearFile
+- was soll das alles ueberhaupt? ich weiss nicht mehr was was ist
+- wie soll ich es machen? I am half asleep
+- was will ich ueberhaupt? brain fog is there, so nothing
+- wozu mach ich das? einfach so genauso wie ballspielen oder am flugplatz sein
+- wie copy ich den gesamten file inhalt in ein yaml file?
+_______  7:47 AM 1/2/2025 airport 5000
+_______  7:47 AM 1/1/2025 airport 4000
+am liebsten wuerd ich in die usa zurueckgehen und mit reema die therapy weitermachen
+aber wo wohne ich dort? das ist das problem! ich hab keine wohnung!
+_______  6:22 AM 12/31/2024 airport 3000
+eigentlich kann ich machen was ich will
+obwohl alles sinnlos ist, es ist nicht garnicht lustig. und ich bin frei, was allein schon ganz schoen cool ist!
+dieses naechste jahr will ich immer in der frueh einen fahrplan machen und dann durch den tag gehen damit
+sonst ist alles egal. alles ist sinnlos aber auch das ist egal
+jetzt will ich irgendwelche buttons fuer verschiedene activities
+wenn 1 button click, dann soll er clear dMain und createStopWatch
+das ganze element soll etwas anders aussehen!
+es soll ein start/pause done haben
+click auf toggle:
+1. timer soll starten
+1.1 mach einen timer
+_______  6:50 AM 12/30/2024 airport 2000
+how about this: 
+1. mueller kaufe zeug + duft
+2. mac donalds
+3. fahr zu urban loritz
+4. wechsel die 3 bue aus
+5. fahr zu nussdorferstrasse
+6. geh nach hause
+7. esse linsen,pause
+8. hole das zeug von zuhause
+9. gehe zu waehringerstrasse,kaufe am weg orangen+osaft
+10. fahre mit 40 zu maedi
+11. gehe von da aus zu vegagasse zu fuss
+6:51 AM 12/30/2024-8:23 AM 12/30/2024 92
+I am in a dream state
+I only always want to be a child
+I want to go back to childhood and have a cosy family and 2 friendly siblings or friends to play with all day long
+also, I am extremely hungry!
+I do NOT want to play adult anymore
+and I do NOT want to compete or assert myself
+I dont care if people call me crazy or regressed
+I dont want to cause hurt neither did I ever.
+it is just, I created hurt because of ignorance and compulsion
+because I cannot handle peoples expectations or even people
+
+_______  7:27 AM 12/29/2024 airport 1000
+7:27 AM 12/29/2024-10:30 PM 12/29/2024
+
+wie kann ich arbeiten ohne dauernd aufzuhoeren und fernzuschauen?
+
+was brauch ich fuer ein mToggle? soll ein multiState toggle sein
+
+mKey 
+fuer ein menu brauch ich menu_id und current_menu
+1. alle mit der id class weg
+2. active menu class dazu
+fuer ein menu das eine flaeche verwendet gilt:
+1. clearTimeouts, clear area, mache neue area (wegen mStyle!)
 _______ 6:51 AM 12/28/2024 airport 0 daumen finger 4 etwas besser hmsgetgd
 say NO: 100pts
 ok - mLayout
@@ -23,8 +93,9 @@ ok - remove all timeouts!!! clearTimeouts ist neu!
 ok - math problem!
 ok - math solutions zurueck David Hurst
 4:00 PM 12/28/2024 300
-
-
+was koennte ich als naechstes brauchen?
+5:00 PM 12/28/2024-5:30 PM 12/28/2024 330
+los gehts: 5:50 PM 12/28/2024-6:50 PM 12/28/2024 390
 soll ich wieder einen challenge starten?
 _______ 6:06 AM 12/27/2024 airport daumen finger 3
 _______ 7:00 AM 12/26/2024 airport daumen finger

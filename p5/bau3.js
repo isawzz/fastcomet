@@ -1,4 +1,171 @@
 
+function allNumbers(s) {
+	//returns array of all numbers within string s
+	let m = s.match(/\-.\d+|\-\d+|\.\d+|\d+\.\d+|\d+\b|\d+(?=\w)/g);
+	if (m) return m.map(v => Number(v)); else return [];
+}
+function arrMax(arr, f) { return arrMinMax(arr, f).max; }
+function arrMinMax(arr, func) {
+  if (nundef(func)) func = x => x;
+  else if (isString(func)) { let val = func; func = x => x[val]; }
+  let min = func(arr[0]), max = func(arr[0]), imin = 0, imax = 0;
+  for (let i = 1, len = arr.length; i < len; i++) {
+    let v = func(arr[i]);
+    if (v < min) {
+      min = v; imin = i;
+    } else if (v > max) {
+      max = v; imax = i;
+    }
+  }
+  return { min: min, imin: imin, max: max, imax: imax, elmin: arr[imin], elmax: arr[imax] };
+}
+function arrMinus(arr, b) { if (isList(b)) return arr.filter(x => !b.includes(x)); else return arr.filter(x => x != b); }
+function arrNext(list, el) {
+  let iturn = list.indexOf(el);
+  let elnext = list[(iturn + 1) % list.length];
+  return elnext;
+}
+function capitalize(s) {
+	if (typeof s !== 'string') return '';
+	return s.charAt(0).toUpperCase() + s.slice(1);
+}
+function copyKeys(ofrom, oto, except = {}, only = null) {
+	let keys = isdef(only) ? only : Object.keys(ofrom);
+	for (const k of keys) {
+		if (isdef(except[k])) continue;
+		oto[k] = ofrom[k];
+	}
+	return oto;
+}
+function createCountdown(elem, duration) {
+	let isRunning = false;
+	let remaining = duration;
+	let interval = null;
+
+	function updateDisplay() {
+		const h = Math.floor(remaining / 3600).toString().padStart(2, '0');
+		const m = Math.floor((remaining % 3600) / 60).toString().padStart(2, '0');
+		const s = (remaining % 60).toString().padStart(2, '0');
+		elem.textContent = `${h}:${m}:${s}`;
+	}
+
+	function start() {
+		if (isRunning || remaining <= 0) return;
+		isRunning = true;
+		const startTime = Date.now();
+
+		interval = setInterval(() => {
+			const elapsed = Math.floor((Date.now() - startTime) / 1000);
+			remaining = duration - elapsed;
+			updateDisplay();
+			if (remaining <= 0) {
+				stop();
+				remaining = 0;
+				updateDisplay();
+			}
+		}, 1000);
+	}
+
+	function stop() {
+		isRunning = false;
+		clearInterval(interval);
+	}
+
+	function toggle() {
+		isRunning ? stop() : start();
+	}
+
+	elem.addEventListener('click', toggle);
+	updateDisplay();
+	return elem;
+}
+function createStopwatch(elem) {
+	elem = toElem(elem);
+	let isRunning = false; mStyle(elem, { bg: 'silver', fg: 'dimgray' });
+	let elapsed = 0;
+	let interval = null;
+
+	function getElapsed(){
+		let nums=allNumbers(elem.textContent);
+		return nums[0]*3600+nums[1]*60+nums[2];
+		const h = Math.floor(elapsed / 3600).toString().padStart(2, '0');
+		const m = Math.floor((elapsed % 3600) / 60).toString().padStart(2, '0');
+		const s = (elapsed % 60).toString().padStart(2, '0');
+		return `${h}:${m}:${s}`;
+	}
+	function updateDisplay() {
+		const h = Math.floor(elapsed / 3600).toString().padStart(2, '0');
+		const m = Math.floor((elapsed % 3600) / 60).toString().padStart(2, '0');
+		const s = (elapsed % 60).toString().padStart(2, '0');
+		elem.textContent = `${h}:${m}:${s}`;
+	}
+
+	function start() {
+		if (isRunning) return;
+		isRunning = true;
+		const startTime = Date.now() - elapsed * 1000;
+		mStyle(elem, { bg: 'white', fg: 'black' });
+		interval = setInterval(() => {
+			elapsed = Math.floor((Date.now() - startTime) / 1000);
+			updateDisplay();
+		}, 1000);
+	}
+
+	function stop() {
+		isRunning = false;
+		mStyle(elem, { bg: 'silver', fg: 'dimgray' });
+		clearInterval(interval);
+	}
+
+	function toggle() {
+		isRunning ? stop() : start();
+	}
+
+	function reset() {
+		elapsed = 0;
+		updateDisplay();
+	}
+
+	elem.addEventListener('click', toggle);
+	updateDisplay();
+	return {elem, start, stop, toggle, getElapsed, reset};
+}
+function detectSessionType() {
+	let loc = window.location.href; //console.log('loc', loc);
+	DA.sessionType =
+		loc.includes('moxito.online') ? 'fastcomet' :
+			loc.includes('vidulus') ? 'vps' :
+				loc.includes('telecave') ? 'telecave' : loc.includes('8080') ? 'php'
+					: loc.includes(':40') ? 'nodejs'
+						: loc.includes(':60') ? 'flask' : 'live';
+	return DA.sessionType;
+}
+function evToElem(ev, attr) {
+	let elem = ev.target;
+	let val = null;
+	while (nundef(val) && isdef(elem)) {
+		val = elem.getAttribute(attr);
+		if (isdef(val)) return { val, elem };
+		elem = elem.parentNode;
+	}
+	return null;
+}
+function evToClass(ev, className) {
+	let elem = findAncestorWith(ev.target, { className });
+	return elem;
+}
+function evToId(ev) {
+	let elem = findAncestorWith(ev.target, { id: true });
+	return elem.id;
+}
+function findAncestorWith(elem, { attribute = null, className = null, id = null }) {
+	elem = toElem(elem);
+	while (elem) {
+		if ((attribute && elem.hasAttribute(attribute)) || (className && elem.classList.contains(className)) || (id && isdef(elem.id))) { return elem; }
+		elem = elem.parentNode;
+	}
+	return null;
+}
 function findSym(s) {
 	s = normalizeString(s);
 	let o = M.superdi[s]; if (isdef(o)) return o;
@@ -59,14 +226,16 @@ function hPrepUi(ev, areas, cols, rows, bg, dParent) {
 	M.divNames = Array.from(new Set(M.divNames.concat(names))); console.log(M.divNames);
 	mStyle('dPage', { bg });
 }
-function hToggleClassMenu(a) {
-	a = a.target;
-	let menu = a.getAttribute('menu');
-	let others = mBy(`[menu='${menu}']`, 'query');
+function hToggleClassMenu(ev) {
+	let elem = findAncestorWith(ev.target, { attribute: 'menu' }); //console.log('elem', elem);
+	let menu = elem.getAttribute('menu'); 
+	let buttonType = elem.getAttribute('buttonType')??'a';
+	let others = mBy(`[menu='${menu}']`, 'query'); //console.log('others', others);
 	for (const o of others) {
-		mClassRemove(o, 'active')
+		if (o == elem) { mClass(o, 'active'); }
+		else if (mHasClass(o, 'active')) { mClassRemove(o, 'active'); }
 	}
-	mClassToggle(a, 'active');
+	return elem;
 }
 function isAlphaNum(s) { query = /^[a-zA-Z0-9]+$/; return query.test(s); }
 
@@ -296,8 +465,5 @@ function recFlatten(o) {
 		for (const k in o) { let val1 = recFlatten(o[k]); valist.push(`${k}: ${val1}`); }
 		return valist.join(', ');
 	}
-}
-function rKeyType(){
-	return rChoose(getKeyTypes());
 }
 

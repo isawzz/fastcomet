@@ -1,24 +1,14 @@
 
-function measureEmojiWidth(text, fontSize = 16) {
-	// Create a temporary element to hold the text
-	const container = document.createElement('div');
-	container.style.position = 'absolute';
-	container.style.whiteSpace = 'nowrap';
-	container.style.fontSize = `${fontSize}px`;
-	container.style.fontFamily = 'Noto Color Emoji';
-	container.style.visibility = 'hidden';
-	container.textContent = text;
-
-	// Append it to the document to measure
-	document.body.appendChild(container);
-
-	// Measure the width using a Range object
-	const range = document.createRange();
-	range.selectNodeContents(container);
-	const width = range.getBoundingClientRect().width;
-
-	// Clean up
-	document.body.removeChild(container);
-
-	return width;
+function valfKey(o, arr) {
+  for (const w of arr) { if (isdef(o[w])) return w; }
+  return null;
 }
+function valfKeyVal(key) {
+  let o = M.superdi[key];
+  let di = { text: 'emoNoto', fa6: 'fa6', fa: 'pictoFa', ga: 'pictoGame' };
+  let k1 = valfKey(o, Object.keys(di));
+  if (k1) return { html: String.fromCharCode('0x' + o[k1]), family: di[k1] }
+  return null;
+}
+
+

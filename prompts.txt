@@ -1,3 +1,6 @@
+_______ timer
+simple js timer element that can be in countdown-timer or stopwatch (counting up) mode and is just a div that shows the time (left / elapsed) as hh:mm:ss. when clicking on it, it is paused, click again and it will resume 
+
 write a js function that ist given a list of filenames (containing javascript functions), loads each file, extracts all functions (as text) and puts them in a dict where keys are function names. functions with same name are overwritten if they occur in a file that comes later in the initial list. 
 at the end, the functions are written alphabetically to a string, separated by an empty line. the resulting string is returned.
 

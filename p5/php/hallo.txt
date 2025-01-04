@@ -1,0 +1,11 @@
+friendly: bee
+photo: ../assets/img/tierspiel/bee.png
+ga: E39D
+text: '&#128029;'
+cats:
+  - animal
+colls:
+  - emo
+  - tierspiel
+  - story
+hallo du!

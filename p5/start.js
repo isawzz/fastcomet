@@ -1,22 +1,69 @@
+
 onload = start;
 
-async function start() { await test8(); }
+async function start() { await test9_testFileio(); }
 
-async function test8() {
+async function test9_testFileio() {
+	await loadAssetsStatic(); 
+	let elems = mLayoutTM(rColor(), dPage); 
+	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
+	let o = M.superdi['bee'];
+	let path = 'hallo.txt'; //'../../zdata/f2.yaml';
+	let d1 = mKey('write', dTop, {}, { onclick: async () => console.log(await mPhpPostFile(jsyaml.dump(o),path)), menu: 'top' });
+	let d2 = mKey('read', dTop, {}, { onclick: async () => console.log(await mPhpGetFile(path)), menu: 'top' });
+	let d3 = mKey('yaml', dTop, {}, { onclick: async () => console.log(await jsyaml.load(await mPhpGetFile(path))), menu: 'top' });
+	let d4 = mKey('delete', dTop, {}, { onclick: async () => console.log(await deleteFile(path)), menu: 'top' });
+	let d5 = mKey('append', dTop, {}, { onclick: async () => console.log(await jsyaml.load(await mPhpPostLine('hallo du!',path))), menu: 'top' });
+	let d6 = mKey('write2', dTop, {}, { onclick: async () => console.log(await mPhpPostFile("was???",path)), menu: 'top' });
+}
+async function test9_postYaml(){
+	await loadAssetsStatic(); //console.log(M.superdi.airplane);
+	let o=M.superdi['bee'];console.log(o);
+	let text = jsyaml.dump(o);console.log(text);
+	//let res = await mPhpPostFile(text,'../../zdata/f2.yaml');console.log(res);
+	let res = await mPhpGetFile('../../zdata/f2.yaml');console.log(res);
+	let o2 = jsyaml.load(res);console.log(o2);
+}
+async function test9_createStopwatch() {
+	await loadAssetsStatic(); //console.log(M.superdi.airplane);
+	let elems = mLayoutTM(rColor(), dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
+	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
+	let d1 = mKey('watch', dTop, {}, { onclick: onclickWatch, menu: 'top' });
+	let d2 = mKey('game', dTop, {}, { onclick: onclickResetActions, menu: 'top' });
+
+	d1.click();
+	//console.log(d1,d2)
+
+	// let d=mDom(dMain,{fz:50,hpadding:10,rounding:10,margin:4,align:'center',hline:50,'user-select':'none',bg:'white',fg:'black'});
+	// let x=createStopwatch(d);
+
+}
+async function test9_mToggleElem() {
+	await loadAssetsStatic(); //console.log(M.superdi.airplane);
+	let elems = mLayoutTLMRS(rColor(), dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
+	mStyle(dTop, { paleft: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
+	mStyle(dLeft, { patop: 4, display: 'flex', dir: 'column', aitems: 'center', wbox: true, gap: 4 });
+	let d = mDom(dTop, { h: 30, hpadding: 10, rounding: 10, margin: 4, align: 'center', hline: 30, 'user-select': 'none', bg: 'red', fg: 'white' });
+	//mToggle1Elem(d,'bee',1,{html:'0'},{html:'1'},{html:'2'});
+	let tAction = mToggleElem(d, 'state', { relax: 'green', work: 'red', sleep: 'blue' }, ['work', 'relax', 'work', 'sleep'], 0, registerAction);
+}
+async function test8_mKey() {
 	await loadAssetsStatic(); //console.log(M.superdi.airplane);
 	window.onkeydown = keyDownHandler;
 	window.onkeyup = keyUpHandler;
 	let di = getKeyLists();
 	let elems = mLayoutTLMRS(rColor(), dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
-	mStyle(dTop, { display: 'flex', padding: 4, wbox: true, gap: 4 });
-	let d = dTop;
+	mStyle(dTop, { paleft: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
+	mStyle(dLeft, { patop: 4, display: 'flex', dir: 'column', aitems: 'center', wbox: true, gap: 4 });
 	for (const i of range(3)) {
-		let type = rKeyType(); //console.log(type);
+		let type = rChoose(arrMinus(getKeyTypes(), ['plain'])); //console.log(type);
 		let list = di[type];
-		let key = rChoose(list); //console.log(key);
-		let elem = mKey(key, type, d);
-		//onHoverMagnify(elem);
-		onHoverTooltip(elem, `${key} (${type})`)
+		//let key = rChoose(list); //console.log('key',key);
+		let elem = mKey(rChoose(list), dTop, { sz: 22 }, { prefer: type, onclick: true });
+		onHoverMagnify(elem);
+		elem = mKey(rChoose(list), dLeft, { sz: 22 }, { prefer: type, onclick: true });
+		//let elem = mKey(key, d);
+		//onHoverTooltip(elem, `${key} (${type})`)
 	}
 }
 async function test8_mLayout() {
@@ -124,7 +171,7 @@ async function test6() {
 	console.log(mBy('a', 'class').map(x => [x.innerHTML, x.getAttribute('menu'), x.getAttribute('kennzahl')].join(',')));
 	//d.click();
 }
-async function test5() {
+async function test5_mMenuV() {
 	await loadAssetsStatic();
 	mStyle(dPage, { w: '100%', h: '100%', bg: 'sienna' }); //page coloring
 	let names = M.divNames = mAreas(dPage, ` 'dLogo dTop' 'dLeft dMain' `, '140px 1fr', 'auto 1fr');
@@ -144,7 +191,7 @@ async function test5() {
 	console.log(mBy('a', 'class').map(x => [x.innerHTML, x.getAttribute('menu'), x.getAttribute('kennzahl')].join(',')));
 	d.click();
 }
-async function test4() {
+async function _test4() {
 	await loadAssetsStatic();
 	mStyle(dPage, { w: '100%', h: '100%', bg: 'sienna' }); //page coloring
 	let names = M.divNames = mAreas(dPage, ` 'dLeft dRight' `, '140px 1fr', '100%');
@@ -177,7 +224,7 @@ async function test4() {
 	mMenuH(dTop, 'HALLO', {}, onclickExample, 'right');
 	mMenuH(dTop, 'EXAMPLE', {}, onclickExample, 'right');
 }
-async function test3() {
+async function _test3() {
 	await loadAssetsStatic();
 	let dPage = document.getElementById('dPage');
 	mStyle(dPage, { w: '100%', h: '100%', bg: 'sienna' }); //page coloring
@@ -189,10 +236,6 @@ async function test3() {
 	mStyle('dTop', { padding: 4 })
 	mStyle('dStatus', { padding: 4 }, { html: '&nbsp;' })
 	let dTop = mDom('dTop'); //top menu
-	// mDom(dTop, { fz: 30, display:'inline' }, { html: `play!` })
-	// mKey('baby', dTop, { h: 30 });
-	// mKey('baby', dTop, { h: 30 });
-	// let dHome = mHomeLogo(dTop, 'airplane', onclickHome, 'top'); //logo
 	let dCalc = mLinkMenu(dTop, 'CALC', {}, onclickCalc, 'top');
 	mLinkMenu(dTop, 'DAY', {}, onclickDay, 'top');
 	let dExample = mLinkMenu(dTop, 'EXAMPLE', {}, onclickExample, 'top');
@@ -201,9 +244,6 @@ async function test3() {
 }
 async function test2() {
 	await loadAssetsStatic();
-	//can I do multiple sketches on 1 page? YES!
-	//challenge: 2 panes
-	//let d=mColFlex('dPage',[1,2],['blue','red']);
 }
 async function test1() {
 	await loadColors();

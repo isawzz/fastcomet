@@ -56,6 +56,7 @@ function capitalize(s) {
 	if (typeof s !== 'string') return '';
 	return s.charAt(0).toUpperCase() + s.slice(1);
 }
+function clearTimeouts() { for (const tok in TO) { clearTimeout(TO[tok]); TO[tok] = null; } }
 function coin(percent = 50) { return Math.random() * 100 < percent; }
 function colorFrom(c, a) {
 	c = colorToHex79(c);
@@ -274,6 +275,36 @@ function ensureColorDict() {
 		if (cnew.hex[0] != '#' && isdef(ColorDi[k])) cnew.hex = ColorDi[k].hex;
 		ColorDi[k] = cnew;
 	}
+}
+function evNoBubble(ev) { ev.preventDefault(); ev.cancelBubble = true; }
+function evToAttr(ev, attr) {
+	let elem = ev.target;
+	let val = null;
+	while (nundef(val) && isdef(elem)) {
+		val = elem.getAttribute(attr);
+		if (isdef(val)) return val;
+		elem = elem.parentNode;
+	}
+	return null;
+}
+function firstCond(aos, func) {
+	//return first elem that fulfills condition
+	if (nundef(aos)) return null;
+	else if (isDict(aos)) for (const k in aos) { if (func(k) || func(aos[k])) return k; }
+	else for (const a of aos) { if (func(a)) return a; }
+	return null;
+}
+function firstNCond(n, arr, func) {
+	//return first n elements that fulfills condition
+	if (nundef(arr)) return [];
+	let result = [];
+	let cnt = 0;
+	for (const a of arr) {
+		cnt += 1; if (cnt > n) break;
+		if (func(a)) result.push(a);
+
+	}
+	return result;
 }
 function firstNumber(s) {
 	if (s) {
@@ -672,11 +703,14 @@ function keyDownHandler(ev) {
 	if (nundef(DA.keysToCheck)) DA.keysToCheck = {};
 	DA.keysToCheck[ev.key] = true;
 }
-function keyUpHandler(ev) {
-	DA.keysToCheck[ev.key] = false;
-}
+function keyUpHandler(ev) { DA.keysToCheck[ev.key] = false; }
 function last(arr) {
 	return arr.length > 0 ? arr[arr.length - 1] : null;
+}
+function lastCond(arr, func) {
+	if (nundef(arr)) return null;
+	for (let i = arr.length - 1; i >= 0; i--) { let a = arr[i]; if (func(a)) return a; }
+	return null;
 }
 function list2dict(arr, keyprop = 'id', uniqueKeys = true) {
 	let di = {};
@@ -834,6 +868,12 @@ function mClass(d) {
 		}
 	} else for (let i = 1; i < arguments.length; i++) d.classList.add(arguments[i]);
 }
+function mClassRemove(d) { d = toElem(d); for (let i = 1; i < arguments.length; i++) d.classList.remove(arguments[i]); }
+function mClassToggle(d, classes) {
+	let wlist = toWords(classes);
+	d = toElem(d);
+	for (const c of wlist) if (d.classList.contains(c)) mClassRemove(d, c); else mClass(d, c);
+}
 function mClear(d) {
 	toElem(d).innerHTML = '';
 }
@@ -864,6 +904,13 @@ function mGetStyle(elem, prop) {
 	if (nundef(val)) val = getStyleProp(elem, prop);
 	if (val.endsWith('px')) return firstNumber(val); else return val;
 }
+function mHasClass(el, className) {
+	if (el.classList) return el.classList.contains(className);
+	else {
+		let x = !!el.className;
+		return isString(x) && !!el.className.match(new RegExp('(\\s|^)' + className + '(\\s|$)'));
+	}
+}
 function mImg(src, d, styles = {}, opts = {}) {
 	let [w, h] = mSizeSuccession(styles, 40);
 	addKeys({ w, h, 'object-fit': 'cover', 'object-position': 'center center' }, styles);
@@ -871,21 +918,27 @@ function mImg(src, d, styles = {}, opts = {}) {
 	let img = mDom(d, styles, opts);
 	return img;
 }
-function mKey(key, type, dParent, styles = {}, opts = {}) {
+function mKey(key, dParent, styles = {}, opts = {}) {
+	let type = valf(opts.prefer, 'img');
 	let o = M.superdi[key];
-	let d1, sz = 40;
-	let d = mDom(dParent, { wbox: true, className: ['a'], cursor: 'pointer', rounding: 4, wmin: sz, hmin: sz, w: sz, h: sz, display: 'flex', aitems: 'center', justify: 'center' }); //continue; //return;
+	if (nundef(o)) type = 'plain'; else if (nundef(o[type])) type = isdef(o.img) ? 'img' : isdef(o.photo) ? 'photo' : isdef(o.text) ? 'text' : isdef(o.fa6) ? 'fa6' : isdef(o.fa) ? 'fa' : isdef(o.ga) ? 'ga' : 'plain';
+	let d1, sz = valf(styles.sz, 40);
+	if (opts.onclick) addKeys({ className: [opts.buttonType??'a'], cursor: 'pointer', rounding: 4, wmin: sz, hmin: sz, w: sz, h: sz, wbox: true, display: 'flex', aitems: 'center', justify: 'center' }, styles);
+	else addKeys({ wbox: true, display: 'flex', aitems: 'center', justify: 'center', cursor: 'default' }, styles);
+	let d = mDom(dParent, styles);
+	if (opts.menu) d.setAttribute('menu', opts.menu);
+	if (typeof opts.onclick == 'function') d.onclick = opts.onclick;
+	//console.log(`${key}: ${type}`);
 	if (type == 'img') { d1 = mImg(o[type], d, { sz }); }
 	else if (type == 'photo') { d1 = mImg(o[type], d, { rounding: 4, sz: sz - 8 }); }
 	else if (type == 'plain') {
 		mStyle(d, { w: 'auto', hpadding: 10 })
-		d1 = mDom(d, {}, { html: key });
-	}
-	else {
+		d1 = mDom(d, {'user-select':'none'}, { html: key });
+	} else {
 		let family = type == 'text' ? 'emoNoto' : type == 'fa6' ? 'fa6' : type == 'fa' ? 'pictoFa' : 'pictoGame';
 		let html = type == 'text' ? o.text : String.fromCharCode('0x' + o[type]);
 		sz -= 4;
-		d1 = mDom(d, { family, fz: sz, hline: sz }, { html });//console.log(getRect(d1));
+		d1 = mDom(d, { family, fz: sz, hline: sz }, { html });
 		let r = getRect(d1);
 		let [w, h] = [r.w, r.h];
 		let scale = Math.min(sz / w, sz / h);
@@ -894,6 +947,7 @@ function mKey(key, type, dParent, styles = {}, opts = {}) {
 		d1.style.transform = `scale(${scale})`;
 	}
 	return d;
+
 }
 function mLayout(bg, dParent, rowlist, colt, rowt) {
 	dParent = toElem(dParent);
@@ -910,6 +964,30 @@ function mLayoutTLMRS(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
 	let colt = `minmax(${wcol}px, auto) 1fr minmax(${wcol}px, auto)`;
 	let rowt = `minmax(${hrow}px, auto) 1fr minmax(${hrow}px, auto)`;
 	return mLayout(bg, dParent, rowlist, colt, rowt);
+}
+function mMagnify(elem, scale = 5) {
+	elem.classList.add(`topmost`);
+	MAGNIFIER_IMAGE = elem;
+	const rect = elem.getBoundingClientRect();
+	let [w, h] = [rect.width * scale, rect.height * scale];
+	let [cx, cy] = [rect.width / 2 + rect.left, rect.height / 2 + rect.top];
+	let [l, t, r, b] = [cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2];
+	let originX = 'center';
+	let originY = 'center';
+	let [tx, ty] = [0, 0];
+	if (l < 0) { tx = -l / scale; }
+	if (t < 0) { ty = -t / scale; }
+	if (r > window.innerWidth) { tx = -(r - window.innerWidth) / scale; }
+	if (b > window.innerHeight) { ty = -(b - window.innerHeight) / scale; }
+	elem.style.transform = `scale(${scale}) translate(${tx}px,${ty}px)`;
+	elem.style.transformOrigin = `${originX} ${originY}`;
+}
+function mMagnifyOff() {
+	if (!MAGNIFIER_IMAGE) return;
+	let elem = MAGNIFIER_IMAGE;
+	MAGNIFIER_IMAGE = null;
+	elem.classList.remove(`topmost`);
+	elem.style.transform = null;
 }
 function mShade(names, offset = 1, contrast = 1) {
 	let palette = paletteTransWhiteBlack(names.length * contrast + 2 * offset).slice(offset);
@@ -937,6 +1015,7 @@ function mStyle(elem, styles = {}, opts = {}) {
 		bgSrc: (elem, v) => elem.style.backgroundImage = `url(${v})`,
 		gridRows: (elem, v) => elem.style.gridTemplateRows = isNumber(v) ? `repeat(${v},1fr)` : v,
 		gridCols: (elem, v) => elem.style.gridTemplateColumns = isNumber(v) ? `repeat(${v},1fr)` : v,
+		html: (elem, v) => elem.innerHTML = v,
 		hpadding: (elem, v) => elem.style.padding = `0 ${v}px`,
 		vpadding: (elem, v) => elem.style.padding = `${v}px ${valf(styles.hpadding, 0)}px`,
 		hmargin: (elem, v) => elem.style.margin = `0 ${v}px`,
@@ -969,24 +1048,36 @@ function mStyle(elem, styles = {}, opts = {}) {
 	applyOpts(elem, opts);
 }
 function nundef(x) { return x === null || x === undefined || x === 'undefined'; }
+function onHoverMagnify(d, controlkey = null, ms = 1000, scale = 5) {
+	d = toElem(d);
+	d.onmouseenter = function () { if (controlkey && !isKeyDown(controlkey)) return; clearTimeout(TO.onhover); TO.onhover = setTimeout(() => mMagnify(d, scale), ms); };
+	d.onmouseleave = function () { clearTimeout(TO.onhover); TO.onhover = null; mMagnifyOff(); };
+}
 function onHoverTooltip(d, text, controlkey = null, ms = 2000, xfactor = 0.7, yfactor = 0.5) {
+
 	d = toElem(d);
 	mClass(d.parentNode, 'tooltip-container');
 	if (nundef(DA.tooltip)) DA.tooltip = mDom('dPage', { className: 'tooltip' }, { tag: 'span', html: 'this is a tooltip' }); //return;
+
 	d.addEventListener('mouseenter', () => {
 		if (controlkey && !isKeyDown(controlkey)) return;
 		if (DA.tooltip.innerHTML == text) return;
 		TO.onhover = setTimeout(() => {
+
 			DA.tooltip.innerHTML = text;
 			DA.tooltip.style.visibility = 'visible';
 			DA.tooltip.style.opacity = '1';
+
+			// Position the tooltip
 			const rect = d.getBoundingClientRect();
 			DA.tooltip.style.left = `${rect.left + rect.width * xfactor + window.scrollX}px`;
 			DA.tooltip.style.top = `${rect.top + rect.height * yfactor + window.scrollY}px`; // Add 5px spacing
 		}, ms);
 	});
+
+	// Hide tooltip immediately on mouseleave
 	d.addEventListener('mouseleave', () => {
-		clearTimeout(TO.onhover); TO.onhover = null;
+		clearTimeout(TO.onhover); TO.onhover = null;// Clear timeout if mouse leaves early
 		DA.tooltip.style.visibility = 'hidden';
 		DA.tooltip.style.opacity = '0';
 		DA.tooltip.innerHTML = '';
