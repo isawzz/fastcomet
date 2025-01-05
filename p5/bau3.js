@@ -81,7 +81,7 @@ function createCountdown(elem, duration) {
 }
 function createStopwatch(elem) {
 	elem = toElem(elem);
-	let isRunning = false; mStyle(elem, { bg: 'silver', fg: 'dimgray' });
+	let isRunning = false; mStyle(elem, { fg: 'white' });
 	let elapsed = 0;
 	let interval = null;
 
@@ -104,7 +104,7 @@ function createStopwatch(elem) {
 		if (isRunning) return;
 		isRunning = true;
 		const startTime = Date.now() - elapsed * 1000;
-		mStyle(elem, { bg: 'white', fg: 'black' });
+		//mStyle(elem, { bg: 'white', fg: 'black' });
 		interval = setInterval(() => {
 			elapsed = Math.floor((Date.now() - startTime) / 1000);
 			updateDisplay();
@@ -113,13 +113,14 @@ function createStopwatch(elem) {
 
 	function stop() {
 		isRunning = false;
-		mStyle(elem, { bg: 'silver', fg: 'dimgray' });
+		//mStyle(elem, { bg: 'silver', fg: 'dimgray' });
 		clearInterval(interval);
 	}
 
 	function toggle() {
 		isRunning ? stop() : start();
 	}
+	function getStatus(){return isRunning?1:0;}
 
 	function reset() {
 		elapsed = 0;
@@ -128,7 +129,7 @@ function createStopwatch(elem) {
 
 	elem.addEventListener('click', toggle);
 	updateDisplay();
-	return {elem, start, stop, toggle, getElapsed, reset};
+	return {elem, start, stop, toggle, getElapsed, getStatus, reset};
 }
 function detectSessionType() {
 	let loc = window.location.href; //console.log('loc', loc);
