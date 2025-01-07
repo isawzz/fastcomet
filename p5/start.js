@@ -5,11 +5,14 @@ async function start() { await app0_stopwatch(); }
 
 async function app0_stopwatch() {
 	await loadAssetsStatic(); //console.log(M.superdi.airplane);
+	Serverdata = await loadServerStatus();
 	let elems = mLayoutTM(rColor(), dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
 	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
 	let d1 = mKey('watch', dTop, {}, { onclick: onclickWatch, menu: 'top' });
 	let d2 = mKey('reset', dTop, {}, { onclick: onclickResetActions, menu: 'top' });
 	let d3 = mKey('archive', dTop, {}, { onclick: onclickArchiveActions, menu: 'top' });
+	let d4 = mKey('thinking_face', dTop, {}, { onclick: onclickAction, menu: 'main' });
+	let d5 = mKey('sleeping_face', dTop, {}, { onclick: onclickAction, menu: 'main' });
 
 	d1.click();
 	//console.log(d1,d2)

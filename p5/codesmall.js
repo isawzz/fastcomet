@@ -769,6 +769,39 @@ function loadColors(bh = 18, bs = 20, bl = 20) {
 	list = sortByMultipleProperties(list, 'fg', 'sorth', 'sorts', 'sortl', 'hue');
 	return list;
 }
+async function loadServerStatus() {
+	let sd=Serverdata = {};
+	sd.config = await loadStaticYaml('y/config.yaml');
+	sd.action = await loadStaticYaml('y/action.yaml');
+	M = await loadStaticYaml('y/m.yaml');
+	M.superdi = await loadStaticYaml('y/superdi.yaml');
+	M.details = await loadStaticYaml('y/details.yaml');
+	M.config = await loadStaticYaml('y/config.yaml');
+	loadColors();
+	M.users = {};
+	for (const uname of M.config.users) {
+		M.users[uname] = await loadStaticYaml(`y/users/${uname}.yaml`);
+	}
+	let [di, byColl, byFriendly, byCat, allImages] = [M.superdi, {}, {}, {}, {}];
+	for (const k in di) {
+		let o = di[k];
+		for (const cat of o.cats) lookupAddIfToList(byCat, [cat], k);
+		for (const coll of o.colls) lookupAddIfToList(byColl, [coll], k);
+		lookupAddIfToList(byFriendly, [o.friendly], k)
+		if (isdef(o.img)) {
+			let fname = stringAfterLast(o.img, '/')
+			allImages[fname] = { fname, path: o.img, k };
+		}
+	}
+	M.allImages = allImages;
+	M.byCat = byCat;
+	M.byCollection = byColl;
+	M.byFriendly = byFriendly;
+	M.categories = Object.keys(byCat); M.categories.sort();
+	M.collections = Object.keys(byColl); M.collections.sort();
+	M.names = Object.keys(byFriendly); M.names.sort();
+	[M.colorList, M.colorByHex, M.colorByName] = getListAndDictsForDicolors();
+}
 async function loadStaticYaml(path) {
 	let sessionType = detectSessionType();
 	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : '../';
@@ -919,13 +952,13 @@ function mImg(src, d, styles = {}, opts = {}) {
 	return img;
 }
 function mKey(key, dParent, styles = {}, opts = {}) {
-	let type = valf(opts.prefer, 'img');
+	let type = valf(opts.prefer, 'img'); console.log(type)
 	let o = M.superdi[key];
-	if (nundef(o)) type = 'plain'; else if (nundef(o[type])) type = isdef(o.img) ? 'img' : isdef(o.photo) ? 'photo' : isdef(o.text) ? 'text' : isdef(o.fa6) ? 'fa6' : isdef(o.fa) ? 'fa' : isdef(o.ga) ? 'ga' : 'plain';
+	if (nundef(o)) type = 'plain'; else if (type !='plain' && nundef(o[type])) type = isdef(o.img) ? 'img' : isdef(o.photo) ? 'photo' : isdef(o.text) ? 'text' : isdef(o.fa6) ? 'fa6' : isdef(o.fa) ? 'fa' : isdef(o.ga) ? 'ga' : 'plain';
 	let d1, sz = valf(styles.sz, 40);
 	if (opts.onclick) addKeys({ className: [opts.buttonType??'a'], cursor: 'pointer', rounding: 4, wmin: sz, hmin: sz, w: sz, h: sz, wbox: true, display: 'flex', aitems: 'center', justify: 'center' }, styles);
 	else addKeys({ wbox: true, display: 'flex', aitems: 'center', justify: 'center', cursor: 'default' }, styles);
-	let d = mDom(dParent, styles);
+	let d = mDom(dParent, styles, {key});
 	if (opts.menu) d.setAttribute('menu', opts.menu);
 	if (typeof opts.onclick == 'function') d.onclick = opts.onclick;
 	//console.log(`${key}: ${type}`);

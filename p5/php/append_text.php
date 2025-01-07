@@ -16,9 +16,9 @@ if (strpos($path, 'zdata/') == false && strpos($path, 'y/') == false){
 // Append the line to the path if it's not empty
 if (!empty(trim($line)) && !empty(trim($path)) ) {
     // Check if a newline is needed
-    if (file_exists($path) && substr(file_get_contents($path), -1) !== "\n") {
-        $line = "\n" . $line;
-    }
+    // if (file_exists($path) && substr(file_get_contents($path), -1) !== "\n") {
+    //     $line = "\n" . $line;
+    // }
     // Append the line
     file_put_contents($path, $line, FILE_APPEND | LOCK_EX);
 }

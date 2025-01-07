@@ -232,11 +232,12 @@ function hToggleClassMenu(ev) {
 	let menu = elem.getAttribute('menu'); 
 	let buttonType = elem.getAttribute('buttonType')??'a';
 	let others = mBy(`[menu='${menu}']`, 'query'); //console.log('others', others);
+	let prev = null;
 	for (const o of others) {
 		if (o == elem) { mClass(o, 'active'); }
-		else if (mHasClass(o, 'active')) { mClassRemove(o, 'active'); }
+		else if (mHasClass(o, 'active')) { prev=o;mClassRemove(o, 'active'); }
 	}
-	return elem;
+	return [prev,elem];
 }
 function isAlphaNum(s) { query = /^[a-zA-Z0-9]+$/; return query.test(s); }
 
