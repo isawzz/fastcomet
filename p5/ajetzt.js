@@ -1,3 +1,44 @@
+
+//#region format date time
+function formatDate(d) {
+	const date = isdef(d) ? d : new Date();
+	const month = ('0' + date.getMonth()).slice(0, 2);
+	const day = date.getDate(); 
+	const year = date.getFullYear();
+	const dateString = `${month}/${day}/${year}`;
+	return dateString;
+}
+function formatDate1(d) {
+	if (nundef(d)) d = Date.now();
+	let ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
+	let mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(d);
+	let da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
+	return `${da}-${mo}-${ye}`;
+}
+function formatDate2(d) { if (nundef(d)) d = new Date(); return d.toISOString().slice(0, 19).replace("T", " "); }
+function formatDate3(d) { if (nundef(d)) d = new Date(); return d.toISOString().slice(0, 19).replace(/-/g, "/").replace("T", " "); }
+function formatNow() { return new Date().toISOString().slice(0, 19).replace("T", " "); }
+function getFormattedDate() {
+  const date = new Date();
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const day = String(date.getDate()).padStart(2, '0'); // Add leading zero if needed
+
+  return `${year}-${month}-${day}`;
+}
+function getFormattedTime() {
+  const date = new Date();
+
+  const hours = String(date.getHours()).padStart(2, '0'); // Get hours (24-hour format)
+  const minutes = String(date.getMinutes()).padStart(2, '0'); // Get minutes
+
+  return `${hours}:${minutes}`;
+}
+
+//#endregion
+
+//#region toggle zeug
 function mToggle(label, dParent, styles = {}, handler, is_on, styleyes, styleno, classes = null) {
 	let cursor = styles.cursor; delete styles.cursor;
 	let name = replaceWhite(label);
@@ -66,7 +107,7 @@ function toggleShow(t, state) {
 }
 function toggleGet(ev) { let key = getIdKey(evToId(ev)); let toggle = DA.toggle[key]; return toggle; }
 function getIdKey(elem) { let id = mBy(elem).id; return id.substring(1).toLowerCase(); }
-
+//#endregion toggle
 
 
 

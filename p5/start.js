@@ -1,14 +1,39 @@
 
 onload = start;
 
-async function start() { await app0_stopwatch(); }
+async function start() { await test10_saveEmo(); }
 
+async function test10_emo1(){
+	let res = await mPhpPostLine("Type something 😊",'zdata/test.txt'); return;
+	let elems = mLayoutTM('hotpink', dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
+	let html=
+		`	<form method="POST" action="save_emoji_text.php">
+			<label for="emojiText">Enter Text with Emojis:</label>
+			<input type="text" id="emojiText" name="emojiText" placeholder="Type something 😊" required>
+			<button type="submit">Save</button>
+			</form>	
+		`;
+	mDom('dMain',{},{html});
+}
+async function test10_saveEmo(){
+	let elems = mLayoutTM('hotpink', dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
+	let inp = createEmojiInput('dMain');
+	let button = mDom('dMain',{},{html:'CLICK!!!',onclick:async()=>{
+		let text = inp.value;
+		let res = await mPhpPostLine(text + "\nType something 😊",'zdata/test.txt'); 
+		console.log('result',res);
+	}})
+	//let d=mDom('dMain',{},{tag:'input'});
+
+}
 async function app0_stopwatch() {
 	await loadAssetsStatic(); //console.log(M.superdi.airplane);
-	Serverdata = await loadServerStatus();
+	let di = await actionLoadAll(); //console.log(Serverdata);
+	di.list.map(x => console.log(x.key, x.date, x.time, x.secs));
+	//return;
 	let elems = mLayoutTM(rColor(), dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
 	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
-	let d1 = mKey('watch', dTop, {}, { onclick: onclickWatch, menu: 'top' });
+	let d1 = mKey('watch', dTop, {}, { onclick: onclickStopwatch, menu: 'top' });
 	let d2 = mKey('reset', dTop, {}, { onclick: onclickResetActions, menu: 'top' });
 	let d3 = mKey('archive', dTop, {}, { onclick: onclickArchiveActions, menu: 'top' });
 	let d4 = mKey('thinking_face', dTop, {}, { onclick: onclickAction, menu: 'main' });
@@ -22,31 +47,31 @@ async function app0_stopwatch() {
 
 }
 async function test9_testFileio() {
-	await loadAssetsStatic(); 
-	let elems = mLayoutTM(rColor(), dPage); 
+	await loadAssetsStatic();
+	let elems = mLayoutTM(rColor(), dPage);
 	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
 	let o = M.superdi['bee'];
 	let path = 'hallo.txt'; //'../../zdata/f2.yaml';
-	let d1 = mKey('write', dTop, {}, { onclick: async () => console.log(await mPhpPostFile(jsyaml.dump(o),path)), menu: 'top' });
+	let d1 = mKey('write', dTop, {}, { onclick: async () => console.log(await mPhpPostFile(jsyaml.dump(o), path)), menu: 'top' });
 	let d2 = mKey('read', dTop, {}, { onclick: async () => console.log(await mPhpGetFile(path)), menu: 'top' });
 	let d3 = mKey('yaml', dTop, {}, { onclick: async () => console.log(await jsyaml.load(await mPhpGetFile(path))), menu: 'top' });
-	let d4 = mKey('delete', dTop, {}, { onclick: async () => console.log(await deleteFile(path)), menu: 'top' });
-	let d5 = mKey('append', dTop, {}, { onclick: async () => console.log(await jsyaml.load(await mPhpPostLine('hallo du!',path))), menu: 'top' });
-	let d6 = mKey('write2', dTop, {}, { onclick: async () => console.log(await mPhpPostFile("was???",path)), menu: 'top' });
+	let d4 = mKey('delete', dTop, {}, { onclick: async () => console.log(await mPhpDeleteFile(path)), menu: 'top' });
+	let d5 = mKey('append', dTop, {}, { onclick: async () => console.log(await jsyaml.load(await mPhpPostLine('hallo du!', path))), menu: 'top' });
+	let d6 = mKey('write2', dTop, {}, { onclick: async () => console.log(await mPhpPostFile("was???", path)), menu: 'top' });
 }
-async function test9_postYaml(){
+async function test9_postYaml() {
 	await loadAssetsStatic(); //console.log(M.superdi.airplane);
-	let o=M.superdi['bee'];console.log(o);
-	let text = jsyaml.dump(o);console.log(text);
+	let o = M.superdi['bee']; console.log(o);
+	let text = jsyaml.dump(o); console.log(text);
 	//let res = await mPhpPostFile(text,'../../zdata/f2.yaml');console.log(res);
-	let res = await mPhpGetFile('../../zdata/f2.yaml');console.log(res);
-	let o2 = jsyaml.load(res);console.log(o2);
+	let res = await mPhpGetFile('../../zdata/f2.yaml'); console.log(res);
+	let o2 = jsyaml.load(res); console.log(o2);
 }
 async function test9_createStopwatch() {
 	await loadAssetsStatic(); //console.log(M.superdi.airplane);
 	let elems = mLayoutTM(rColor(), dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
 	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
-	let d1 = mKey('watch', dTop, {}, { onclick: onclickWatch, menu: 'top' });
+	let d1 = mKey('watch', dTop, {}, { onclick: onclickStopwatch, menu: 'top' });
 	let d2 = mKey('game', dTop, {}, { onclick: onclickResetActions, menu: 'top' });
 
 	d1.click();

@@ -292,6 +292,45 @@ function showDetailsAndMagnify(elem) {
 	mDom(d, {}, { tag: 'img', src: valf(o.photo, o.img) });
 	showDetailsPresentation(o, d);
 }
+function isToggleState(key, nword) {
+	let toggle = DA.toggle[key];
+	return toggle.state == n || toggle.seq[toggle.state] == nword;
+}
+function mToggle(ev) {
+	let key = ev.target.getAttribute('data-toggle');
+	let t = DA.toggle[key];
+	let prev = t.state;
+	t.state = (t.state + 1) % t.seq.length;
+	let html = t.seq[t.state];
+	mStyle(t.elem, { bg: t.states[html] }, { html });
+	if (isdef(t.handler)) t.handler(key, prev, t.state);
+}
+function mToggleElem(elem, key, states, seq, i, handler) {
+	//states is a dictionary attributing a color to each state word
+	//seq is a list of states how they change when toggle is triggered
+	//i is index in seq that should be the initial state
+	if (nundef(DA.toggle)) DA.toggle = {};
+
+	let t = DA.toggle[key] = { handler, key, elem, state: i, states, seq };
+
+	elem.setAttribute('data-toggle', key);
+	mStyle(elem, { cursor: 'pointer' });
+	let html = seq[i];
+	mStyle(elem, { bg: states[html] }, { html });
+	elem.onclick = mToggle;
+	return t;
+}
+function valfKey(o, arr) {
+  for (const w of arr) { if (isdef(o[w])) return w; }
+  return null;
+}
+function valfKeyVal(key) {
+  let o = M.superdi[key];
+  let di = { text: 'emoNoto', fa6: 'fa6', fa: 'pictoFa', ga: 'pictoGame' };
+  let k1 = valfKey(o, Object.keys(di));
+  if (k1) return { html: String.fromCharCode('0x' + o[k1]), family: di[k1] }
+  return null;
+}
 
 
 

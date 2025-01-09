@@ -228,16 +228,17 @@ function hPrepUi(ev, areas, cols, rows, bg, dParent) {
 	mStyle('dPage', { bg });
 }
 function hToggleClassMenu(ev) {
-	let elem = findAncestorWith(ev.target, { attribute: 'menu' }); //console.log('elem', elem);
-	let menu = elem.getAttribute('menu'); 
-	let buttonType = elem.getAttribute('buttonType')??'a';
-	let others = mBy(`[menu='${menu}']`, 'query'); //console.log('others', others);
-	let prev = null;
-	for (const o of others) {
-		if (o == elem) { mClass(o, 'active'); }
-		else if (mHasClass(o, 'active')) { prev=o;mClassRemove(o, 'active'); }
-	}
-	return [prev,elem];
+  let elem = findAncestorWith(ev.target, { attribute: 'menu' });
+	if (mHasClass(elem, 'active')) return [elem,elem];
+  let menu = elem.getAttribute('menu');
+  let others = mBy(`[menu='${menu}']`, 'query').filter(x => x != elem);
+  let prev = null;
+  for (const o of others) {
+    assertion(o != elem);
+    if (mHasClass(o, 'active')) { prev = o; mClassRemove(o, 'active'); }
+  }
+  mClass(elem, 'active');
+  return [prev, elem];
 }
 function isAlphaNum(s) { query = /^[a-zA-Z0-9]+$/; return query.test(s); }
 
@@ -448,6 +449,7 @@ async function onclickCalc(ev) {
 	let normal = mLinkMenu(dMenu, 'Normal', {}, onclickNormal, 'side');
 	let all = mLinkMenu(dMenu, 'Alles', {}, onclickAll, 'side');
 }
+function p5ClearAll() { clearTimeouts(); mClear('dMain'); DA.stopwatch = null; }
 function range(f, t, st = 1) {
 	if (nundef(t)) {
 		t = f - 1;

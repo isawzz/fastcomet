@@ -1,9 +1,5 @@
 
 
-
-
-
-
 function addKeys(ofrom, oto) { for (const k in ofrom) if (nundef(oto[k])) oto[k] = ofrom[k]; return oto; }
 function alphaToHex(a01) {
 	a01 = Math.round(a01 * 100) / 100;
@@ -51,6 +47,11 @@ function assertion(cond) {
 		}
 		throw new Error('TERMINATING!!!')
 	}
+}
+function calculateSecondsDifference(timestamp1, timestamp2) {
+	const differenceInMilliseconds = Math.abs(timestamp1 - timestamp2);
+	const differenceInSeconds = Math.ceil(differenceInMilliseconds / 1000); // (1000 * 60));
+	return differenceInSeconds;
 }
 function capitalize(s) {
 	if (typeof s !== 'string') return '';
@@ -632,6 +633,30 @@ function getColorNames() {
 		'YellowGreen'
 	];
 }
+function getDateTimeData(from, to) {
+	let dt = new Date(from);
+	const year = dt.getFullYear();
+	const month = String(dt.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+	const day = String(dt.getDate()).padStart(2, '0'); // Add leading zero if needed
+	const hour = String(dt.getHours()).padStart(2, '0'); // Get hours (24-hour format)
+	const minute = String(dt.getMinutes()).padStart(2, '0'); // Get minutes
+	const second = String(dt.getSeconds()).padStart(2, '0'); // Get minutes
+	let dateSort = `${year}.${month}.${day}`;
+	let date = `${day}.${month}.${year}`;
+	let time = `${hour}:${minute}:${second}`;
+	let secs = calculateSecondsDifference(from, to);
+	return { dt, year, month, day, hour, minute, second, date, time, secs, dateSort };
+}
+function getInnermostTextString(div) {
+	if (!div || !div.children.length) {
+		return div && div.innerHTML.trim() && !/<[^>]+>/.test(div.innerHTML) ? div.innerHTML.trim() : null;
+	}
+	for (let child of div.children) {
+		let result = getInnermostTextString(child);
+		if (result) return result;
+	}
+	return null;
+}
 function getKeyLists() {
 	if (isdef(M.byKeyType)) return M.byKeyType;
 	let types = getKeyTypes();
@@ -664,6 +689,7 @@ function getListAndDictsForDicolors() {
 	let byname = list2dict(dicolorlist, 'name');
 	return [dicolorlist, byhex, byname];
 }
+function getNow() { return Date.now(); }
 function getRect(elem, relto) {
 	if (isString(elem)) elem = document.getElementById(elem);
 	let res = elem.getBoundingClientRect();
@@ -768,39 +794,6 @@ function loadColors(bh = 18, bs = 20, bl = 20) {
 	}
 	list = sortByMultipleProperties(list, 'fg', 'sorth', 'sorts', 'sortl', 'hue');
 	return list;
-}
-async function loadServerStatus() {
-	let sd=Serverdata = {};
-	sd.config = await loadStaticYaml('y/config.yaml');
-	sd.action = await loadStaticYaml('y/action.yaml');
-	M = await loadStaticYaml('y/m.yaml');
-	M.superdi = await loadStaticYaml('y/superdi.yaml');
-	M.details = await loadStaticYaml('y/details.yaml');
-	M.config = await loadStaticYaml('y/config.yaml');
-	loadColors();
-	M.users = {};
-	for (const uname of M.config.users) {
-		M.users[uname] = await loadStaticYaml(`y/users/${uname}.yaml`);
-	}
-	let [di, byColl, byFriendly, byCat, allImages] = [M.superdi, {}, {}, {}, {}];
-	for (const k in di) {
-		let o = di[k];
-		for (const cat of o.cats) lookupAddIfToList(byCat, [cat], k);
-		for (const coll of o.colls) lookupAddIfToList(byColl, [coll], k);
-		lookupAddIfToList(byFriendly, [o.friendly], k)
-		if (isdef(o.img)) {
-			let fname = stringAfterLast(o.img, '/')
-			allImages[fname] = { fname, path: o.img, k };
-		}
-	}
-	M.allImages = allImages;
-	M.byCat = byCat;
-	M.byCollection = byColl;
-	M.byFriendly = byFriendly;
-	M.categories = Object.keys(byCat); M.categories.sort();
-	M.collections = Object.keys(byColl); M.collections.sort();
-	M.names = Object.keys(byFriendly); M.names.sort();
-	[M.colorList, M.colorByHex, M.colorByName] = getListAndDictsForDicolors();
 }
 async function loadStaticYaml(path) {
 	let sessionType = detectSessionType();
@@ -952,35 +945,34 @@ function mImg(src, d, styles = {}, opts = {}) {
 	return img;
 }
 function mKey(key, dParent, styles = {}, opts = {}) {
-	let type = valf(opts.prefer, 'img'); console.log(type)
-	let o = M.superdi[key];
-	if (nundef(o)) type = 'plain'; else if (type !='plain' && nundef(o[type])) type = isdef(o.img) ? 'img' : isdef(o.photo) ? 'photo' : isdef(o.text) ? 'text' : isdef(o.fa6) ? 'fa6' : isdef(o.fa) ? 'fa' : isdef(o.ga) ? 'ga' : 'plain';
-	let d1, sz = valf(styles.sz, 40);
-	if (opts.onclick) addKeys({ className: [opts.buttonType??'a'], cursor: 'pointer', rounding: 4, wmin: sz, hmin: sz, w: sz, h: sz, wbox: true, display: 'flex', aitems: 'center', justify: 'center' }, styles);
-	else addKeys({ wbox: true, display: 'flex', aitems: 'center', justify: 'center', cursor: 'default' }, styles);
-	let d = mDom(dParent, styles, {key});
-	if (opts.menu) d.setAttribute('menu', opts.menu);
-	if (typeof opts.onclick == 'function') d.onclick = opts.onclick;
-	//console.log(`${key}: ${type}`);
-	if (type == 'img') { d1 = mImg(o[type], d, { sz }); }
-	else if (type == 'photo') { d1 = mImg(o[type], d, { rounding: 4, sz: sz - 8 }); }
-	else if (type == 'plain') {
-		mStyle(d, { w: 'auto', hpadding: 10 })
-		d1 = mDom(d, {'user-select':'none'}, { html: key });
-	} else {
-		let family = type == 'text' ? 'emoNoto' : type == 'fa6' ? 'fa6' : type == 'fa' ? 'pictoFa' : 'pictoGame';
-		let html = type == 'text' ? o.text : String.fromCharCode('0x' + o[type]);
-		sz -= 4;
-		d1 = mDom(d, { family, fz: sz, hline: sz }, { html });
-		let r = getRect(d1);
-		let [w, h] = [r.w, r.h];
-		let scale = Math.min(sz / w, sz / h);
-		d1.style.transformOrigin = 'center center';
-		d1.style.transform = `scale(${scale})`;
-		d1.style.transform = `scale(${scale})`;
-	}
-	return d;
-
+  let type = valf(opts.prefer, 'img');
+  let o = M.superdi[key];
+  if (nundef(o)) type = 'plain'; else if (type != 'plain' && nundef(o[type])) type = isdef(o.img) ? 'img' : isdef(o.photo) ? 'photo' : isdef(o.text) ? 'text' : isdef(o.fa6) ? 'fa6' : isdef(o.fa) ? 'fa' : isdef(o.ga) ? 'ga' : 'plain';
+  let d1, sz = valf(styles.sz, 40);
+  if (opts.onclick) addKeys({ className: [opts.buttonType ?? 'a'], cursor: 'pointer', rounding: 4, wmin: sz, hmin: sz, w: sz, h: sz, wbox: true, display: 'flex', aitems: 'center', justify: 'center' }, styles);
+  else addKeys({ wbox: true, display: 'flex', aitems: 'center', justify: 'center', cursor: 'default' }, styles);
+  let d = mDom(dParent, styles, { key });
+  if (opts.menu) d.setAttribute('menu', opts.menu);
+  if (typeof opts.onclick == 'function') d.onclick = opts.onclick;
+  //console.log(`${key}: ${type}`);
+  if (type == 'img') { d1 = mImg(o[type], d, { sz }); }
+  else if (type == 'photo') { d1 = mImg(o[type], d, { rounding: 4, sz: sz - 8 }); }
+  else if (type == 'plain') {
+    mStyle(d, { w: 'auto', hpadding: 10 })
+    d1 = mDom(d, { 'user-select': 'none' }, { html: key });
+  } else {
+    let family = type == 'text' ? 'emoNoto' : type == 'fa6' ? 'fa6' : type == 'fa' ? 'pictoFa' : 'pictoGame';
+    let html = type == 'text' ? o.text : String.fromCharCode('0x' + o[type]);
+    sz -= 4;
+    d1 = mDom(d, { family, fz: sz, hline: sz }, { html });
+    let r = getRect(d1);
+    let [w, h] = [r.w, r.h];
+    let scale = Math.min(sz / w, sz / h);
+    d1.style.transformOrigin = 'center center';
+    d1.style.transform = `scale(${scale})`;
+    d1.style.transform = `scale(${scale})`;
+  }
+  return d;
 }
 function mLayout(bg, dParent, rowlist, colt, rowt) {
 	dParent = toElem(dParent);
@@ -1022,6 +1014,36 @@ function mMagnifyOff() {
 	elem.classList.remove(`topmost`);
 	elem.style.transform = null;
 }
+async function mPostPhp(cmd, o, jsonResult = true) {
+	let sessionType = detectSessionType();
+	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
+	if (isdef(o.path) && (o.path.startsWith('zdata') || o.path.startsWith('y'))) o.path = '../../' + o.path;
+	let res = await fetch(server + `p5/php/${cmd}.php`,
+		{
+			method: 'POST',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: new URLSearchParams(o), // Send the line in POST request
+		}
+	);
+	let text;
+	try {
+		text = await res.text();
+		if (!jsonResult) {
+			//console.log('!!!asking for plain text!!!');
+			return text;
+		}
+		let obj = JSON.parse(text);
+		return obj;
+		//return res.ok? await res.json(): res; //jsonResult ? await res.json() : await res.text() : res;
+	} catch (e) {
+		return isString(text) ? text : e;
+	}
+}
+async function mPhpGetFile(path) { return await mPostPhp('read_file', { path }, false); }
+async function mPhpPostFile(text, path) { return await mPostPhp('write_file', { text, path }, false); }
+async function mPhpPostLine(line, path) { return await mPostPhp('append_action', { line, path }, false); }
+async function mPhpPostText(text, path) { return await mPostPhp('append_text', { text, path }, false); }
+async function mPhpDeleteFile(path) { return await mPostPhp('delete_file', { path }); }
 function mShade(names, offset = 1, contrast = 1) {
 	let palette = paletteTransWhiteBlack(names.length * contrast + 2 * offset).slice(offset);
 	for (const name of names) {
