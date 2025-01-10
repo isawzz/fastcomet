@@ -1,5 +1,9 @@
 13.1. lib renew
 dieses jahr will ich disziplin lernen! 
+attention: n people use info for their own elevation and entertainment!!!!
+so: do NOT talk about you and your family! always deflect! deflect! deflect
+mirror, deflect, say you are tired, say you are not feeling well, say you need some rest - minimize mine fields such as tdndsm
+d in setting boundaries
 d in letting go
 d in planning and acting accordingly, without any outcome
 d in sparing words and setting boundaries
@@ -11,8 +15,21 @@ d in handling all other people gracefully, in silence, leaving them in peace
 just always always do math violin piano walk prog read tv game kids rest
 no thinking necessary!
 just go to the place of joy and gratitude and you will find freedom and love
-_______ 6:32 AM 1/9/2025 airport 12000
+_______ 6:51 AM 1/10/2025 airport 14000
 
+_______ 6:32 AM 1/9/2025 airport 12000
+onclickReset soll action.tzt loeschen, NICHT von stopwatch weggehen!
+DA.action=a
+noch simpler:
+wenn DA.action vom vortag ist, wird es einfach geloescht!!!
+1. loadActions: wenn ich eine line habe die ist: move:222222222-
+dann muss DA.action = {key,from} setzen
+2. createStopwatch: wenn DA.action existiert und dieser key existiert,
+(daher keys NIEMALS wegloeschen!
+3. wenn key aus menu aendere, dann MUSS in action.txt text replacen!!!!
+4. wenn stopwatch create und DA.actionlkey mache, dann muss in DA.action elem setzen und die stopwatch starten
+aber wenn DA.action.from vom vorigen tag ist, dann soll die angefangene entry geloescht werden! und DA.action from zu now gesetzt (big op!)
+wenn die zeit aber vom selben tag ist, dann soll now-DA.from gerechnet werden und die stopwatch zu dieser zeit gesetzt werden!!!
 _______ 6:59 AM 1/8/2025 airport 11000
 heute math tage 15h30-17h30
 do NOT play psychotherapist! just be quiet at all times. stay alone.
