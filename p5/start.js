@@ -3,6 +3,25 @@ onload = start;
 
 async function start() { await test10_saveEmo(); }
 
+async function test11(){
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 async function test10_emo1(){
 	let res = await mPhpPostLine("Type something 😊",'zdata/test.txt'); return;
 	let elems = mLayoutTM('hotpink', dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
@@ -24,26 +43,6 @@ async function test10_saveEmo(){
 		console.log('result',res);
 	}})
 	//let d=mDom('dMain',{},{tag:'input'});
-
-}
-async function app0_stopwatch() {
-	await loadAssetsStatic(); //console.log(M.superdi.airplane);
-	let di = await actionLoadAll(); //console.log(Serverdata);
-	di.list.map(x => console.log(x.key, x.date, x.time, x.secs));
-	//return;
-	let elems = mLayoutTM(rColor(), dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
-	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
-	let d1 = mKey('watch', dTop, {}, { onclick: onclickStopwatch, menu: 'top' });
-	let d2 = mKey('reset', dTop, {}, { onclick: onclickResetActions, menu: 'top' });
-	let d3 = mKey('archive', dTop, {}, { onclick: onclickArchiveActions, menu: 'top' });
-	let d4 = mKey('thinking_face', dTop, {}, { onclick: onclickAction, menu: 'main' });
-	let d5 = mKey('sleeping_face', dTop, {}, { onclick: onclickAction, menu: 'main' });
-
-	d1.click();
-	//console.log(d1,d2)
-
-	// let d=mDom(dMain,{fz:50,hpadding:10,rounding:10,margin:4,align:'center',hline:50,'user-select':'none',bg:'white',fg:'black'});
-	// let x=createStopwatch(d);
 
 }
 async function test9_testFileio() {
