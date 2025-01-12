@@ -1,32 +1,106 @@
 
 //#region mGather uiType
+function clamp(x, min, max) { return Math.min(Math.max(x, min), max); }
+function isPointOutsideOf(form, x, y) { const r = form.getBoundingClientRect(); return (x < r.left || x > r.right || y < r.top || y > r.bottom); }
+function mAnchorTo(elem, dAnchor, align = 'bl') {
+  let rect = dAnchor.getBoundingClientRect();
+  let drect = elem.getBoundingClientRect();
+  let [v, h] = [align[0], align[1]];
+  let vPos = v == 'b' ? { top: rect.bottom } : v == 'c' ? { top: rect.top } : { top: rect.top - drect.height };
+  let hPos = h == 'l' ? { left: rect.left } : h == 'c' ? { left: rect.left } : { right: window.innerWidth - rect.right };
+  let posStyles = { position: 'absolute' };
+  addKeys(vPos, posStyles);
+  addKeys(hPos, posStyles);
+  mStyle(elem, posStyles);
+}
+function mDummyFocus() {
+	function addDummy(dParent, place) {
+		let b = mDom(dParent, { opacity: 0, h: 0, w: 0, padding: 0, margin: 0, outline: 'none', border: 'none', bg: 'transparent' });
+		if (isdef(place)) mPlace(b, place);
+		b.id = 'dummy';
+	}
+	if (nundef(mBy('dummy'))) addDummy(document.body, 'cc');
+	mBy('dummy').focus();
+}
 function mGather(dAnchor, styles = {}, opts = {}) {
-  return new Promise((resolve, _) => {
-    let [content, type] = [valf(opts.content, 'name'), valf(opts.type, 'text')]; //defaults
-    let dbody = document.body;
-    let dDialog = mDom(dbody, { bg: '#00000040', box: true, w: '100vw', h: '100vh' }, { tag: 'dialog', id: 'dDialog' });
-    let d = mDom(dDialog);
-    let funcName = `uiGadgetType${capitalize(type)}`; //console.log(funcName)
-    let uiFunc = window[funcName];
-    let dx = uiFunc(d, content, x => { dDialog.remove(); resolve(x) }, styles, opts);
-    if (isdef(opts.title)) mInsert(dx, mCreateFrom(`<h2>Details for ${opts.title}</h2>`))
-    dDialog.addEventListener('mouseup', ev => {
-      if (opts.type != 'select' && isPointOutsideOf(dx, ev.clientX, ev.clientY)) {
-        resolve(null);
-        dDialog.remove();
-      }
-    });
-    dDialog.addEventListener('keydown', ev => {
-      if (ev.key === 'Escape') {
-        dDialog.remove();
-        console.log('RESOLVE NULL ESCAPE');
-        resolve(null);
-      }
-    });
-    dDialog.showModal();
-    if (isdef(dAnchor)) mAnchorTo(dx, toElem(dAnchor), opts.align);
-    else { mStyle(d, { h: '100vh' }); mCenterCenterFlex(d); }
-  });
+	return new Promise((resolve, _) => {
+		let [content, type] = [valf(opts.content, 'name'), valf(opts.type, 'text')]; //defaults
+		let dbody = document.body;
+		let dDialog = mDom(dbody, { bg: '#00000040', border:'none', box: true, w: '100vw', h: '100vh' }, { tag: 'dialog', id: 'dDialog' });
+		let d = mDom(dDialog);
+		let funcName = `uiGadgetType${capitalize(type)}`; //console.log(funcName)
+		let uiFunc = window[funcName];
+		let dx = uiFunc(d, content, x => { dDialog.remove(); resolve(x) }, styles, opts);
+		if (isdef(opts.title)) mInsert(dx, mCreateFrom(`<h2>Details for ${opts.title}</h2>`))
+		dDialog.addEventListener('mouseup', ev => {
+			if (opts.type != 'select' && isPointOutsideOf(dx, ev.clientX, ev.clientY)) {
+				resolve(null);
+				dDialog.remove();
+			}
+		});
+		dDialog.addEventListener('keydown', ev => {
+			if (ev.key === 'Escape') {
+				dDialog.remove();
+				console.log('RESOLVE NULL ESCAPE');
+				resolve(null);
+			}
+		});
+		dDialog.showModal();
+		if (isdef(dAnchor)) mAnchorTo(dx, toElem(dAnchor), opts.align);
+		else { mStyle(d, { h: '100vh' }); mCenterCenterFlex(d); }
+	});
+}
+function mPos(d, x, y, offx=0, offy=0, unit = 'px') { 
+  let dParent = d.parentNode; mIfNotRelative(dParent);
+  mStyle(d, { left: `${x+offx}${unit}`, top: `${y+offy}${unit}`, position: 'absolute' }); 
+}
+function mOnEnter(elem, handler) {
+	elem.addEventListener('keydown', ev => {
+		if (ev.key == 'Enter') {
+			ev.preventDefault();
+			mDummyFocus();
+			if (handler) handler(ev);
+		}
+	});
+}
+function mOnEnterInput(elem, handler) {
+	elem.addEventListener('keydown', ev => {
+		if (ev.key == 'Enter') {
+			ev.preventDefault();
+			mDummyFocus();
+			if (handler) handler(ev.target.value);
+		}
+	});
+}
+function mIfNotRelative(d) { d = toElem(d); if (isEmpty(d.style.position)) d.style.position = 'relative'; }
+function mPlace(elem, pos, offx, offy) {
+  elem = toElem(elem);
+  pos = pos.toLowerCase();
+  let dParent = elem.parentNode; mIfNotRelative(dParent);
+  let hor = valf(offx, 0);
+  let vert = isdef(offy) ? offy : hor;
+  if (pos[0] == 'c' || pos[1] == 'c') {
+    let dpp = dParent.parentNode;
+    let opac = mGetStyle(dParent, 'opacity'); //console.log('opac', opac);
+    if (nundef(dpp)) { mAppend(document.body, dParent); mStyle(dParent, { opacity: 0 }) }
+    let rParent = getRect(dParent);
+    let [wParent, hParent] = [rParent.w, rParent.h];
+    let rElem = getRect(elem);
+    let [wElem, hElem] = [rElem.w, rElem.h];
+    if (nundef(dpp)) { dParent.remove(); mStyle(dParent, { opacity: valf(opac, 1) }) }
+    switch (pos) {
+      case 'cc': mStyle(elem, { position: 'absolute', left: hor + (wParent - wElem) / 2, top: vert + (hParent - hElem) / 2 }); break;
+      case 'tc': mStyle(elem, { position: 'absolute', left: hor + (wParent - wElem) / 2, top: vert }); break;
+      case 'bc': mStyle(elem, { position: 'absolute', left: hor + (wParent - wElem) / 2, bottom: vert }); break;
+      case 'cl': mStyle(elem, { position: 'absolute', left: hor, top: vert + (hParent - hElem) / 2 }); break;
+      case 'cr': mStyle(elem, { position: 'absolute', right: hor, top: vert + (hParent - hElem) / 2 }); break;
+    }
+    return;
+  }
+  let di = { t: 'top', b: 'bottom', r: 'right', l: 'left' };
+  elem.style.position = 'absolute';
+  let kvert = di[pos[0]], khor = di[pos[1]];
+  elem.style[kvert] = vert + 'px'; elem.style[khor] = hor + 'px';
 }
 function uiGadgetTypeCheckList(dParent, content, resolve, styles = {}, opts = {}) {
 	addKeys({ hmax: 500, wmax: 200, bg: 'white', fg: 'black', padding: 10, rounding: 10, box: true }, styles)
@@ -382,7 +456,7 @@ function uiTypeSelect(any, dParent, styles = {}, opts = {}) {
 function formatDate(d) {
 	const date = isdef(d) ? d : new Date();
 	const month = ('0' + date.getMonth()).slice(0, 2);
-	const day = date.getDate(); 
+	const day = date.getDate();
 	const year = date.getFullYear();
 	const dateString = `${month}/${day}/${year}`;
 	return dateString;
@@ -398,21 +472,21 @@ function formatDate2(d) { if (nundef(d)) d = new Date(); return d.toISOString().
 function formatDate3(d) { if (nundef(d)) d = new Date(); return d.toISOString().slice(0, 19).replace(/-/g, "/").replace("T", " "); }
 function formatNow() { return new Date().toISOString().slice(0, 19).replace("T", " "); }
 function getFormattedDate() {
-  const date = new Date();
+	const date = new Date();
 
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-  const day = String(date.getDate()).padStart(2, '0'); // Add leading zero if needed
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+	const day = String(date.getDate()).padStart(2, '0'); // Add leading zero if needed
 
-  return `${year}-${month}-${day}`;
+	return `${year}-${month}-${day}`;
 }
 function getFormattedTime() {
-  const date = new Date();
+	const date = new Date();
 
-  const hours = String(date.getHours()).padStart(2, '0'); // Get hours (24-hour format)
-  const minutes = String(date.getMinutes()).padStart(2, '0'); // Get minutes
+	const hours = String(date.getHours()).padStart(2, '0'); // Get hours (24-hour format)
+	const minutes = String(date.getMinutes()).padStart(2, '0'); // Get minutes
 
-  return `${hours}:${minutes}`;
+	return `${hours}:${minutes}`;
 }
 
 //#endregion
@@ -456,33 +530,33 @@ function mTogglebar(di, handler, styleyes, styleno, dParent, styles, bstyles, id
 //*********************************************** */
 function toggleAdd(key, sym, dParent, styles) {
 	//let t2 = toggleAdd('right', 'arrow_down_long', dr, { hpadding: 9, vpadding: 5 }, { w: 0 }, { w: 300 });
-  addKeys({ fz: 20, rounding: '50%', padding: 5, fg: rColor() }, styles);
-  let info = valfHtml(sym);
-  let b;
-  if (info) {
-    let stButton = copyKeys({ overflow: 'hidden', box: true, family: info.family, cursor: 'pointer' }, styles);
-    b = mDom(dParent, stButton, { id: getButtonId(key), html: info.html, className: 'hop1' });
-  } else {
-    b = mButton(sym, 'dToolbar')
-  }
-  b.onclick = toggleClick;
-  let d = mBy(getDivId(key));
-  if (nundef(DA.toggle)) DA.toggle = {};
-  let t = DA.toggle[key] = { key: key, button: b, div: d, state: 0, states: [...arguments].slice(4) };
-  toggleShow(t);
-  return t;
+	addKeys({ fz: 20, rounding: '50%', padding: 5, fg: rColor() }, styles);
+	let info = valfHtml(sym);
+	let b;
+	if (info) {
+		let stButton = copyKeys({ overflow: 'hidden', box: true, family: info.family, cursor: 'pointer' }, styles);
+		b = mDom(dParent, stButton, { id: getButtonId(key), html: info.html, className: 'hop1' });
+	} else {
+		b = mButton(sym, 'dToolbar')
+	}
+	b.onclick = toggleClick;
+	let d = mBy(getDivId(key));
+	if (nundef(DA.toggle)) DA.toggle = {};
+	let t = DA.toggle[key] = { key: key, button: b, div: d, state: 0, states: [...arguments].slice(4) };
+	toggleShow(t);
+	return t;
 }
 function toggleClick(ev) {
-  let t = toggleGet(ev);
-  let i = t.state = (t.state + 1) % t.states.length;
-  toggleShow(t);
+	let t = toggleGet(ev);
+	let i = t.state = (t.state + 1) % t.states.length;
+	toggleShow(t);
 }
 function toggleShow(t, state) {
-  if (nundef(state)) state = t.states[t.state];
-  let d = iDiv(t); mStyle(d, state);
-  let percent = 100 * t.state / (t.states.length - 1);
-  //console.log('percent open',percent)
-  mStyle(t.button, { bg: colorMix('lime', 'red', percent) });
+	if (nundef(state)) state = t.states[t.state];
+	let d = iDiv(t); mStyle(d, state);
+	let percent = 100 * t.state / (t.states.length - 1);
+	//console.log('percent open',percent)
+	mStyle(t.button, { bg: colorMix('lime', 'red', percent) });
 }
 function toggleGet(ev) { let key = getIdKey(evToId(ev)); let toggle = DA.toggle[key]; return toggle; }
 function getIdKey(elem) { let id = mBy(elem).id; return id.substring(1).toLowerCase(); }

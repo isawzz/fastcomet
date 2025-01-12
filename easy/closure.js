@@ -7234,7 +7234,10 @@ function mPopup(dParent, styles = {}, opts = {}) {
   mButtonX(popup);
   return popup;
 }
-function mPos(d, x, y, unit = 'px') { mStyle(d, { left: x, top: y, position: 'absolute' }, unit); }
+function mPos(d, x, y, unit = 'px') { 
+  let dParent = d.parentNode; mIfNotRelative(dParent);
+  mStyle(d, { left: `${x}${unit}`, top: `${y}${unit}`, position: 'absolute' }); 
+}
 async function mPostRoute(route, o = {}) {
   let server = getServerurl();
   server += `/${route}`;

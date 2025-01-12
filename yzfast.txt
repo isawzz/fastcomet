@@ -1,6 +1,7 @@
 20.1. lib renew
-_______ 5:06 AM 1/11/2025 airport 14000
-
+_______ 6:53 AM 1/12/2025 airport 15000
+neue art von placement!
+smart placement: [tcb],[lcr],[0..1] overlap
 
 
 
