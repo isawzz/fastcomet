@@ -6,24 +6,24 @@ function allNumbers(s) {
 }
 function arrMax(arr, f) { return arrMinMax(arr, f).max; }
 function arrMinMax(arr, func) {
-  if (nundef(func)) func = x => x;
-  else if (isString(func)) { let val = func; func = x => x[val]; }
-  let min = func(arr[0]), max = func(arr[0]), imin = 0, imax = 0;
-  for (let i = 1, len = arr.length; i < len; i++) {
-    let v = func(arr[i]);
-    if (v < min) {
-      min = v; imin = i;
-    } else if (v > max) {
-      max = v; imax = i;
-    }
-  }
-  return { min: min, imin: imin, max: max, imax: imax, elmin: arr[imin], elmax: arr[imax] };
+	if (nundef(func)) func = x => x;
+	else if (isString(func)) { let val = func; func = x => x[val]; }
+	let min = func(arr[0]), max = func(arr[0]), imin = 0, imax = 0;
+	for (let i = 1, len = arr.length; i < len; i++) {
+		let v = func(arr[i]);
+		if (v < min) {
+			min = v; imin = i;
+		} else if (v > max) {
+			max = v; imax = i;
+		}
+	}
+	return { min: min, imin: imin, max: max, imax: imax, elmin: arr[imin], elmax: arr[imax] };
 }
 function arrMinus(arr, b) { if (isList(b)) return arr.filter(x => !b.includes(x)); else return arr.filter(x => x != b); }
 function arrNext(list, el) {
-  let iturn = list.indexOf(el);
-  let elnext = list[(iturn + 1) % list.length];
-  return elnext;
+	let iturn = list.indexOf(el);
+	let elnext = list[(iturn + 1) % list.length];
+	return elnext;
 }
 function capitalize(s) {
 	if (typeof s !== 'string') return '';
@@ -85,9 +85,9 @@ function createStopwatch(elem) {
 	let elapsed = 0;
 	let interval = null;
 
-	function getElapsed(){
-		let nums=allNumbers(elem.textContent);
-		return nums[0]*3600+nums[1]*60+nums[2];
+	function getElapsed() {
+		let nums = allNumbers(elem.textContent);
+		return nums[0] * 3600 + nums[1] * 60 + nums[2];
 		const h = Math.floor(elapsed / 3600).toString().padStart(2, '0');
 		const m = Math.floor((elapsed % 3600) / 60).toString().padStart(2, '0');
 		const s = (elapsed % 60).toString().padStart(2, '0');
@@ -120,7 +120,7 @@ function createStopwatch(elem) {
 	function toggle() {
 		isRunning ? stop() : start();
 	}
-	function getStatus(){return isRunning?1:0;}
+	function getStatus() { return isRunning ? 1 : 0; }
 
 	function reset() {
 		elapsed = 0;
@@ -129,7 +129,7 @@ function createStopwatch(elem) {
 
 	elem.addEventListener('click', toggle);
 	updateDisplay();
-	return {elem, start, stop, toggle, getElapsed, getStatus, reset};
+	return { elem, start, stop, toggle, getElapsed, getStatus, reset };
 }
 function detectSessionType() {
 	let loc = window.location.href; //console.log('loc', loc);
@@ -184,21 +184,21 @@ function findSym(s) {
 
 	return null;
 }
-function getKeyLists(){
+function getKeyLists() {
 	if (isdef(M.byKeyType)) return M.byKeyType;
 	let types = getKeyTypes();
-	let di={};
-	let keys = M.symKeys=Object.keys(M.superdi);
-	for(const k of keys){
-		let o=M.superdi[k];
-		for(const t of types) if (isdef(o[t])) lookupAddToList(di,[t], k); 
+	let di = {};
+	let keys = M.symKeys = Object.keys(M.superdi);
+	for (const k of keys) {
+		let o = M.superdi[k];
+		for (const t of types) if (isdef(o[t])) lookupAddToList(di, [t], k);
 
 	}
-	di.plain=jsCopy(commandWords);
+	di.plain = jsCopy(commandWords);
 	M.byKeyType = di;
 	return di;
 }
-function getKeyTypes(){return ['plain','fa', 'ga', 'fa6', 'img', 'text', 'photo'];}
+function getKeyTypes() { return ['plain', 'fa', 'ga', 'fa6', 'img', 'text', 'photo']; }
 function getRect(elem, relto) {
 	if (isString(elem)) elem = document.getElementById(elem);
 	let res = elem.getBoundingClientRect();
@@ -228,17 +228,17 @@ function hPrepUi(ev, areas, cols, rows, bg, dParent) {
 	mStyle('dPage', { bg });
 }
 function hToggleClassMenu(ev) {
-  let elem = findAncestorWith(ev.target, { attribute: 'menu' });
-	if (mHasClass(elem, 'active')) return [elem,elem];
-  let menu = elem.getAttribute('menu');
-  let others = mBy(`[menu='${menu}']`, 'query').filter(x => x != elem);
-  let prev = null;
-  for (const o of others) {
-    assertion(o != elem);
-    if (mHasClass(o, 'active')) { prev = o; mClassRemove(o, 'active'); }
-  }
-  mClass(elem, 'active');
-  return [prev, elem];
+	let elem = findAncestorWith(ev.target, { attribute: 'menu' });
+	if (mHasClass(elem, 'active')) return [elem, elem];
+	let menu = elem.getAttribute('menu');
+	let others = mBy(`[menu='${menu}']`, 'query').filter(x => x != elem);
+	let prev = null;
+	for (const o of others) {
+		assertion(o != elem);
+		if (mHasClass(o, 'active')) { prev = o; mClassRemove(o, 'active'); }
+	}
+	mClass(elem, 'active');
+	return [prev, elem];
 }
 function isAlphaNum(s) { query = /^[a-zA-Z0-9]+$/; return query.test(s); }
 
@@ -292,15 +292,15 @@ function measureText(text, styles = {}, cx = null) { //mit canvas
 function measureText(text, styles = {}, cx = null) {
 	// Helper function to ensure font style is correctly formed
 	function getFontString(styles) {
-			const fontSize = styles.fz || 16; // Default font size to 16px
-			const fontFamily = styles.family || 'sans-serif'; // Default font family
-			return styles.font || `${fontSize}px ${fontFamily}`; // Prefer full font string if available
+		const fontSize = styles.fz || 16; // Default font size to 16px
+		const fontFamily = styles.family || 'sans-serif'; // Default font family
+		return styles.font || `${fontSize}px ${fontFamily}`; // Prefer full font string if available
 	}
 
 	// Create or reuse canvas for better performance
 	if (!cx) {
-			const canvas = measureText.canvas || (measureText.canvas = document.createElement('canvas'));
-			cx = canvas.getContext('2d');
+		const canvas = measureText.canvas || (measureText.canvas = document.createElement('canvas'));
+		cx = canvas.getContext('2d');
 	}
 
 	// Set font style
@@ -314,10 +314,10 @@ function measureText(text, styles = {}, cx = null) {
 	const descent = metrics.actualBoundingBoxDescent || 0;
 
 	return {
-			width: metrics.width,
-			height: ascent + descent,
-			ascent: ascent,
-			descent: descent,
+		width: metrics.width,
+		height: ascent + descent,
+		ascent: ascent,
+		descent: descent,
 	};
 }
 function measureActualTextWidth(text, styles = {}) {
@@ -327,9 +327,9 @@ function measureActualTextWidth(text, styles = {}) {
 
 	// Helper to build font string
 	function getFontString(styles) {
-			const fontSize = styles.fz || 16; // Default to 16px font size
-			const fontFamily = styles.family || 'sans-serif'; // Default font family
-			return styles.font || `${fontSize}px ${fontFamily}`; // Use full font if available
+		const fontSize = styles.fz || 16; // Default to 16px font size
+		const fontFamily = styles.family || 'sans-serif'; // Default font family
+		return styles.font || `${fontSize}px ${fontFamily}`; // Use full font if available
 	}
 
 	// Set font on the canvas context
@@ -355,13 +355,13 @@ function measureActualTextWidth(text, styles = {}) {
 	let startX = canvas.width;
 	let endX = 0;
 	for (let y = 0; y < canvas.height; y++) {
-			for (let x = 0; x < canvas.width; x++) {
-					const alpha = imageData[(y * canvas.width + x) * 4 + 3];
-					if (alpha > 0) {
-							startX = Math.min(startX, x);
-							endX = Math.max(endX, x);
-					}
+		for (let x = 0; x < canvas.width; x++) {
+			const alpha = imageData[(y * canvas.width + x) * 4 + 3];
+			if (alpha > 0) {
+				startX = Math.min(startX, x);
+				endX = Math.max(endX, x);
 			}
+		}
 	}
 
 	// Calculate the actual width
@@ -381,45 +381,45 @@ function mImg(src, d, styles = {}, opts = {}) {
 	let img = mDom(d, styles, opts);
 	return img;
 }
-function mLayout(bg,dParent,rowlist,colt,rowt){
+function mLayout(bg, dParent, rowlist, colt, rowt) {
 	dParent = toElem(dParent);
 	mStyle(dParent, { w: '100%', h: '100%', bg, 'caret-color': '#ffffff00' });
 	let areas = `'${rowlist.join("' '")}'`;
 	if (dParent.id == 'dPage') M.divNames = [];
-	let newNames = mAreas(dParent, areas, colt, rowt); 
+	let newNames = mAreas(dParent, areas, colt, rowt);
 	let names = M.divNames = Array.from(new Set(M.divNames.concat(newNames)));
 	mShade(newNames);
-	return names.map(x=>mBy(x));
+	return names.map(x => mBy(x));
 }
-function mLayoutTLM(bg,dParent,suffix='',wcol=30,hrow=30){
-	let rowlist = [`dTop${suffix} dTop${suffix}`,`dLeft${suffix} dMain${suffix}`];
+function mLayoutTLM(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
+	let rowlist = [`dTop${suffix} dTop${suffix}`, `dLeft${suffix} dMain${suffix}`];
 	let colt = `minmax(${wcol}px, auto) 1fr`;
 	let rowt = `minmax(${hrow}px, auto) 1fr`;
-	return mLayout(bg,dParent,rowlist,colt,rowt);
+	return mLayout(bg, dParent, rowlist, colt, rowt);
 }
-function mLayoutTLMR(bg,dParent,suffix='',wcol=30,hrow=30){
-	let rowlist = [`dTop${suffix} dTop${suffix} dTop${suffix}`,`dLeft${suffix} dMain${suffix} dRight${suffix}`];
+function mLayoutTLMR(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
+	let rowlist = [`dTop${suffix} dTop${suffix} dTop${suffix}`, `dLeft${suffix} dMain${suffix} dRight${suffix}`];
 	let colt = `minmax(${wcol}px, auto) 1fr minmax(${wcol}px, auto)`;
 	let rowt = `minmax(${hrow}px, auto) 1fr`;
-	return mLayout(bg,dParent,rowlist,colt,rowt);
+	return mLayout(bg, dParent, rowlist, colt, rowt);
 }
-function mLayoutTLMRS(bg,dParent,suffix='',wcol=30,hrow=30){
-	let rowlist = [`dTop${suffix} dTop${suffix} dTop${suffix}`,`dLeft${suffix} dMain${suffix} dRight${suffix}`,`dStatus${suffix} dStatus${suffix} dStatus${suffix}`];
+function mLayoutTLMRS(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
+	let rowlist = [`dTop${suffix} dTop${suffix} dTop${suffix}`, `dLeft${suffix} dMain${suffix} dRight${suffix}`, `dStatus${suffix} dStatus${suffix} dStatus${suffix}`];
 	let colt = `minmax(${wcol}px, auto) 1fr minmax(${wcol}px, auto)`;
 	let rowt = `minmax(${hrow}px, auto) 1fr minmax(${hrow}px, auto)`;
-	return mLayout(bg,dParent,rowlist,colt,rowt);
+	return mLayout(bg, dParent, rowlist, colt, rowt);
 }
-function mLayoutTM(bg,dParent,suffix='',hrow=30){
-	let rowlist = [`dTop${suffix}`,`dMain${suffix}`];
+function mLayoutTM(bg, dParent, suffix = '', hrow = 30) {
+	let rowlist = [`dTop${suffix}`, `dMain${suffix}`];
 	let colt = `1fr`;
 	let rowt = `minmax(${hrow}px, auto) 1fr`;
-	return mLayout(bg,dParent,rowlist,colt,rowt);
+	return mLayout(bg, dParent, rowlist, colt, rowt);
 }
-function mLayoutTMS(bg,dParent,suffix='',hrow=30){
-	let rowlist = [`dTop${suffix}`,`dMain${suffix}`,`dStatus${suffix}`];
+function mLayoutTMS(bg, dParent, suffix = '', hrow = 30) {
+	let rowlist = [`dTop${suffix}`, `dMain${suffix}`, `dStatus${suffix}`];
 	let colt = `1fr`;
 	let rowt = `minmax(${hrow}px, auto) 1fr minmax(${hrow}px, auto)`;
-	return mLayout(bg,dParent,rowlist,colt,rowt);
+	return mLayout(bg, dParent, rowlist, colt, rowt);
 }
 function mMenuV(d, text, styles = {}, handler = null, menu = null, kennzahl = null) {
 	if (nundef(kennzahl)) kennzahl = getUID();

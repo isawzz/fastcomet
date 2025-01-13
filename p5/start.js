@@ -1,68 +1,33 @@
 
 onload = start;
 
-async function start() { await test11(); }
+async function start() { await test11_mAlignable(); }
 
+async function test11_mGather(){
+	let d = mDom('dPage', {className:'button'}, { tag:'button', html: 'New' });//return;
+
+}
+async function test11_mAlignable() {
+	let d = mDom('dPage', {}, { html: 'hallo' });//return;
+
+	let [box, inp] = mInputInBox('dPage', { padding: 4, bg: 'silver', rounding: 4 }, { fz: 24 });
+	mAlign(box, d, { align: 'bl', offx: 20 });
+	mOnEnterInput(inp, val => console.log(inp.value,val))
+}
 async function test11() {
-	let d = mDom('dPage', { position: 'absolute', top: 10, left: 200, w: 500, h: 500, bg: 'green' }, {  html: 'hallo' });//return;
-	let x = await mGather({}, { align:'tl',anchor: d }); console.log('gather', x)
+	let d = mDom('dPage', { position: 'absolute', top: 10, left: 200, w: 500, h: 500, bg: 'green' }, { html: 'hallo' });//return;
+	let d1 = mDom('dPage', { display: 'inline-block' });
+	let d2 = mDom(d1, { display: 'flex', gap: 10, padding: 10 });
+	let d3;
+	for (const i of range(3)) { d3 = mDom(d2, { bg: rColor(), w: 50, h: 50 }); }
+	mAlign(d1, d, { align: 'cl', ov: 1 });
+
+	let d4 = mDom('dPage', { display: 'inline-block' });
+	let d5 = mDom(d4, { padding: 4, bg: 'silver' }); //
+	let d6 = mDom(d5, { className: 'button' }, { tag: 'input' }); d6.focus();
+	mAlign(d4, d3, { align: 'bl' })
+	//let x = await mGather({}, { align:'bl',anchor: d }); console.log('gather', x)
 }
-function mAlign(d,da,opts){
-		//mAnchorTo(d,da,'bl');
-		//smart placement: [tcb],[lcr],[0..1] overlap rel to d,offx,offy
-		let rda = getRect(da); //console.log(rda)
-		let rd = getRect(d); //console.log(rda)
-		let align = valf(opts.align,'bl'),ov=valf(opts.ov,0);
-		//priority keep vertical alignment: 
-		if (align == 'tl') {dx=rda.l;dy=rda.t-rd.h*(1-ov);}
-		else if (align == 'bl') {dx=rda.l;dy=rda.b-rd.h*ov;}
-		else if (align == 'cl') {dx=rda.l-rd.w*(1-ov);dy=rda.t+rda.h/2-rd.h/2;}
-		else if (align == 'tr') {dx=rda.l+rda.w-rd.w;dy=rda.t-rd.h*(1-ov);}
-		else if (align == 'br') {dx=rda.l+rda.w-rd.w;dy=rda.t+rda.h-rd.h*ov;}
-		else if (align == 'cr') {dx=rda.l+rda.w-rd.w+rd.w*(1-ov);dy=rda.t+rda.h/2-rd.h/2;}
-		else if (align == 'tc') {dx=rda.l+rda.w/2-rd.w/2;dy=rda.t-rd.h*(1-ov);}
-		else if (align == 'bc') {dx=rda.l+rda.w/2-rd.w/2;dy=rda.t+rda.h-rd.h*ov;}
-		else if (align == 'cc') {dx=rda.l+rda.w/2-rd.w/2;dy=rda.t+rda.h/2-rd.h/2;}
-		dx=clamp(dx,0,window.innerWidth-rd.w);dy=clamp(dy,0,window.innerHeight-rd.h);
-		mPos(d, dx, dy, -3, -3);
-		//mPos(d, rda[align[1]], rda[align[0]], -3, -3);//, 15,5); //mPos(d, 50, 50, '%'
-		//mPlace(d,'cc',rda.l,rda.t); //mPos(d,50,50,'%')
-}
-function mGather(styles = {}, opts = {}) {
-	return new Promise((resolve, _) => {
-
-		let [content, type] = [valf(opts.content, 'name'), valf(opts.type, 'text')]; //defaults
-		let dbody = document.body;
-		// let dDialog = mDom(dbody, { bg: '#00000040', border:'none', box: true, w: '100vw', h: '100vh' }, { tag: 'dialog', id: 'dDialog' });
-		let dDialog = mDom(dbody, { border: 'none', h: '100vh', w: '100vw', bg: 'blue', alpha: .15 }, { tag: 'dialog', id: 'dDialog' });
-		dDialog.showModal();
-
-		let d = mDom(dDialog, { bg: 'blue', display:'flex', gap:10,h: 100 });
-		for (const i of range(3)) { mDom(d, { bg: rColor(), w: 50, h: 50 }); }
-		let da = opts.anchor; //console.log(da)
-		if (isdef(da)) mAlign(d,da,opts);
-
-		// let funcName = `uiGadgetType${capitalize(type)}`; //console.log(funcName)
-		// let uiFunc = window[funcName];
-		// let dx = uiFunc(d, content, x => { dDialog.remove(); resolve(x) }, styles, opts);
-		dDialog.showModal();
-	});
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 async function test10_emo1() {
 	let res = await mPhpPostLine("Type something 😊", 'zdata/test.txt'); return;
 	let elems = mLayoutTM('hotpink', dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);

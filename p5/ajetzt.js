@@ -1,7 +1,7 @@
 
 //#region mGather uiType
 function clamp(x, min, max) { return Math.min(Math.max(x, min), max); }
-function isPointOutsideOf(form, x, y) { const r = form.getBoundingClientRect(); return (x < r.left || x > r.right || y < r.top || y > r.bottom); }
+function isPointOutsideOf(elem, x, y) { const r = elem.getBoundingClientRect(); return (x < r.left || x > r.right || y < r.top || y > r.bottom); }
 function mAnchorTo(elem, dAnchor, align = 'bl') {
   let rect = dAnchor.getBoundingClientRect();
   let drect = elem.getBoundingClientRect();
@@ -14,12 +14,7 @@ function mAnchorTo(elem, dAnchor, align = 'bl') {
   mStyle(elem, posStyles);
 }
 function mDummyFocus() {
-	function addDummy(dParent, place) {
-		let b = mDom(dParent, { opacity: 0, h: 0, w: 0, padding: 0, margin: 0, outline: 'none', border: 'none', bg: 'transparent' });
-		if (isdef(place)) mPlace(b, place);
-		b.id = 'dummy';
-	}
-	if (nundef(mBy('dummy'))) addDummy(document.body, 'cc');
+	if (nundef(mBy('dummy'))) mDom(document.body,{opacity: 0, h: 0, w: 0, padding: 0, margin: 0, outline: 'none', border: 'none', bg: 'transparent'},{tag:'button',id:'dummy',html:'dummy'}); //addDummy(document.body); //, 'cc');
 	mBy('dummy').focus();
 }
 function mGather(dAnchor, styles = {}, opts = {}) {
