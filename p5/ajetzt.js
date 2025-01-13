@@ -33,22 +33,6 @@ function mCreateFrom(htmlString) {
 	div.innerHTML = htmlString.trim();
 	return div.firstChild;
 }
-function mInput(dParent, styles = {}, opts = {}) {
-	addKeys({ id: getUID(), placeholder: '', classtr: 'input', value: '', selectOnClick: true, type: "text" }, opts);
-	let html = `<input type="${opts.type}" autocomplete="off" id=${opts.id} placeholder="${valf(opts.placeholder, '')}" tabindex="${opts.tabindex}" value="${opts.value}">`;
-	let d = mAppend(dParent, mCreateFrom(html));
-	d.onclick = opts.selectOnClick ?
-		ev => { evNoBubble(ev); d.select(); } :
-		ev => { evNoBubble(ev); };
-	if (isdef(styles)) mStyle(d, styles); //console.log(d)
-	return d;
-}
-function mInputInBox(dParent, boxStyles = {}, inpStyles = {}, opts = {}) {
-	let d5 = mDom(dParent, boxStyles);
-	let d6 = mInput(d5, inpStyles, opts);
-	if (isdef(opts.handler)) mOnEnterInput(d6, opts.handler);
-	return [d5, d6];
-}
 
 
 //#region mGather uiType

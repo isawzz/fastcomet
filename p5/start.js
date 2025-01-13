@@ -1,30 +1,27 @@
 
 onload = start;
 
-async function start() { await test12_mGather(); }
+async function start() { await test13_mGather(); }
 
-async function test12_mGather(){
-	//mStyle('dPage', { w: '100%', h: '100%', bg, 'caret-color': '#ffffff00' });
+async function test13_mGather() {
 	let elems = mLayoutTM(rColor(), 'dPage');
-	let d = mDom(elems[1], {className:'button'}, { tag:'button', html: 'New' });//return;
-	//mStyle(d,{w:100,h:30});
-	//return;
-	// mStyle('dPage',{w:'100%',h:'100%',bg:'green'});
-	d.onclick=async()=>{
-		//let sh = mShield('dPage'); 
-		let x = await mGather(d); console.log('you entered',x);
-	
-	}
+	let d = mDom(elems[1], {  }, { tag: 'button', html: 'New' });//return;
+	d.onclick = async () => { let x = await mGather(d); console.log('you entered', x); }
 }
-async function test11_mGather(){
+async function test12_mGather() {
+	let elems = mLayoutTM(rColor(), 'dPage');
+	let d = mDom(elems[1], { className: 'button' }, { tag: 'button', html: 'New' });//return;
+	d.onclick = async () => { let x = await mGather(d); console.log('you entered', x); }
+}
+async function test11_mGather() {
 	//mStyle('dPage', { w: '100%', h: '100%', bg, 'caret-color': '#ffffff00' });
 	let elems = mLayoutTM(rColor(), 'dPage');
-	let d = mDom(elems[1], {className:'button'}, { tag:'button', html: 'New' });//return;
+	let d = mDom(elems[1], { className: 'button' }, { tag: 'button', html: 'New' });//return;
 	// mStyle('dPage',{w:'100%',h:'100%',bg:'green'});
-	d.onclick=async()=>{
-		let sh = mShield('dPage'); 
-		let x = await mGather(sh,d); console.log('you entered',x);
-	
+	d.onclick = async () => {
+		let sh = mShield('dPage');
+		let x = await mGather(sh, d); console.log('you entered', x);
+
 	}
 }
 async function test11_mAlignable() {
@@ -32,7 +29,7 @@ async function test11_mAlignable() {
 
 	let [box, inp] = mInputInBox('dPage', { padding: 4, bg: 'silver', rounding: 4 }, { fz: 24 });
 	mAlign(box, d, { align: 'bl', offx: 20 });
-	mOnEnterInput(inp, val => console.log(inp.value,val))
+	mOnEnterInput(inp, val => console.log(inp.value, val))
 }
 async function test11() {
 	let d = mDom('dPage', { position: 'absolute', top: 10, left: 200, w: 500, h: 500, bg: 'green' }, { html: 'hallo' });//return;
