@@ -5,13 +5,13 @@ function mGather(d, styles = {}, opts = {}) {
 		let onEscape = _ => { dParent.remove(); resolve(null) };
 		let onEnter = val => { dParent.remove(); resolve(val) };
 		dParent.onclick = onEscape;
-		let [box, inp] = mInputInBox(dParent, { bg:'red' }, { fz: 20, className:'no_outline' }, { onEnter, onEscape });
+		let [box, inp] = mInputInBox(dParent, {  }, {  }, { onEnter, onEscape });
 		mAlign(box, d, { align: 'bl', offx: 20 });
 		inp.focus();
 	});
 }
 function mInput(dParent, styles = {}, opts = {}) {
-	addKeys({ id: getUID(), placeholder: '', className: 'no_outline', value: '', selectOnClick: true, type: "text" }, opts);
+	addKeys({ id: getUID(), placeholder: '', value: '', selectOnClick: true, type: "text" }, opts);
 	let html = `<input type="${opts.type}" autocomplete="off" id=${opts.id} placeholder="${valf(opts.placeholder, '')}" tabindex="${opts.tabindex}" value="${opts.value}">`;
 	let d = mAppend(dParent, mCreateFrom(html));
 	d.onclick = opts.selectOnClick ? ev => { evNoBubble(ev); d.select(); } : ev => { evNoBubble(ev); };

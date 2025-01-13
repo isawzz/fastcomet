@@ -4,9 +4,19 @@ onload = start;
 async function start() { await test13_mGather(); }
 
 async function test13_mGather() {
+
+	// mStyle('dPage',{bg:'darkgreen'})
+	await loadAssetsStatic();
 	let elems = mLayoutTM(rColor(), 'dPage');
-	let d = mDom(elems[1], {  }, { tag: 'button', html: 'New' });//return;
-	d.onclick = async () => { let x = await mGather(d); console.log('you entered', x); }
+	mStyle(dTop,{display:'flex',aitems:'center',wbox:true,gap:4,padding:4});
+	let d1 = mKey('watch', dTop, {}, { tag:'button',onclick: onclickStopwatch, menu: 'top' });
+	let d2 = mKey('game', dTop, {}, { tag:'a',onclick: onclickResetActions, menu: 'top' });
+	let d3 = mKey('crow', dTop, {}, { tag:'a',onclick: onclickResetActions, menu: 'top' });
+	// mKey('crow', elems[1], {}, { }); //onclick: async (ev) => { let x = await mGather(ev.target); console.log('you entered', x); } }); 
+	// //mDom(elems[0], {  }, { tag: 'button', html: 'New' });
+	// let d = mDom(elems[1], {  }, { tag: 'button', html: 'New' });
+	d1.onclick = async () => { let x = await mGather(d1); console.log('you entered', x); }
+	d2.onclick = async () => { let x = await mGather(d2); console.log('you entered', x); }
 }
 async function test12_mGather() {
 	let elems = mLayoutTM(rColor(), 'dPage');
