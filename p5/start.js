@@ -1,11 +1,11 @@
 
 onload = start;
 
-async function start() { await test11_mAlignable(); }
+async function start() { await test11_mGather(); }
 
 async function test11_mGather(){
 	let d = mDom('dPage', {className:'button'}, { tag:'button', html: 'New' });//return;
-
+	let x = await mGather(d); console.log('you entered',x);
 }
 async function test11_mAlignable() {
 	let d = mDom('dPage', {}, { html: 'hallo' });//return;

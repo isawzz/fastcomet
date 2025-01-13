@@ -2,6 +2,16 @@
 do 16.1. 9h30 tage F
 
 _______ 7:39 AM 1/13/2025 airport 16000
+1ak:10:28 AM 1/13/2025-
+10:44 AM 1/13/2025 *M
+soll ich trotzdem noch mathe machen? ja
+10:43 AM 1/13/2025:mir ist schlecht
+P=> ok ich brauch ein shield popup: search mShield
+ok - open original mGather
+ok - kann ich es ohne dialog machen?vielleicht aber der dialog handled das modal zeug sehr gut und also keep it
+ok - doch nicht: ich mach ja das mouse und esc haendisch!
+ok - open irgendein uiGadgetType
+10:28 AM 1/13/2025 *P
 mAlign neue art von placement!
 mInputInBox
 the only thing I want is unlimited unbounded eternal peace and quiet
