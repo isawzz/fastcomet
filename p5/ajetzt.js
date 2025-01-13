@@ -34,16 +34,18 @@ function mCreateFrom(htmlString) {
 	return div.firstChild;
 }
 function mInput(dParent, styles = {}, opts = {}) {
-	addKeys({ id: getUID(), placeholder: '', classtr: 'input', tabindex: null, value: '', selectOnClick: true, type: "text" }, opts);
-	let html = `<input type="${opts.type}" autocomplete="off" ${opts.selectOnClick ? 'onclick="this.select();"' : ''} id=${opts.id} class="${opts.classtr}" placeholder="${valf(opts.placeholder, '')}" tabindex="${opts.tabindex}" value="${opts.value}">`;
+	addKeys({ id: getUID(), placeholder: '', classtr: 'input', value: '', selectOnClick: true, type: "text" }, opts);
+	let html = `<input type="${opts.type}" autocomplete="off" id=${opts.id} placeholder="${valf(opts.placeholder, '')}" tabindex="${opts.tabindex}" value="${opts.value}">`;
 	let d = mAppend(dParent, mCreateFrom(html));
-	if (isdef(styles)) mStyle(d, styles);console.log(d)
+	d.onclick = opts.selectOnClick ?
+		ev => { evNoBubble(ev); d.select(); } :
+		ev => { evNoBubble(ev); };
+	if (isdef(styles)) mStyle(d, styles); //console.log(d)
 	return d;
 }
 function mInputInBox(dParent, boxStyles = {}, inpStyles = {}, opts = {}) {
 	let d5 = mDom(dParent, boxStyles);
-	let d6 = mInput(d5, inpStyles, opts); //mDom(d5, inpStyles, { tag: 'input' });
-	//d6.focus();
+	let d6 = mInput(d5, inpStyles, opts);
 	if (isdef(opts.handler)) mOnEnterInput(d6, opts.handler);
 	return [d5, d6];
 }
@@ -53,25 +55,25 @@ function mInputInBox(dParent, boxStyles = {}, inpStyles = {}, opts = {}) {
 function clamp(x, min, max) { return Math.min(Math.max(x, min), max); }
 function isPointOutsideOf(elem, x, y) { const r = elem.getBoundingClientRect(); return (x < r.left || x > r.right || y < r.top || y > r.bottom); }
 function mAnchorTo(elem, dAnchor, align = 'bl') {
-  let rect = dAnchor.getBoundingClientRect();
-  let drect = elem.getBoundingClientRect();
-  let [v, h] = [align[0], align[1]];
-  let vPos = v == 'b' ? { top: rect.bottom } : v == 'c' ? { top: rect.top } : { top: rect.top - drect.height };
-  let hPos = h == 'l' ? { left: rect.left } : h == 'c' ? { left: rect.left } : { right: window.innerWidth - rect.right };
-  let posStyles = { position: 'absolute' };
-  addKeys(vPos, posStyles);
-  addKeys(hPos, posStyles);
-  mStyle(elem, posStyles);
+	let rect = dAnchor.getBoundingClientRect();
+	let drect = elem.getBoundingClientRect();
+	let [v, h] = [align[0], align[1]];
+	let vPos = v == 'b' ? { top: rect.bottom } : v == 'c' ? { top: rect.top } : { top: rect.top - drect.height };
+	let hPos = h == 'l' ? { left: rect.left } : h == 'c' ? { left: rect.left } : { right: window.innerWidth - rect.right };
+	let posStyles = { position: 'absolute' };
+	addKeys(vPos, posStyles);
+	addKeys(hPos, posStyles);
+	mStyle(elem, posStyles);
 }
 function mDummyFocus() {
-	if (nundef(mBy('dummy'))) mDom(document.body,{opacity: 0, h: 0, w: 0, padding: 0, margin: 0, outline: 'none', border: 'none', bg: 'transparent'},{tag:'button',id:'dummy',html:'dummy'}); //addDummy(document.body); //, 'cc');
+	if (nundef(mBy('dummy'))) mDom(document.body, { position: 'absolute', top: 0, left: 0, opacity: 0, h: 0, w: 0, padding: 0, margin: 0, outline: 'none', border: 'none', bg: 'transparent' }, { tag: 'button', id: 'dummy', html: 'dummy' }); //addDummy(document.body); //, 'cc');
 	mBy('dummy').focus();
 }
 function mGather(dAnchor, styles = {}, opts = {}) {
 	return new Promise((resolve, _) => {
 		let [content, type] = [valf(opts.content, 'name'), valf(opts.type, 'text')]; //defaults
 		let dbody = document.body;
-		let dDialog = mDom(dbody, { bg: '#00000040', border:'none', box: true, w: '100vw', h: '100vh' }, { tag: 'dialog', id: 'dDialog' });
+		let dDialog = mDom(dbody, { bg: '#00000040', border: 'none', box: true, w: '100vw', h: '100vh' }, { tag: 'dialog', id: 'dDialog' });
 		let d = mDom(dDialog);
 		let funcName = `uiGadgetType${capitalize(type)}`; //console.log(funcName)
 		let uiFunc = window[funcName];
@@ -95,9 +97,9 @@ function mGather(dAnchor, styles = {}, opts = {}) {
 		else { mStyle(d, { h: '100vh' }); mCenterCenterFlex(d); }
 	});
 }
-function mPos(d, x, y, offx=0, offy=0, unit = 'px') { 
-  let dParent = d.parentNode; mIfNotRelative(dParent);
-  mStyle(d, { left: `${x+offx}${unit}`, top: `${y+offy}${unit}`, position: 'absolute' }); 
+function mPos(d, x, y, offx = 0, offy = 0, unit = 'px') {
+	let dParent = d.parentNode; mIfNotRelative(dParent);
+	mStyle(d, { left: `${x + offx}${unit}`, top: `${y + offy}${unit}`, position: 'absolute' });
 }
 function mOnEnter(elem, handler) {
 	elem.addEventListener('keydown', ev => {
@@ -119,33 +121,33 @@ function mOnEnterInput(elem, handler) {
 }
 function mIfNotRelative(d) { d = toElem(d); if (isEmpty(d.style.position)) d.style.position = 'relative'; }
 function mPlace(elem, pos, offx, offy) {
-  elem = toElem(elem);
-  pos = pos.toLowerCase();
-  let dParent = elem.parentNode; mIfNotRelative(dParent);
-  let hor = valf(offx, 0);
-  let vert = isdef(offy) ? offy : hor;
-  if (pos[0] == 'c' || pos[1] == 'c') {
-    let dpp = dParent.parentNode;
-    let opac = mGetStyle(dParent, 'opacity'); //console.log('opac', opac);
-    if (nundef(dpp)) { mAppend(document.body, dParent); mStyle(dParent, { opacity: 0 }) }
-    let rParent = getRect(dParent);
-    let [wParent, hParent] = [rParent.w, rParent.h];
-    let rElem = getRect(elem);
-    let [wElem, hElem] = [rElem.w, rElem.h];
-    if (nundef(dpp)) { dParent.remove(); mStyle(dParent, { opacity: valf(opac, 1) }) }
-    switch (pos) {
-      case 'cc': mStyle(elem, { position: 'absolute', left: hor + (wParent - wElem) / 2, top: vert + (hParent - hElem) / 2 }); break;
-      case 'tc': mStyle(elem, { position: 'absolute', left: hor + (wParent - wElem) / 2, top: vert }); break;
-      case 'bc': mStyle(elem, { position: 'absolute', left: hor + (wParent - wElem) / 2, bottom: vert }); break;
-      case 'cl': mStyle(elem, { position: 'absolute', left: hor, top: vert + (hParent - hElem) / 2 }); break;
-      case 'cr': mStyle(elem, { position: 'absolute', right: hor, top: vert + (hParent - hElem) / 2 }); break;
-    }
-    return;
-  }
-  let di = { t: 'top', b: 'bottom', r: 'right', l: 'left' };
-  elem.style.position = 'absolute';
-  let kvert = di[pos[0]], khor = di[pos[1]];
-  elem.style[kvert] = vert + 'px'; elem.style[khor] = hor + 'px';
+	elem = toElem(elem);
+	pos = pos.toLowerCase();
+	let dParent = elem.parentNode; mIfNotRelative(dParent);
+	let hor = valf(offx, 0);
+	let vert = isdef(offy) ? offy : hor;
+	if (pos[0] == 'c' || pos[1] == 'c') {
+		let dpp = dParent.parentNode;
+		let opac = mGetStyle(dParent, 'opacity'); //console.log('opac', opac);
+		if (nundef(dpp)) { mAppend(document.body, dParent); mStyle(dParent, { opacity: 0 }) }
+		let rParent = getRect(dParent);
+		let [wParent, hParent] = [rParent.w, rParent.h];
+		let rElem = getRect(elem);
+		let [wElem, hElem] = [rElem.w, rElem.h];
+		if (nundef(dpp)) { dParent.remove(); mStyle(dParent, { opacity: valf(opac, 1) }) }
+		switch (pos) {
+			case 'cc': mStyle(elem, { position: 'absolute', left: hor + (wParent - wElem) / 2, top: vert + (hParent - hElem) / 2 }); break;
+			case 'tc': mStyle(elem, { position: 'absolute', left: hor + (wParent - wElem) / 2, top: vert }); break;
+			case 'bc': mStyle(elem, { position: 'absolute', left: hor + (wParent - wElem) / 2, bottom: vert }); break;
+			case 'cl': mStyle(elem, { position: 'absolute', left: hor, top: vert + (hParent - hElem) / 2 }); break;
+			case 'cr': mStyle(elem, { position: 'absolute', right: hor, top: vert + (hParent - hElem) / 2 }); break;
+		}
+		return;
+	}
+	let di = { t: 'top', b: 'bottom', r: 'right', l: 'left' };
+	elem.style.position = 'absolute';
+	let kvert = di[pos[0]], khor = di[pos[1]];
+	elem.style[kvert] = vert + 'px'; elem.style[khor] = hor + 'px';
 }
 function uiGadgetTypeCheckList(dParent, content, resolve, styles = {}, opts = {}) {
 	addKeys({ hmax: 500, wmax: 200, bg: 'white', fg: 'black', padding: 10, rounding: 10, box: true }, styles)

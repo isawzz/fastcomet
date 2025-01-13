@@ -383,7 +383,7 @@ function mImg(src, d, styles = {}, opts = {}) {
 }
 function mLayout(bg, dParent, rowlist, colt, rowt) {
 	dParent = toElem(dParent);
-	mStyle(dParent, { w: '100%', h: '100%', bg, 'caret-color': '#ffffff00' });
+	mStyle(dParent,{bg});
 	let areas = `'${rowlist.join("' '")}'`;
 	if (dParent.id == 'dPage') M.divNames = [];
 	let newNames = mAreas(dParent, areas, colt, rowt);

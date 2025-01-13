@@ -1,11 +1,31 @@
 
 onload = start;
 
-async function start() { await test11_mGather(); }
+async function start() { await test12_mGather(); }
 
+async function test12_mGather(){
+	//mStyle('dPage', { w: '100%', h: '100%', bg, 'caret-color': '#ffffff00' });
+	let elems = mLayoutTM(rColor(), 'dPage');
+	let d = mDom(elems[1], {className:'button'}, { tag:'button', html: 'New' });//return;
+	//mStyle(d,{w:100,h:30});
+	//return;
+	// mStyle('dPage',{w:'100%',h:'100%',bg:'green'});
+	d.onclick=async()=>{
+		//let sh = mShield('dPage'); 
+		let x = await mGather(d); console.log('you entered',x);
+	
+	}
+}
 async function test11_mGather(){
-	let d = mDom('dPage', {className:'button'}, { tag:'button', html: 'New' });//return;
-	let x = await mGather(d); console.log('you entered',x);
+	//mStyle('dPage', { w: '100%', h: '100%', bg, 'caret-color': '#ffffff00' });
+	let elems = mLayoutTM(rColor(), 'dPage');
+	let d = mDom(elems[1], {className:'button'}, { tag:'button', html: 'New' });//return;
+	// mStyle('dPage',{w:'100%',h:'100%',bg:'green'});
+	d.onclick=async()=>{
+		let sh = mShield('dPage'); 
+		let x = await mGather(sh,d); console.log('you entered',x);
+	
+	}
 }
 async function test11_mAlignable() {
 	let d = mDom('dPage', {}, { html: 'hallo' });//return;
