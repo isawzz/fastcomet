@@ -5,11 +5,6 @@ _______ 6:53 AM 1/12/2025 airport 15000
 neue art von placement!
 smart placement: [tcb],[lcr],[0..1] overlap
 
-plan ohne gewaehr
-wenn flug buchen angesagt ist:
-1. zeug zum maedi bringen
-2. Nil LG violin?
-min: nur LG?
 
 
 
