@@ -2,7 +2,12 @@
 do 16.1. 9h30 tage F
 ho:tee+scho
 
-_______ 7:39 AM 1/13/2025 airport 16000
+_______ 7:22 AM 1/14/2025 airport 17000
+=>how to handle screen size!!! mit der stopwatch. dTop must be at least as height as buttons!!!! button list auf dMain must be flexWrap!!!
+ok ich muss jetzt eincallback ins loadImageAsync reintun
+ok =>mach ein besseren tag button bei mKey! use tag!!!
+ok - check ob es ein round:true gibt!
+_______ 7:39 AM 1/13/2025 airport 16000 +
 4ak: 4:51 PM 1/13/2025-5:57 PM 1/13/2025
 5:35 PM 1/13/2025 M*
 obsthaendler c 
@@ -15,7 +20,6 @@ z=-.84=14-16 / std
 std=-2/-.84=2.38
 std
 =>
-=>mach ein besseren tag button bei mKey! use tag!!!
 ok =>input button styling ueberlegen! dann coordinieren ohne class
 nap:3:07 PM 1/13/2025-4:00 PM 1/13/2025
 3ho: 2:21 PM 1/13/2025-3:07 PM 1/13/2025

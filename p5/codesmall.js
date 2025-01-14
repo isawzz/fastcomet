@@ -944,36 +944,6 @@ function mImg(src, d, styles = {}, opts = {}) {
 	let img = mDom(d, styles, opts);
 	return img;
 }
-function mKey(key, dParent, styles = {}, opts = {}) {
-  let type = valf(opts.prefer, 'img');
-  let o = M.superdi[key];
-  if (nundef(o)) type = 'plain'; else if (type != 'plain' && nundef(o[type])) type = isdef(o.img) ? 'img' : isdef(o.photo) ? 'photo' : isdef(o.text) ? 'text' : isdef(o.fa6) ? 'fa6' : isdef(o.fa) ? 'fa' : isdef(o.ga) ? 'ga' : 'plain';
-  let d1, sz = valf(styles.sz, 40);
-  if (opts.onclick) addKeys({ className: [opts.buttonType ?? 'a'], cursor: 'pointer', rounding: 4, wmin: sz, hmin: sz, w: sz, h: sz, wbox: true, display: 'flex', aitems: 'center', justify: 'center' }, styles);
-  else addKeys({ wbox: true, display: 'flex', aitems: 'center', justify: 'center', cursor: 'default' }, styles);
-  let d = mDom(dParent, styles, { key });
-  if (opts.menu) d.setAttribute('menu', opts.menu);
-  if (typeof opts.onclick == 'function') d.onclick = opts.onclick;
-  //console.log(`${key}: ${type}`);
-  if (type == 'img') { d1 = mImg(o[type], d, { sz }); }
-  else if (type == 'photo') { d1 = mImg(o[type], d, { rounding: 4, sz: sz - 8 }); }
-  else if (type == 'plain') {
-    mStyle(d, { w: 'auto', hpadding: 10 })
-    d1 = mDom(d, { 'user-select': 'none' }, { html: key });
-  } else {
-    let family = type == 'text' ? 'emoNoto' : type == 'fa6' ? 'fa6' : type == 'fa' ? 'pictoFa' : 'pictoGame';
-    let html = type == 'text' ? o.text : String.fromCharCode('0x' + o[type]);
-    sz -= 4;
-    d1 = mDom(d, { family, fz: sz, hline: sz }, { html });
-    let r = getRect(d1);
-    let [w, h] = [r.w, r.h];
-    let scale = Math.min(sz / w, sz / h);
-    d1.style.transformOrigin = 'center center';
-    d1.style.transform = `scale(${scale})`;
-    d1.style.transform = `scale(${scale})`;
-  }
-  return d;
-}
 function mLayout(bg, dParent, rowlist, colt, rowt) {
 	dParent = toElem(dParent);
 	mStyle(dParent, { w: '100%', h: '100%', bg, 'caret-color': '#ffffff00' });
@@ -1075,6 +1045,7 @@ function mStyle(elem, styles = {}, opts = {}) {
 		vpadding: (elem, v) => elem.style.padding = `${v}px ${valf(styles.hpadding, 0)}px`,
 		hmargin: (elem, v) => elem.style.margin = `0 ${v}px`,
 		vmargin: (elem, v) => elem.style.margin = `${v}px ${valf(styles.hmargin, 0)}px`,
+		round: elem => elem.style.borderRadius = '50%',
 		wbox: (elem, v) => elem.style.boxSizing = v ? 'border-box' : 'content-box',
 		wrap: (elem, v) => { if (v == 'hard') elem.setAttribute('wrap', 'hard'); else elem.style.flexWrap = 'wrap'; }
 	};

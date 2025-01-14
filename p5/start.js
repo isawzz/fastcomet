@@ -6,7 +6,7 @@ async function start() { await test13_mGather(); }
 async function test13_mGather() {
 
 	// mStyle('dPage',{bg:'darkgreen'})
-	await loadAssetsStatic();
+	await loadAssetsStatic();await actionLoadAll();
 	let elems = mLayoutTM(rColor(), 'dPage');
 	mStyle(dTop,{display:'flex',aitems:'center',wbox:true,gap:4,padding:4});
 	let d1 = mKey('watch', dTop, {}, { tag:'button',onclick: onclickStopwatch, menu: 'top' });

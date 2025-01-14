@@ -11,9 +11,9 @@ input {
   caret-color: black;
 }
 
-button, input {
-  padding: 5px 10px;
-  margin: 5px 10px;
+a, button, input {
+  /* padding: 5px 10px; */
+  /* margin: 5px 10px; */
   font-size: 18px;
   /* border: 1px solid #ccc; */
   border-radius: 5px;
@@ -24,11 +24,15 @@ button, input {
   cursor: pointer;
 }
 
-button:hover {
+a:hover, button:hover {
   background: #ffffff80 !important;
 }
+a:active, button:active {
+  background: white !important;
+  color:black !important;
+}
 
-.a {
+/* .a {
   background: #ffffff80;
   caret-color: #ffffff00;
 }
@@ -41,7 +45,7 @@ button:hover {
 .a.active {
   background: #00000070;
   color: white;
-}
+} */
 
 .blink_green {
   background: lime;
@@ -69,6 +73,7 @@ button:hover {
 
 .hop1:hover {
   color: 'red';
+  background:'white';
 }
 
 /* .input {

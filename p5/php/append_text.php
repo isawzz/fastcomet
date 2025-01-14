@@ -1,5 +1,8 @@
 <?php
 header('Content-Type: text/plain'); // Set response type to plain text
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Headers: Content-Type");
 
 // Define the path to append data
 // $path = 'action.txt';
