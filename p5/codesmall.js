@@ -277,7 +277,7 @@ function ensureColorDict() {
 		ColorDi[k] = cnew;
 	}
 }
-function evNoBubble(ev) { ev.preventDefault(); ev.cancelBubble = true; }
+function evNoBubble(ev) { ev.preventDefault(); ev.stopPropagation(); }
 function evToAttr(ev, attr) {
 	let elem = ev.target;
 	let val = null;

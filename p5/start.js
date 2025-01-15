@@ -5,11 +5,12 @@ async function start() { await test13_mGather(); }
 
 async function test13_mGather() {
 	await loadAssetsStatic();
-	let elems = mLayoutTM('limegreen', 'dPage');
+	let elems = mLayoutTM('pink', 'dPage');
 	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
 	let styles = { h: 30 };
 	let d = mDom(elems[1], dictMerge({margin:10},styles), { tag: 'button', html: 'New' });//return;
 	d.onclick = async () => { let x = await mGather(d); console.log('you entered', x); }
+	let d1 = mKey('watch', dTop, {}, { tag: 'button', onclick: onclickStopwatch, menu: 'top' });
 	let d2 = mDom(dTop, styles, { tag: 'button', menu: 'top', html: 'game' });
 	d2.onclick = async () => { let x = await mGather(d2); console.log('you entered', x); }
 	let d3 = await mKey('table', dTop, styles, { tag: 'button', menu: 'top' });
@@ -17,7 +18,7 @@ async function test13_mGather() {
 	let d4 = await mKey('bee', dTop, styles, { tag: 'button', menu: 'top' });
 	d4.onclick = async () => { let x = await mGather(d4); console.log('you entered', x); }
 	let d5 = await mKey('crow', dTop, styles, { tag: 'button', menu: 'top' });
-	d5.onclick = async () => { let x = await mGatherDropDown(d5,{},{list:['violin','piano','prog','math','walk']}); console.log('you entered', x); }
+	d5.onclick = async () => { let x = await mGatherDropdown(d5,{bg:'pink',padding:12},{list:['violin','piano','prog','math','walk']}); console.log('you entered', x); }
 }
 async function test12_mGather() {
 

@@ -13,23 +13,6 @@ function mGather(d, styles = {}, opts = {}) {
 		inp.focus();
 	});
 }
-function mInput(dParent, styles = {}, opts = {}) {
-	addKeys({ id: getUID(), placeholder: '', value: '', selectOnClick: true, type: "text" }, opts);
-	let html = `<input type="${opts.type}" autocomplete="off" id=${opts.id} placeholder="${valf(opts.placeholder, '')}" tabindex="${opts.tabindex}" value="${opts.value}">`;
-	let d = mAppend(dParent, mCreateFrom(html));
-	d.onclick = opts.selectOnClick ? ev => { evNoBubble(ev); d.select(); } : ev => { evNoBubble(ev); };
-	d.onkeydown = ev => {
-		if (ev.key == 'Enter' && isdef(opts.onEnter)) { evNoBubble(ev); opts.onEnter(d.value); }
-		else if (ev.key == 'Escape' && isdef(opts.onEscape)) { evNoBubble(ev); opts.onEscape(); }
-	}
-	if (isdef(styles)) mStyle(d, styles);
-	return d;
-}
-function mInputInBox(dParent, boxStyles = {}, inpStyles = {}, opts = {}) {
-	let d5 = mDom(dParent, boxStyles);
-	let d6 = mInput(d5, inpStyles, opts);
-	return [d5, d6];
-}
 function mShield(dParent, styles = {}, opts = {}) {
 	addKeys({ bg: '#00000080' }, styles);
 	addKeys({ hideonclick: true }, opts);

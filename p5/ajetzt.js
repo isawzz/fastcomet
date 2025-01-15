@@ -498,10 +498,11 @@ function uiTypeRadios(lst, d, styles = {}, opts = {}) {
 function uiTypeSelect(any, dParent, styles = {}, opts = {}) {
 	let list = toNameValueList(any);
 	addKeys({ tag: 'select' }, opts);
-	let dselect = mDom(dParent, styles, opts);
+	let d0=mDom(dParent,styles,opts);
+	let dselect = mDom(d0, {}, { tag: 'select' });
 	for (const el of list) { mDom(dselect, {}, { tag: 'option', html: el.name, value: el.value }); }
 	dselect.value = '';
-	return dselect;
+	return [d0,dselect];
 }
 
 

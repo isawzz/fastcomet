@@ -469,9 +469,9 @@ function mImgAsync(d, styles = {}, opts = {}, callback = null) {
 	});
 }
 async function mKey(imgKey, d, styles = {}, opts = {}) {
-	let o = lookup(M.superdi, [imgKey]);
 	styles = jsCopy(styles);
 	let type = opts.prefer;
+	let o = type != 'plain'?lookup(M.superdi, [imgKey]):null;
 	let src;
 	if (nundef(o) && imgKey.includes('.')) src = imgKey;
 	else if (isdef(o) && (type == 'img' || type == 'photo') && isdef(o[type])) src = o[type];

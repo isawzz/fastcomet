@@ -11,7 +11,7 @@ input {
   caret-color: black;
 }
 
-a, button, input {
+a, button, input, select {
   padding: 5px 10px;
   /* margin: 5px 10px; */
   font-size: 18px;
