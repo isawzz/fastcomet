@@ -4,7 +4,7 @@ function createEmojiInput(dParent) {
 
 	// Create the input element
 	dParent = toElem(dParent);
-	const input = mDom(dParent,{},{tag:'input'});
+	const input = mDom(dParent, {}, { tag: 'input' });
 
 	// Set attributes to ensure emoji support
 	input.type = "text"; // Default text input supports emoji
@@ -41,6 +41,42 @@ function findUniqueSuperdiKey(friendly) {
 		else { imgname = 'img'; break; }
 	}
 	return [name, imgname];
+}
+function getTopLeftPixelColor(imageSrc, callback) {
+	const img = new Image();
+	img.crossOrigin = "Anonymous"; // Avoid CORS issues
+	img.src = imageSrc;
+
+	img.onload = function () {
+		// Create a canvas and get its context
+		const canvas = document.createElement('canvas');
+		const ctx = canvas.getContext('2d');
+
+		// Set canvas dimensions to match the image
+		canvas.width = img.width;
+		canvas.height = img.height;
+
+		// Draw the image onto the canvas
+		ctx.drawImage(img, 0, 0);
+
+		// Get pixel data from the top-left corner
+		const imageData = ctx.getImageData(0, 0, 1, 1).data;
+
+		// Extract RGBA values
+		const r = imageData[0];
+		const g = imageData[1];
+		const b = imageData[2];
+		const a = imageData[3] / 255; // Convert alpha to a range of 0-1
+
+		// Return the color as an object or in a format you prefer
+		const color = { r, g, b, a };
+		callback(img, color);
+	};
+
+	img.onerror = function () {
+		console.error('Failed to load image.');
+		callback(null);
+	};
 }
 function isKeyPressedDown(controlKey) {
 	let isPressed = false;
@@ -91,6 +127,89 @@ function measureEmojiWidth(text, fontSize = 16) {
 	document.body.removeChild(container);
 
 	return width;
+}
+function mImgAsync(src, d, styles = {}, opts = {}, callback = null) {
+	return new Promise((resolve, reject) => {
+		let img = document.createElement('img');
+		mAppend(d, img);
+		let [w, h] = mSizeSuccession(styles, 40);
+		addKeys({ w, h, 'object-fit': 'cover', 'object-position': 'center center' }, styles);
+		addKeys({ tag: 'img', src }, opts);
+		mStyle(img, styles, opts);
+		img.onload = async () => {
+			if (callback) callback(img);
+			resolve(img);
+		};
+		img.onerror = (error) => {
+			reject(error);
+		};
+		img.src = src;
+	});
+}
+async function _mKey(key, dParent, styles = {}, opts = {}) {
+	let type = valf(opts.prefer, 'img');
+	let o = M.superdi[key];
+	if (nundef(o)) type = 'plain'; else if (type != 'plain' && nundef(o[type])) type = isdef(o.img) ? 'img' : isdef(o.photo) ? 'photo' : isdef(o.text) ? 'text' : isdef(o.fa6) ? 'fa6' : isdef(o.fa) ? 'fa' : isdef(o.ga) ? 'ga' : 'plain';
+	let d1, sz = valf(styles.sz, 40);
+	if (opts.onclick) addKeys({ bg: '#00000080', rounding: 4, w: sz, h: sz, wbox: true, display: 'flex', aitems: 'center', justify: 'center' }, styles);
+	else addKeys({ wbox: true, display: 'flex', aitems: 'center', justify: 'center', cursor: 'default' }, styles);
+	addKeys({ key }, opts)
+	let d = mDom(dParent, styles, opts);//mStyle(d,{bg:'red'})
+	//console.log(`${key}: ${type}`);
+
+	if (type == 'img') { d1 = await mImgAsync(o[type], d, { sz }, {}, roundIfTransparentCorner); }
+	else if (type == 'photo') { d1 = await mImgAsync(o[type], d, { margin: 3, rounding: 4, sz }, {}, roundIfTransparentCorner); }
+	else if (type == 'plain') {
+		mStyle(d, { w: 'auto', hpadding: 10 })
+		d1 = mDom(d, { 'user-select': 'none' }, { html: key });
+	} else {
+		let family = type == 'text' ? 'emoNoto' : type == 'fa6' ? 'fa6' : type == 'fa' ? 'pictoFa' : 'pictoGame';
+		let html = type == 'text' ? o.text : String.fromCharCode('0x' + o[type]);
+		sz -= 4;
+		d1 = mDom(d, { family, fz: sz, hline: sz }, { html });
+		let r = getRect(d1);
+		let [w, h] = [r.w, r.h];
+		let scale = Math.min(sz / w, sz / h);
+		d1.style.transformOrigin = 'center center';
+		d1.style.transform = `scale(${scale})`;
+		d1.style.transform = `scale(${scale})`;
+	}
+	return d;
+}
+async function _mImg(src, d, styles = {}, opts = {}) {
+	return null;
+	return new Promise(resolve => {
+		let [w, h] = mSizeSuccession(styles, 40);
+		addKeys({ w, h, 'object-fit': 'cover', 'object-position': 'center center' }, styles);
+		addKeys({ tag: 'img', src }, opts);
+		getTopLeftPixelColor(src, (img, color) => {
+			if (color) {
+				console.log(`Top-left pixel color: rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`);
+				if (color.a != 0) {
+					styles.round = true;
+					console.log('HHHHHHHHHHHHHHHHHHHHHHHH');
+					//let x=mDom(d,{rounding:20,h:40,bg:'red'},opts); return x;
+				}
+				mAppend(d, img);
+				mStyle(img, styles, opts);
+				resolve(img)
+				// let img = mDom(d, styles, opts);
+
+			} else {
+				console.error('Could not retrieve pixel color.');
+				resolve(null)
+			}
+		});
+	});
+
+	// console.log(src, styles);
+	// let [w, h] = mSizeSuccession(styles, 40);
+	// addKeys({ w, h, 'object-fit': 'cover', 'object-position': 'center center' }, styles);
+	// addKeys({ tag: 'img', src }, opts);
+	// let img = mDom(d, styles, opts);
+	// // let img = mDom(d, {rounding:20,h:40,bg:'red'}, opts);
+	// //let img = mDom(d, {round:true,h:40,bg:'red'}, opts);
+	// return img;
 }
 function _mKey(key, d, styles = {}, opts = {}) {
 
@@ -175,12 +294,12 @@ function mKey2(item, d, styles = {}, opts = {}) {
 	el.id = getUID(); A.di[el.id] = item;
 	el.onclick = callback;
 }
-function _mLayoutTLM(bg,dParent){
+function _mLayoutTLM(bg, dParent) {
 	mStyle(dParent, { w: '100%', h: '100%', bg, 'caret-color': '#ffffff00' });
-	let names = M.divNames = mAreas(dParent, ` 'dTop dTop' 'dLeft dMain' `, 'minmax(140px, auto) 1fr', 'minmax(40px, auto) 1fr'); 
-	mStyle(dTop, { display: 'flex', padding:4, wbox:true, gap:4 }); 
+	let names = M.divNames = mAreas(dParent, ` 'dTop dTop' 'dLeft dMain' `, 'minmax(140px, auto) 1fr', 'minmax(40px, auto) 1fr');
+	mStyle(dTop, { display: 'flex', padding: 4, wbox: true, gap: 4 });
 	mShade(names);
-	return names.map(x=>mBy(x));
+	return names.map(x => mBy(x));
 
 }
 function _mS(s, d, styles = {}, opts = {}) {
@@ -201,32 +320,32 @@ function _mS(s, d, styles = {}, opts = {}) {
 	el.onclick = callback;
 }
 function mSym(key, dParent, styles = {}, pos, classes) {
-  let info = M.superdi[key];
-  styles.display = 'inline-block';
-  let family = info.family;
-  styles.family = family;
-  let sizes;
-  if (isdef(styles.sz)) { sizes = mSymSizeToBox(info, styles.sz, styles.sz); }
-  else if (isdef(styles.w) && isdef(styles.h)) { sizes = mSymSizeToBox(info, styles.w, styles.h); }
-  else if (isdef(styles.fz)) { sizes = mSymSizeToFz(info, styles.fz); }
-  else if (isdef(styles.h)) { sizes = mSymSizeToH(info, styles.h); }
-  else if (isdef(styles.w)) { sizes = mSymSizeToW(info, styles.w); }
-  else { sizes = mSymSizeToFz(info, 25); }
-  styles.fz = sizes.fz;
-  styles.w = sizes.w;
-  styles.h = sizes.h;
-  styles.align = 'center';
-  if (isdef(styles.bg) && info.family != 'emoNoto') { styles.fg = styles.bg; delete styles.bg; }
-  let x = mDiv(dParent, styles, null, info.text);
-  if (isdef(classes)) mClass(x, classes);
-  if (isdef(pos)) { mPlace(x, pos); }
-  return x;
+	let info = M.superdi[key];
+	styles.display = 'inline-block';
+	let family = info.family;
+	styles.family = family;
+	let sizes;
+	if (isdef(styles.sz)) { sizes = mSymSizeToBox(info, styles.sz, styles.sz); }
+	else if (isdef(styles.w) && isdef(styles.h)) { sizes = mSymSizeToBox(info, styles.w, styles.h); }
+	else if (isdef(styles.fz)) { sizes = mSymSizeToFz(info, styles.fz); }
+	else if (isdef(styles.h)) { sizes = mSymSizeToH(info, styles.h); }
+	else if (isdef(styles.w)) { sizes = mSymSizeToW(info, styles.w); }
+	else { sizes = mSymSizeToFz(info, 25); }
+	styles.fz = sizes.fz;
+	styles.w = sizes.w;
+	styles.h = sizes.h;
+	styles.align = 'center';
+	if (isdef(styles.bg) && info.family != 'emoNoto') { styles.fg = styles.bg; delete styles.bg; }
+	let x = mDiv(dParent, styles, null, info.text);
+	if (isdef(classes)) mClass(x, classes);
+	if (isdef(pos)) { mPlace(x, pos); }
+	return x;
 }
 function mSymSizeToBox(info, w, h) {
-  let fw = w / info.w;
-  let fh = h / info.h;
-  let f = Math.min(fw, fh);
-  return { fz: 100 * f, w: info.w * f, h: info.h * f };
+	let fw = w / info.w;
+	let fh = h / info.h;
+	let f = Math.min(fw, fh);
+	return { fz: 100 * f, w: info.w * f, h: info.h * f };
 }
 function mSymSizeToFz(info, fz) { let f = fz / 100; return { fz: fz, w: info.w * f, h: info.h * f }; }
 
@@ -258,29 +377,29 @@ function mToggleElem(elem, key, states, seq, i, handler) {
 	return t;
 }
 function _mTooltip(oid) {
-  $('#' + oid).unbind('mouseover mouseout');
-  $('#' + oid).mouseover(function (e) {
-    e.stopPropagation();
-    let id = evToId(e);
-    if (TT_JUST_UPDATED != id) {
-      TT_JUST_UPDATED = id;
-      updateTooltipContent(id);
-      $('div#tooltip').css({
-        display: 'inline-block',
-        top: e.pageY,
-        left: e.pageX,
-      });
-    }
-  });
-  $('#' + oid).mouseout(function (e) {
-    if (TT_JUST_UPDATED == oid) TT_JUST_UPDATED = -1;
-    e.stopPropagation();
-    $('div#tooltip').css({
-      top: 0,
-      left: 0,
-      display: 'none'
-    });
-  });
+	$('#' + oid).unbind('mouseover mouseout');
+	$('#' + oid).mouseover(function (e) {
+		e.stopPropagation();
+		let id = evToId(e);
+		if (TT_JUST_UPDATED != id) {
+			TT_JUST_UPDATED = id;
+			updateTooltipContent(id);
+			$('div#tooltip').css({
+				display: 'inline-block',
+				top: e.pageY,
+				left: e.pageX,
+			});
+		}
+	});
+	$('#' + oid).mouseout(function (e) {
+		if (TT_JUST_UPDATED == oid) TT_JUST_UPDATED = -1;
+		e.stopPropagation();
+		$('div#tooltip').css({
+			top: 0,
+			left: 0,
+			display: 'none'
+		});
+	});
 }
 function _mTooltip(d, text) {
 	d.addEventListener('mouseenter', (event) => {
@@ -322,21 +441,21 @@ function showDetailsAndMagnify(elem) {
 	showDetailsPresentation(o, d);
 }
 function _updateTooltipContent(oid) {
-  let pool = findPool(oid);
-  let o = pool[oid];
-  ttTitle(oid, o);
-  ttBody(oid, o);
+	let pool = findPool(oid);
+	let o = pool[oid];
+	ttTitle(oid, o);
+	ttBody(oid, o);
 }
 function valfKey(o, arr) {
-  for (const w of arr) { if (isdef(o[w])) return w; }
-  return null;
+	for (const w of arr) { if (isdef(o[w])) return w; }
+	return null;
 }
 function valfKeyVal(key) {
-  let o = M.superdi[key];
-  let di = { text: 'emoNoto', fa6: 'fa6', fa: 'pictoFa', ga: 'pictoGame' };
-  let k1 = valfKey(o, Object.keys(di));
-  if (k1) return { html: String.fromCharCode('0x' + o[k1]), family: di[k1] }
-  return null;
+	let o = M.superdi[key];
+	let di = { text: 'emoNoto', fa6: 'fa6', fa: 'pictoFa', ga: 'pictoGame' };
+	let k1 = valfKey(o, Object.keys(di));
+	if (k1) return { html: String.fromCharCode('0x' + o[k1]), family: di[k1] }
+	return null;
 }
 function wsOffspringSymbol(dParent, styles = {}) {
 	console.log(styles)

@@ -2,6 +2,11 @@
 do 16.1. 9h30 tage F
 ho:tee+scho
 
+_______ 7:31 AM 1/15/2025 airport 18000
+=>explain difference between ev.preventDefault(), ev.cancelBubble = true, and ev.stopPropagation()
+=>mGather mit select liste
+- leider fehler in mKey!!! font family bei o.text!!!!
+ok=>ich brauch ein dict das 2 dicts verbindet und ein neues dict ergibt: dictMerge
 _______ 7:22 AM 1/14/2025 airport 17000
 =>how to handle screen size!!! mit der stopwatch. dTop must be at least as height as buttons!!!! button list auf dMain must be flexWrap!!!
 ok ich muss jetzt eincallback ins loadImageAsync reintun

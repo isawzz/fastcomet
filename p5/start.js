@@ -4,24 +4,35 @@ onload = start;
 async function start() { await test13_mGather(); }
 
 async function test13_mGather() {
+	await loadAssetsStatic();
+	let elems = mLayoutTM('limegreen', 'dPage');
+	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
+	let styles = { h: 30 };
+	let d = mDom(elems[1], dictMerge({margin:10},styles), { tag: 'button', html: 'New' });//return;
+	d.onclick = async () => { let x = await mGather(d); console.log('you entered', x); }
+	let d2 = mDom(dTop, styles, { tag: 'button', menu: 'top', html: 'game' });
+	d2.onclick = async () => { let x = await mGather(d2); console.log('you entered', x); }
+	let d3 = await mKey('table', dTop, styles, { tag: 'button', menu: 'top' });
+	d3.onclick = async () => { let x = await mGather(d3); console.log('you entered', x); }
+	let d4 = await mKey('bee', dTop, styles, { tag: 'button', menu: 'top' });
+	d4.onclick = async () => { let x = await mGather(d4); console.log('you entered', x); }
+	let d5 = await mKey('crow', dTop, styles, { tag: 'button', menu: 'top' });
+	d5.onclick = async () => { let x = await mGatherDropDown(d5,{},{list:['violin','piano','prog','math','walk']}); console.log('you entered', x); }
+}
+async function test12_mGather() {
 
 	// mStyle('dPage',{bg:'darkgreen'})
-	await loadAssetsStatic();await actionLoadAll();
+	await loadAssetsStatic(); await actionLoadAll();
 	let elems = mLayoutTM(rColor(), 'dPage');
-	mStyle(dTop,{display:'flex',aitems:'center',wbox:true,gap:4,padding:4});
-	let d1 = mKey('watch', dTop, {}, { tag:'button',onclick: onclickStopwatch, menu: 'top' });
-	let d2 = mKey('game', dTop, {}, { tag:'a',onclick: onclickResetActions, menu: 'top' });
-	let d3 = mKey('crow', dTop, {}, { tag:'a',onclick: onclickResetActions, menu: 'top' });
+	mStyle(dTop, { display: 'flex', aitems: 'center', wbox: true, gap: 4, padding: 4 });
+	let d1 = mKey('watch', dTop, {}, { tag: 'button', onclick: onclickStopwatch, menu: 'top' });
+	let d2 = mKey('game', dTop, {}, { menu: 'top' });
+	let d3 = mKey('crow', dTop, {}, { tag: 'a', onclick: onclickResetActions, menu: 'top' });
 	// mKey('crow', elems[1], {}, { }); //onclick: async (ev) => { let x = await mGather(ev.target); console.log('you entered', x); } }); 
 	// //mDom(elems[0], {  }, { tag: 'button', html: 'New' });
 	// let d = mDom(elems[1], {  }, { tag: 'button', html: 'New' });
-	d1.onclick = async () => { let x = await mGather(d1); console.log('you entered', x); }
+	//d1.onclick = async () => { let x = await mGather(d1); console.log('you entered', x); }
 	d2.onclick = async () => { let x = await mGather(d2); console.log('you entered', x); }
-}
-async function test12_mGather() {
-	let elems = mLayoutTM(rColor(), 'dPage');
-	let d = mDom(elems[1], { className: 'button' }, { tag: 'button', html: 'New' });//return;
-	d.onclick = async () => { let x = await mGather(d); console.log('you entered', x); }
 }
 async function test11_mGather() {
 	//mStyle('dPage', { w: '100%', h: '100%', bg, 'caret-color': '#ffffff00' });

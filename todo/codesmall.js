@@ -796,10 +796,11 @@ function mKey(imgKey, d, styles = {}, opts = {}) {
 	if (nundef(o) && imgKey.includes('.')) src = imgKey;
 	else if (isdef(o) && isdef(opts.prefer)) src = valf(o[opts.prefer], o.img);
 	else if (isdef(o)) src = valf(o.img, o.photo)
-	if (nundef(src)) src = rChoose(M.allImages).path;
-	let [w, h] = mSizeSuccession(styles, 40);
-	addKeys({ w, h }, styles)
-	addKeys({ tag: 'img', src }, opts)
+	if (isdef(src)) {
+		let [w, h] = mSizeSuccession(styles, 40);
+		addKeys({ w, h }, styles)
+		addKeys({ tag: 'img', src }, opts)
+	} 
 	let img = mDom(d, styles, opts);
 	return img;
 }

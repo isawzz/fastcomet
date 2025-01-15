@@ -1053,7 +1053,7 @@ function mStyle(elem, styles = {}, opts = {}) {
 		let v = styles[k];
 		let key = STYLE_PARAMS_2[k];
 		let val = isNumber(v) && !noUnit.some(x => k.includes(x)) || k == 'fz' ? '' + Number(v) + 'px' : v;
-		if (k.includes('flex')) console.log(key, val);
+		//if (k.includes('flex')) console.log(k,v,key, val);
 		if (isdef(key)) { elem.style.setProperty(key, val); continue; }
 		if (v == 'contrast') { //nur bei fg verwenden!!!!
 			let bg = nundef(styles.bg) ? mGetStyle(elem, 'bg') : colorFrom(styles.bg);

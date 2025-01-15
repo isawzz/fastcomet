@@ -1,44 +1,47 @@
 
-async function mKey(key, dParent, styles = {}, opts = {}) {
-	let type = valf(opts.prefer, 'img');
-	let o = M.superdi[key];
-	if (nundef(o)) type = 'plain'; else if (type != 'plain' && nundef(o[type])) type = isdef(o.img) ? 'img' : isdef(o.photo) ? 'photo' : isdef(o.text) ? 'text' : isdef(o.fa6) ? 'fa6' : isdef(o.fa) ? 'fa' : isdef(o.ga) ? 'ga' : 'plain';
-	let d1, sz = valf(styles.sz, 40);
-	if (opts.onclick) addKeys({ bg:'#00000080', rounding: 4,w:sz,h:sz, wbox: true, display: 'flex', aitems: 'center', justify: 'center' }, styles);
-	else addKeys({ wbox: true, display: 'flex', aitems: 'center', justify: 'center', cursor: 'default' }, styles);
-	addKeys({key},opts)
-	let d = mDom(dParent, styles, opts);//mStyle(d,{bg:'red'})
-	//if (opts.menu) d.setAttribute('menu', opts.menu);
-	//if (typeof opts.onclick == 'function') d.onclick = opts.onclick;
-	console.log(`${key}: ${type}`);
+function mGather(d, styles = {}, opts = {}) {
+	return new Promise((resolve, _) => {
+		let dParent = mShield(document.body, {});
+		let onEscape = _ => { dParent.remove(); resolve(null) };
+		let onEnter = val => { dParent.remove(); resolve(val) };
+		dParent.onclick = onEscape;
 
-	if (type == 'img') { d1 = await mImgAsync(o[type], d, { sz },{},roundIfTransparentCorner); }
-	else if (type == 'photo') { d1 = await mImgAsync(o[type], d, { margin: 3, rounding: 4, sz },{},roundIfTransparentCorner); }
-	else if (type == 'plain') {
-		mStyle(d, { w: 'auto', hpadding: 10 })
-		d1 = mDom(d, { 'user-select': 'none' }, { html: key });
-	} else {
-		let family = type == 'text' ? 'emoNoto' : type == 'fa6' ? 'fa6' : type == 'fa' ? 'pictoFa' : 'pictoGame';
-		let html = type == 'text' ? o.text : String.fromCharCode('0x' + o[type]);
-		sz -= 4;
-		d1 = mDom(d, { family, fz: sz, hline: sz }, { html });
-		let r = getRect(d1);
-		let [w, h] = [r.w, r.h];
-		let scale = Math.min(sz / w, sz / h);
-		d1.style.transformOrigin = 'center center';
-		d1.style.transform = `scale(${scale})`;
-		d1.style.transform = `scale(${scale})`;
+		let [box, inp] = mInputInBox(dParent, {}, {}, { onEnter, onEscape });
+
+
+		mAlign(box, d, { align: 'bl', offx: 20 });
+		inp.focus();
+	});
+}
+function mInput(dParent, styles = {}, opts = {}) {
+	addKeys({ id: getUID(), placeholder: '', value: '', selectOnClick: true, type: "text" }, opts);
+	let html = `<input type="${opts.type}" autocomplete="off" id=${opts.id} placeholder="${valf(opts.placeholder, '')}" tabindex="${opts.tabindex}" value="${opts.value}">`;
+	let d = mAppend(dParent, mCreateFrom(html));
+	d.onclick = opts.selectOnClick ? ev => { evNoBubble(ev); d.select(); } : ev => { evNoBubble(ev); };
+	d.onkeydown = ev => {
+		if (ev.key == 'Enter' && isdef(opts.onEnter)) { evNoBubble(ev); opts.onEnter(d.value); }
+		else if (ev.key == 'Escape' && isdef(opts.onEscape)) { evNoBubble(ev); opts.onEscape(); }
 	}
+	if (isdef(styles)) mStyle(d, styles);
 	return d;
 }
-function roundIfTransparentCorner(img){
-	let c=getPixTL(img);console.log(c);
-	if (c.a != 0) {
-		let r=getRect(img.parentNode); console.log(r);
-		mStyle(img,{round:true,h:r.h-6,w:r.w-6});//styles.round = true;
-		console.log('HHHHHHHHHHHHHHHHHHHHHHHH');
-		//let x=mDom(d, {rounding:20, h:40, bg:'red'}, opts); return x;
-	}
+function mInputInBox(dParent, boxStyles = {}, inpStyles = {}, opts = {}) {
+	let d5 = mDom(dParent, boxStyles);
+	let d6 = mInput(d5, inpStyles, opts);
+	return [d5, d6];
+}
+function mShield(dParent, styles = {}, opts = {}) {
+	addKeys({ bg: '#00000080' }, styles);
+	addKeys({ hideonclick: true }, opts);
+	dParent = toElem(dParent); //console.log(dParent);
+	let d = mDom(dParent, styles, opts);
+	mIfNotRelative(dParent);
 
+	mStyle(d, { position: 'absolute', left: 0, top: 0, w: '100%', h: '100%' });
+	if (opts.onclick) d.onclick = opts.onclick;
+	else if (opts.hideonclick) d.onclick = ev => { evNoBubble(ev); d.remove(); };
+	else d.onclick = ev => { evNoBubble(ev); };
+	mClass(d, 'topmost');
+	return d;
 }
 

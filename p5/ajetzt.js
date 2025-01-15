@@ -133,6 +133,29 @@ function mPlace(elem, pos, offx, offy) {
 	let kvert = di[pos[0]], khor = di[pos[1]];
 	elem.style[kvert] = vert + 'px'; elem.style[khor] = hor + 'px';
 }
+function toNameValueList(any) {
+  if (isEmpty(any)) return [];
+  let list = [];
+  if (isString(any)) {
+    let words = toWords(any);
+    for (const w of words) { list.push({ name: w, value: w }) };
+  } else if (isDict(any)) {
+    for (const k in any) { list.push({ name: k, value: any[k] }) };
+  } else if (isList(any) && !isDict(any[0])) {
+    for (const el of any) list.push({ name: el, value: el });
+  } else if (isList(any) && isdef(any[0].name) && isdef(any[0].value)) {
+    list = any;
+  } else {
+    let el = any[0];
+    let keys = Object.keys(el);
+    let nameKey = keys[0];
+    let valueKey = keys[1];
+    for (const x of any) {
+      list.push({ name: x[nameKey], value: x[valueKey] });
+    }
+  }
+  return list;
+}
 function uiGadgetTypeCheckList(dParent, content, resolve, styles = {}, opts = {}) {
 	addKeys({ hmax: 500, wmax: 200, bg: 'white', fg: 'black', padding: 10, rounding: 10, box: true }, styles)
 	let dOuter = mDom(dParent, styles);
@@ -194,6 +217,7 @@ function uiGadgetTypeMultiText(dParent, dict, resolve, styles = {}, opts = {}) {
 }
 function uiGadgetTypeSelect(dParent, content, resolve, styles = {}, opts = {}) {
 	let dSelect = uiTypeSelect(content, dParent, styles, opts);
+	dSelect.onclick = ev => ev.stopPropagation();
 	dSelect.onchange = ev => resolve(ev.target.value);
 	return dSelect;
 }
@@ -473,7 +497,7 @@ function uiTypeRadios(lst, d, styles = {}, opts = {}) {
 }
 function uiTypeSelect(any, dParent, styles = {}, opts = {}) {
 	let list = toNameValueList(any);
-	addKeys({ className: 'input', tag: 'select' }, opts);
+	addKeys({ tag: 'select' }, opts);
 	let dselect = mDom(dParent, styles, opts);
 	for (const el of list) { mDom(dselect, {}, { tag: 'option', html: el.name, value: el.value }); }
 	dselect.value = '';

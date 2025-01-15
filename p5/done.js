@@ -25,6 +25,14 @@ function allNumbers(s) {
 	let m = s.match(/\-.\d+|\-\d+|\.\d+|\d+\.\d+|\d+\b|\d+(?=\w)/g);
 	if (m) return m.map(v => Number(v)); else return [];
 }
+function arrChildren(elem) { return [...toElem(elem).children]; }
+function arrClear(arr) { arr.length = 0; return arr; }
+function arrCycle(arr, count) { return arrRotate(arr, count); }
+function arrDisjoint(ad1, ad2, prop) {
+	console.log(isDict(ad1), isDict(ad2))
+	if (isDict(ad1) && isDict(ad2)) return Object.keys(ad1).find(x => x in ad2);
+	else return ad1.map(x => x[prop]).find(el => ad2.map(x => x[prop]) == el);
+}
 function arrMax(arr, f) { return arrMinMax(arr, f).max; }
 function arrMinMax(arr, func) {
 	if (nundef(func)) func = x => x;
@@ -162,6 +170,14 @@ function detectSessionType() {
 						: loc.includes(':60') ? 'flask' : 'live';
 	return DA.sessionType;
 }
+function dictMerge(target, source) {
+	for (const key in source) {
+		if (source[key] instanceof Object && key in target) {
+			Object.assign(source[key], dictMerge(target[key], source[key]));
+		}
+	}
+	return { ...target, ...source };
+}
 function evToElem(ev, attr) {
 	let elem = ev.target;
 	let val = null;
@@ -220,6 +236,31 @@ function getKeyLists() {
 	return di;
 }
 function getKeyTypes() { return ['plain', 'fa', 'ga', 'fa6', 'img', 'text', 'photo']; }
+function getPixTL(img) {
+	const canvas = document.createElement('canvas');
+	const ctx = canvas.getContext('2d');
+
+	// Set canvas dimensions to match the image
+	canvas.width = img.width;
+	canvas.height = img.height;
+
+	// Draw the image onto the canvas
+	ctx.drawImage(img, 0, 0);
+
+	// Get pixel data from the top-left corner
+	const imageData = ctx.getImageData(0, 0, 1, 1).data;
+
+	// Extract RGBA values
+	const r = imageData[0];
+	const g = imageData[1];
+	const b = imageData[2];
+	const a = imageData[3] / 255; // Convert alpha to a range of 0-1
+
+	// Return the color as an object or in a format you prefer
+	const color = { r, g, b, a };
+	return color;
+
+}
 function getRect(elem, relto) {
 	if (isString(elem)) elem = document.getElementById(elem);
 	let res = elem.getBoundingClientRect();
@@ -289,6 +330,18 @@ function mBy(id, what, elem) {
 		case 'query': return Array.from(elem.querySelectorAll(id)); break;
 		default: return elem.getElementById(id);
 	}
+}
+function mCenterCenter(d, gap) { mCenterCenterFlex(d, gap); }
+
+function mCenterCenterFlex(d, gap) { mCenterFlex(d, true, true, true, gap); }
+
+function mCenterFlex(d, hCenter = true, vCenter = false, wrap = true, gap = null) {
+	let styles = { display: 'flex' };
+	if (hCenter) styles['justify-content'] = 'center';
+	styles['align-content'] = vCenter ? 'center' : 'flex-start';
+	if (wrap) styles['flex-wrap'] = 'wrap';
+	if (gap) styles.gap = gap;
+	mStyle(d, styles);
 }
 function measureText(text, styles = {}, cx = null) { //mit canvas
 	function getTextWidth(text, font) { //mit canvas
@@ -395,9 +448,80 @@ function mHomeLogo(d, key, styles = {}, handler = null, menu = null) {
 	let ui = mKey(key, d, { maright: 12, fz: 30, cursor: 'pointer' }, { onclick: handler, menu });
 	return ui;
 }
+function mImgAsync(d, styles = {}, opts = {}, callback = null) {
+	return new Promise((resolve, reject) => {
+		let img = document.createElement('img');
+		mAppend(d, img);
+		let [w, h] = mSizeSuccession(styles, 40);
+		addKeys({ w, h, 'object-fit': 'cover', 'object-position': 'center center' }, styles);
+		addKeys({ tag: 'img' }, opts);
+		mStyle(img, styles, opts);
+		img.onload = async () => {
+			console.log(mGetStyle(img,'h'))
+			if (callback) callback(img);
+			//console.log(mGetStyle(img,'h'))
+			resolve(img);
+		};
+		img.onerror = (error) => {
+			reject(error);
+		};
+		img.src = opts.src;
+	});
+}
+async function mKey(imgKey, d, styles = {}, opts = {}) {
+	let o = lookup(M.superdi, [imgKey]);
+	styles = jsCopy(styles);
+	let type = opts.prefer;
+	let src;
+	if (nundef(o) && imgKey.includes('.')) src = imgKey;
+	else if (isdef(o) && (type == 'img' || type == 'photo') && isdef(o[type])) src = o[type];
+	else if (isdef(o) && isdef(o.img)) src = o.img;
+	//console.log('src', src)
+	if (isdef(src)) {
+		let [w, h] = mSizeSuccession(styles, 40); //console.log(w, h)
+		addKeys({ w, h }, styles);
+		addKeys({ tag: 'img', src }, opts);
+		//let img = mDom(d, styles, opts);
+		let d0 = mDom(d, styles, opts);
+		mCenterCenterFlex(d0);
+		let img = await mImgAsync(d0, styles, opts, roundIfTransparentCorner);
+		//console.log(img)
+		return d0;
+	} else if (isdef(o)) {
+		let [w, h] = mSizeSuccession(styles, 40);
+		let sz = h;
+		addKeys({ h }, styles);
+		if (nundef(type)) type = isdef(o.text) ? 'text' : isdef(o.fa6) ? 'fa6' : isdef(o.fa) ? 'fa' : isdef(o.ga) ? 'ga' : null;
+		let family = type == 'text' ? 'emoNoto' : type == 'fa6' ? 'fa6' : type == 'fa' ? 'pictoFa' : 'pictoGame';
+		let html = type == 'text' ? o.text : String.fromCharCode('0x' + o[type]);
+		addKeys({ family }, styles); //console.log(h)
+		//addKeys({ html }, opts);
+		let d0 = mDom(d, styles, opts);
+		mCenterCenterFlex(d0);
+		let d1 = mDom(d0, {}, { html });
+		//d1 = mDom(d, { family, fz: sz, hline: sz }, { html });
+		let r = getRect(d1);
+		[w, h] = [r.w, r.h];
+		let scale = Math.min(sz / w, sz / h);
+		d1.style.transformOrigin = 'center center';
+		d1.style.transform = `scale(${scale})`;
+		d1.style.transform = `scale(${scale})`;
+		return d0;
+		// if (isdef(o.fa6)) addKeys({ html: String.fromCharCode('0x' + o.fa6) }, opts);
+		// else if (isdef(o.fa)) addKeys({ html: String.fromCharCode('0x' + o.fa) }, opts);
+		// else if (isdef(o.ga)) addKeys({ html: String.fromCharCode('0x' + o.ga) }, opts);
+		// else if (isdef(o.text)) addKeys({ html: o.text }, opts);
+		// addKeys({ html: o.text }, opts);
+	} else {
+		addKeys({ html: imgKey }, opts)
+		let img = mDom(d, styles, opts);
+		return img;
+	}
+	console.log('type', type)
+}
 function mLayout(bg, dParent, rowlist, colt, rowt) {
 	dParent = toElem(dParent);
-	mStyle(dParent,{bg});
+	mStyle(dParent, { bg });
 	let areas = `'${rowlist.join("' '")}'`;
 	if (dParent.id == 'dPage') M.divNames = [];
 	let newNames = mAreas(dParent, areas, colt, rowt);
@@ -482,6 +606,17 @@ function recFlatten(o) {
 		let valist = [];
 		for (const k in o) { let val1 = recFlatten(o[k]); valist.push(`${k}: ${val1}`); }
 		return valist.join(', ');
+	}
+}
+function roundIfTransparentCorner(img) {
+	let c = getPixTL(img);
+	if (c.a != 0) {
+		//only resize if parent is a frame for this image!!!!!
+		let parent = img.parentNode;
+		if (arrChildren(parent).length <= 1) {
+			let r = getRect(img.parentNode);
+			mStyle(img, { round: true, h: r.h - 8, w: r.w - 8 });
+		} else mStyle(img, { round: true });
 	}
 }
 
