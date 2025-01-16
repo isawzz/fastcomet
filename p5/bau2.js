@@ -4,7 +4,6 @@ function mGatherSelect(d, styles = {}, opts = {}) {
 		let dParent = mShield(document.body,resolve);
 		//let onEscape = _ => resolve(null); //{ dParent.remove(); resolve(null) };
 		let onchange = val => {resolve(val);} // { dParent.remove(); resolve(val) };
-		//dParent.onclick = onEscape;
 
 		//let [box, inp] = mInputInBox(dParent, {}, {}, dictMerge(opts,{ onEnter, onEscape }));
 		//console.log('styles', styles,'\nopts',opts)
