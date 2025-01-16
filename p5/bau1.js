@@ -4,11 +4,26 @@ function globalKeyHandling(){
 }
 
 function hotkeyHandler(ev) {
-	let handler = lookup(DA['hotkeys',ev.key]);
+	let k = ev.key;
+	console.log('pressed',ev.key);
+	if (nundef(DA.hotkeys)) DA.hotkeys = {};
+	let handler = DA.hotkeys[k];
+	//let handler = lookup(DA['hotkeys',ev.key]);
+	console.log(DA.hotkeys)
+	console.log('handler for',ev.key, handler);
 	if (handler) { handler(ev); }
 }
-function hotkeyActivate(key, handler) {	lookupSetOverride(DA,['hotkeys',key],handler);}
-function hotkeyDeactivate(key) {	DA.hotkeys[key] = null;}
+function hotkeyActivate(key, handler) {	
+	console.log('activating' , key);
+	if (nundef(DA.hotkeys)) DA.hotkeys = {};
+	DA.hotkeys[key] =  handler;
+	//lookupSetOverride(DA,['hotkeys',key],handler);
+}
+function hotkeyDeactivate(key) {	
+	console.log('deactivating' , key);
+	if (nundef(DA.hotkeys)) DA.hotkeys = {};
+	DA.hotkeys[key] = null;
+}
 
 function _createSelect(dParent, styles = {}, opts = {}) {
 	let html =

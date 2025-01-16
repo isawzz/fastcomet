@@ -1,14 +1,14 @@
 
 function mGatherSelect(d, styles = {}, opts = {}) {
 	return new Promise((resolve, _) => {
-		let dParent = mShield(document.body, {});
-		let onEscape = _ => { dParent.remove(); resolve(null) };
-		let onchange = val => { dParent.remove(); resolve(val) };
-		dParent.onclick = onEscape;
+		let dParent = mShield(document.body,resolve);
+		//let onEscape = _ => resolve(null); //{ dParent.remove(); resolve(null) };
+		let onchange = val => {resolve(val);} // { dParent.remove(); resolve(val) };
+		//dParent.onclick = onEscape;
 
 		//let [box, inp] = mInputInBox(dParent, {}, {}, dictMerge(opts,{ onEnter, onEscape }));
 		//console.log('styles', styles,'\nopts',opts)
-		let [box, inp] = mSelectInBox(dParent, styles, {}, dictMerge(opts, { onEscape, onchange }));
+		let [box, inp] = mSelectInBox(dParent, styles, {}, dictMerge(opts,{onchange})); //dictMerge(opts, { onEscape, onchange }));
 
 		mAlign(box, d, { align: 'bl', offx: 20 });
 		if (inp) inp.focus();
@@ -33,9 +33,9 @@ function mSelect(dParent, styles = {}, opts = {}) {
 
 	}
 	//let dDefault = arrChildren(d0)[0];
-	hotkeyActivate('Escape', ev => {
-		if (isdef(opts.onEscape)) { opts.onEscape();  }
-	});
+	// hotkeyActivate('Escape', ev => {
+	// 	if (isdef(opts.onEscape)) { opts.onEscape();  }
+	// });
 	// document.onkeydown = ev => {
 	// 	if (ev.key == 'Escape' && isdef(opts.onEscape)) { opts.onEscape(); }
 	// }
@@ -46,6 +46,28 @@ function mSelectInBox(dParent, boxStyles = {}, inpStyles = {}, opts = {}) {
 	let dinp = mSelect(dbox, inpStyles, opts);
 	return [dbox, dinp];
 }
+function mShield(dParent, resolve,styles = {}, opts = {}) {
+	function close(){
+		console.log('close!');
+		mBy('shield').remove();
+		hotkeyDeactivate('Escape'); resolve(null);
+	}
+	addKeys({ bg: '#00000080' }, styles);
+	addKeys({ id:'shield', hideOnClick: true, hideOnEscape: true }, opts);
+	dParent = toElem(dParent); //console.log(dParent);
+	let d = mDom(dParent, styles, opts);
+	mIfNotRelative(dParent);
+
+	mStyle(d, { position: 'absolute', left: 0, top: 0, w: '100%', h: '100%' });
+	if (opts.onclick) d.onclick = opts.onclick;
+	else if (opts.hideOnClick) d.onclick = ev => { evNoBubble(ev); close(); };
+	else d.onclick = ev => { evNoBubble(ev); };
+	if (opts.hideOnEscape) hotkeyActivate('Escape', ev => { evNoBubble(ev); close(); });
+	mClass(d, 'topmost');
+	return d;
+}
+
+
 function mDropdown(dParent, styles = {}, opts = {}) {
 	let list = toNameValueList(opts.list);
 	addKeys({ tag: 'select' }, opts);
