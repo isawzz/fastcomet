@@ -3,9 +3,11 @@ do 16.1. 9h30 tage F
 ho:tee+scho
 
 _______ 7:13 AM 1/16/2025 airport 18000
+s1:ak 11:38 AM 1/16/2025-11:49 AM 1/16/2025
+- soll ich sowas machen wie mShieldClose()? das macht das shield zu und deactivated global Escape key
 7:29 AM 1/16/2025- done 460
 7:30 AM 1/16/2025- show styles
-- why cant see d?
+11:43 AM 1/16/2025- why cant see d?
 _______ 7:31 AM 1/15/2025 airport 18000
 s1:li 11:12 AM 1/15/2025-11:59 AM 1/15/2025
 =>chatGpt answer!

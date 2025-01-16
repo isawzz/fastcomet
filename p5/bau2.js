@@ -1,5 +1,5 @@
 
-function mGatherDropdown(d, styles = {}, opts = {}) {
+function mGatherSelect(d, styles = {}, opts = {}) {
 	return new Promise((resolve, _) => {
 		let dParent = mShield(document.body, {});
 		let onEscape = _ => { dParent.remove(); resolve(null) };
@@ -8,7 +8,7 @@ function mGatherDropdown(d, styles = {}, opts = {}) {
 
 		//let [box, inp] = mInputInBox(dParent, {}, {}, dictMerge(opts,{ onEnter, onEscape }));
 		//console.log('styles', styles,'\nopts',opts)
-		let [box, inp] = mDropdownInBox(dParent, styles, {}, dictMerge(opts, { onEscape, onchange }));
+		let [box, inp] = mSelectInBox(dParent, styles, {}, dictMerge(opts, { onEscape, onchange }));
 
 		mAlign(box, d, { align: 'bl', offx: 20 });
 		if (inp) inp.focus();
@@ -16,9 +16,34 @@ function mGatherDropdown(d, styles = {}, opts = {}) {
 
 	});
 }
-function mDropdownInBox(dParent, boxStyles = {}, inpStyles = {}, opts = {}) {
+function mSelect(dParent, styles = {}, opts = {}) {
+	//addKeys({fg:'black',bg:'white'},styles)
+	let d0 = mDom(dParent, styles, opts);
+	mCenterCenterFlex(d0);
+	//let d1=mDom(d0,{},{html:'ewew'});
+	//let d2=mDom(d0, {}, {});
+	function onclick(ev) {
+		let html = ev.target.innerHTML;
+		//mStyle(d1,{},{html});
+		evNoBubble(ev);
+		opts.onchange(html);
+	}
+	for (const html of opts.list) {
+		mDom(d0, { margin: 6 }, { tag: 'button', html, onclick });
+
+	}
+	//let dDefault = arrChildren(d0)[0];
+	hotkeyActivate('Escape', ev => {
+		if (isdef(opts.onEscape)) { opts.onEscape();  }
+	});
+	// document.onkeydown = ev => {
+	// 	if (ev.key == 'Escape' && isdef(opts.onEscape)) { opts.onEscape(); }
+	// }
+	return d0;
+}
+function mSelectInBox(dParent, boxStyles = {}, inpStyles = {}, opts = {}) {
 	let dbox = mDom(dParent, boxStyles);
-	let dinp = createSelect(dbox, inpStyles, opts);
+	let dinp = mSelect(dbox, inpStyles, opts);
 	return [dbox, dinp];
 }
 function mDropdown(dParent, styles = {}, opts = {}) {
