@@ -727,7 +727,7 @@ function isdef(x) { return x !== null && x !== undefined && x !== 'undefined'; }
 function jsCopy(o) { return JSON.parse(JSON.stringify(o)); }
 function keyDownHandler(ev) {
 	if (nundef(DA.keysToCheck)) DA.keysToCheck = {};
-	DA.keysToCheck[ev.key] = true;
+	DA.keysToCheck[ev.key] = true; //console.log(ev.key)
 }
 function keyUpHandler(ev) { DA.keysToCheck[ev.key] = false; }
 function last(arr) {
@@ -853,6 +853,26 @@ function lookupSet(dict, keys, val) {
 		if (nundef(d[k])) d[k] = (i == ilast ? val : {});
 		d = d[k];
 		if (i == ilast) return d;
+		i += 1;
+	}
+	return d;
+}
+function lookupSetOverride(dict, keys, val) {
+	let d = dict;
+	let ilast = keys.length - 1;
+	let i = 0;
+	for (const k of keys) {
+		if (i == ilast) {
+			if (nundef(k)) {
+				return null;
+			} else {
+				d[k] = val;
+			}
+			return d[k];
+		}
+		if (nundef(k)) continue;
+		if (nundef(d[k])) d[k] = {};
+		d = d[k];
 		i += 1;
 	}
 	return d;

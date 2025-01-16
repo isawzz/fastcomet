@@ -457,7 +457,7 @@ function mImgAsync(d, styles = {}, opts = {}, callback = null) {
 		addKeys({ tag: 'img' }, opts);
 		mStyle(img, styles, opts);
 		img.onload = async () => {
-			console.log(mGetStyle(img,'h'))
+			//console.log(mGetStyle(img,'h'))
 			if (callback) callback(img);
 			//console.log(mGetStyle(img,'h'))
 			resolve(img);

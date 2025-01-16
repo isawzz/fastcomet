@@ -7,6 +7,7 @@ function mGatherDropdown(d, styles = {}, opts = {}) {
 		dParent.onclick = onEscape;
 
 		//let [box, inp] = mInputInBox(dParent, {}, {}, dictMerge(opts,{ onEnter, onEscape }));
+		//console.log('styles', styles,'\nopts',opts)
 		let [box, inp] = mDropdownInBox(dParent, styles, {}, dictMerge(opts, { onEscape, onchange }));
 
 		mAlign(box, d, { align: 'bl', offx: 20 });
@@ -17,7 +18,7 @@ function mGatherDropdown(d, styles = {}, opts = {}) {
 }
 function mDropdownInBox(dParent, boxStyles = {}, inpStyles = {}, opts = {}) {
 	let dbox = mDom(dParent, boxStyles);
-	let dinp = mDropdown(dbox, inpStyles, opts);
+	let dinp = createSelect(dbox, inpStyles, opts);
 	return [dbox, dinp];
 }
 function mDropdown(dParent, styles = {}, opts = {}) {
@@ -33,15 +34,16 @@ function mDropdown(dParent, styles = {}, opts = {}) {
 	dselect.onchange = ev=>opts.onchange(ev.target.value)
 	dselect.value = '';
 
-  dselect.addEventListener('keypress', (event) => {
+  dselect.addEventListener('keydown', (event) => {
     console.log(`Key pressed: ${event.key}`);
   });
 
   // Create and dispatch the event
-  const event = new KeyboardEvent('keypress', {
-    key: 'enter',       // The key value
+  const event = new KeyboardEvent('keydown', {
+    key: 'Enter',       // The key value
     char: 'a',      // The character representation (deprecated in favor of `key`)
-    code: 'KeyEnter',   // The physical key on the keyboard
+		keyCode: 13,    // The key code value
+    code: 'Enter',   // The physical key on the keyboard
     bubbles: true,  // Allow the event to bubble
     cancelable: true // Allow the event to be canceled
   });

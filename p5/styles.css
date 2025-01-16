@@ -135,3 +135,40 @@ a:active, button:active {
 .topmost {
   z-index: 100000;
 }
+
+/* #region custom select */
+.custom-select {
+  position: relative;
+  width: 200px;
+  font-family: Arial, sans-serif;
+}
+.selected {
+  padding: 10px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+}
+.options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid #ccc;
+  background: #fff;
+  max-height: 150px;
+  overflow-y: auto;
+  display: none;
+  z-index: 1000;
+}
+.options li {
+  padding: 10px;
+  cursor: pointer;
+}
+.options li:hover {
+  background: #f0f0f0;
+}
+
+/* #endregion */
