@@ -7,18 +7,10 @@ async function test4_mMultiGather() {
 	await loadAssetsStatic();
 	globalKeyHandling();
 	let elems = mLayoutTM('pink', 'dPage');
-	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
-	let styles = { h: 30 }, boxStyles = { bg: 'pink', padding: 4 }, stylesMain = dictMerge({ margin: 10 }, styles);
-	let bGame = mDom(dTop, styles, { tag: 'button', menu: 'top', html: 'game' });
-	bGame.onclick = async () => { let x = await mGather(mInput, bGame, boxStyles); console.log('you entered', x); }
-	let bWatch = mDom(dTop, styles, { tag: 'button', menu: 'top', html: 'hallo' }); //mKey('watch', dTop, styles, { tag: 'button', menu: 'top' });
-	bWatch.onclick = async () => { let x = await mGather(mYesNo, bWatch, boxStyles); console.log('you entered', x); }
-	let bNew = mDom(elems[1], stylesMain, { tag: 'button', html: 'New' });//return;
-	let list = ['violin', 'piano', 'prog', 'math', 'walk', 'violin', 'piano', 'prog', 'math', 'walk', 'violin', 'piano', 'prog', 'math', 'walk']
-	bNew.onclick = async () => { let x = await mGather(mSelect, bNew, boxStyles, { list }); console.log('you entered', x); }
-	let d3 = await mKey('watch', dMain, stylesMain, { tag: 'button', menu: 'top' });
-	d3.onclick = async () => { let x = await mGather(mYesNo, d3, boxStyles); console.log('you entered', x); }
-	d3.click();
+	let d=mDom('dMain',{gap:10,padding:10});
+	mCenterCenterFlex(d);
+	let board = drawHexBoard(3, 3, d, { bg: 'transparent', padding: 10 }, { w: 70, h: 72, bg:rColor(),border:'white',classes: 'hexframe' }); //, {padding:10});
+
 }
 
 async function test4_mGather() {
