@@ -1,32 +1,44 @@
 
 onload = start;
 
-async function start() { await test14_mGather(); }
+async function start() { await test4_mMultiGather(); }
 
-async function test14_mGather() {
+async function test4_mMultiGather() {
 	await loadAssetsStatic();
 	globalKeyHandling();
-	// window.onkeydown = keyDownHandler;
-	// window.onkeyup = keyUpHandler;
-	//window.onkeydown = hotkeyHandler;
 	let elems = mLayoutTM('pink', 'dPage');
 	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
-	let styles = { h: 30 };
-	let d = mDom(elems[1], dictMerge({ margin: 10 }, styles), { tag: 'button', html: 'New' });//return;
-	//d.onclick = async () => { let x = await mGather(d); console.log('you entered', x); }
-	let d1 = mKey('watch', dTop, {}, { tag: 'button', onclick: onclickStopwatch, menu: 'top' });
-	let d2 = mDom(dTop, styles, { tag: 'button', menu: 'top', html: 'game' });
-	d2.onclick = async () => { let x = await mGather(d2); console.log('you entered', x); }
-	let d3 = await mKey('table', dTop, styles, { tag: 'button', menu: 'top' });
-	d3.onclick = async () => { let x = await mGather(d3); console.log('you entered', x); }
-	let d4 = await mKey('bee', dTop, styles, { tag: 'button', menu: 'top' });
-	d4.onclick = async () => { let x = await mGather(d4); console.log('you entered', x); }
-	let d5 = await mKey('crow', dTop, styles, { tag: 'button', menu: 'top' });
+	let styles = { h: 30 }, boxStyles = { bg: 'pink', padding: 4 }, stylesMain = dictMerge({ margin: 10 }, styles);
+	let bGame = mDom(dTop, styles, { tag: 'button', menu: 'top', html: 'game' });
+	bGame.onclick = async () => { let x = await mGather(mInput, bGame, boxStyles); console.log('you entered', x); }
+	let bWatch = mDom(dTop, styles, { tag: 'button', menu: 'top', html: 'hallo' }); //mKey('watch', dTop, styles, { tag: 'button', menu: 'top' });
+	bWatch.onclick = async () => { let x = await mGather(mYesNo, bWatch, boxStyles); console.log('you entered', x); }
+	let bNew = mDom(elems[1], stylesMain, { tag: 'button', html: 'New' });//return;
 	let list = ['violin', 'piano', 'prog', 'math', 'walk', 'violin', 'piano', 'prog', 'math', 'walk', 'violin', 'piano', 'prog', 'math', 'walk']
-	d.onclick = async () => { let x = await mGatherSelect(d, { bg: 'pink', padding: 12 }, { list }); console.log('you entered', x); }
-	d.click();
+	bNew.onclick = async () => { let x = await mGather(mSelect, bNew, boxStyles, { list }); console.log('you entered', x); }
+	let d3 = await mKey('watch', dMain, stylesMain, { tag: 'button', menu: 'top' });
+	d3.onclick = async () => { let x = await mGather(mYesNo, d3, boxStyles); console.log('you entered', x); }
+	d3.click();
 }
-async function test13_mGather() {
+
+async function test4_mGather() {
+	await loadAssetsStatic();
+	globalKeyHandling();
+	let elems = mLayoutTM('pink', 'dPage');
+	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
+	let styles = { h: 30 }, boxStyles = { bg: 'pink', padding: 4 }, stylesMain = dictMerge({ margin: 10 }, styles);
+	let bGame = mDom(dTop, styles, { tag: 'button', menu: 'top', html: 'game' });
+	bGame.onclick = async () => { let x = await mGather(mInput, bGame, boxStyles); console.log('you entered', x); }
+	let bWatch = mDom(dTop, styles, { tag: 'button', menu: 'top', html: 'hallo' }); //mKey('watch', dTop, styles, { tag: 'button', menu: 'top' });
+	bWatch.onclick = async () => { let x = await mGather(mYesNo, bWatch, boxStyles); console.log('you entered', x); }
+	let bNew = mDom(elems[1], stylesMain, { tag: 'button', html: 'New' });//return;
+	let list = ['violin', 'piano', 'prog', 'math', 'walk', 'violin', 'piano', 'prog', 'math', 'walk', 'violin', 'piano', 'prog', 'math', 'walk']
+	bNew.onclick = async () => { let x = await mGather(mSelect, bNew, boxStyles, { list }); console.log('you entered', x); }
+	let d3 = await mKey('watch', dMain, stylesMain, { tag: 'button', menu: 'top' });
+	d3.onclick = async () => { let x = await mGather(mYesNo, d3, boxStyles); console.log('you entered', x); }
+	d3.click();
+}
+async function test3_mGather() {
 	await loadAssetsStatic();
 	// window.onkeydown = keyDownHandler;
 	// window.onkeyup = keyUpHandler;
@@ -48,7 +60,7 @@ async function test13_mGather() {
 	d.onclick = async () => { let x = await mGatherSelect(d, { bg: 'pink', padding: 12 }, { list }); console.log('you entered', x); }
 	d.click();
 }
-async function test12_mGather() {
+async function test2_mGather() {
 
 	// mStyle('dPage',{bg:'darkgreen'})
 	await loadAssetsStatic(); await actionLoadAll();
@@ -63,7 +75,7 @@ async function test12_mGather() {
 	//d1.onclick = async () => { let x = await mGather(d1); console.log('you entered', x); }
 	d2.onclick = async () => { let x = await mGather(d2); console.log('you entered', x); }
 }
-async function test11_mGather() {
+async function test1_mGather() {
 	//mStyle('dPage', { w: '100%', h: '100%', bg, 'caret-color': '#ffffff00' });
 	let elems = mLayoutTM(rColor(), 'dPage');
 	let d = mDom(elems[1], { className: 'button' }, { tag: 'button', html: 'New' });//return;
@@ -74,14 +86,14 @@ async function test11_mGather() {
 
 	}
 }
-async function test11_mAlignable() {
+async function test1_mAlignable() {
 	let d = mDom('dPage', {}, { html: 'hallo' });//return;
 
 	let [box, inp] = mInputInBox('dPage', { padding: 4, bg: 'silver', rounding: 4 }, { fz: 24 });
 	mAlign(box, d, { align: 'bl', offx: 20 });
 	mOnEnterInput(inp, val => console.log(inp.value, val))
 }
-async function test11() {
+async function test1_mAlign() {
 	let d = mDom('dPage', { position: 'absolute', top: 10, left: 200, w: 500, h: 500, bg: 'green' }, { html: 'hallo' });//return;
 	let d1 = mDom('dPage', { display: 'inline-block' });
 	let d2 = mDom(d1, { display: 'flex', gap: 10, padding: 10 });
@@ -95,7 +107,7 @@ async function test11() {
 	mAlign(d4, d3, { align: 'bl' })
 	//let x = await mGather({}, { align:'bl',anchor: d }); console.log('gather', x)
 }
-async function test10_emo1() {
+async function test1_emo1() {
 	let res = await mPhpPostLine("Type something 😊", 'zdata/test.txt'); return;
 	let elems = mLayoutTM('hotpink', dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
 	let html =
@@ -107,7 +119,7 @@ async function test10_emo1() {
 		`;
 	mDom('dMain', {}, { html });
 }
-async function test10_saveEmo() {
+async function test1_saveEmo() {
 	let elems = mLayoutTM('hotpink', dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
 	let inp = createEmojiInput('dMain');
 	let button = mDom('dMain', {}, {
@@ -120,7 +132,7 @@ async function test10_saveEmo() {
 	//let d=mDom('dMain',{},{tag:'input'});
 
 }
-async function test9_testFileio() {
+async function test1_testFileio() {
 	await loadAssetsStatic();
 	let elems = mLayoutTM(rColor(), dPage);
 	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
@@ -133,7 +145,7 @@ async function test9_testFileio() {
 	let d5 = mKey('append', dTop, {}, { onclick: async () => console.log(await jsyaml.load(await mPhpPostLine('hallo du!', path))), menu: 'top' });
 	let d6 = mKey('write2', dTop, {}, { onclick: async () => console.log(await mPhpPostFile("was???", path)), menu: 'top' });
 }
-async function test9_postYaml() {
+async function test1_postYaml() {
 	await loadAssetsStatic(); //console.log(M.superdi.airplane);
 	let o = M.superdi['bee']; console.log(o);
 	let text = jsyaml.dump(o); console.log(text);
@@ -141,7 +153,7 @@ async function test9_postYaml() {
 	let res = await mPhpGetFile('../../zdata/f2.yaml'); console.log(res);
 	let o2 = jsyaml.load(res); console.log(o2);
 }
-async function test9_createStopwatch() {
+async function test1_createStopwatch() {
 	await loadAssetsStatic(); //console.log(M.superdi.airplane);
 	let elems = mLayoutTM(rColor(), dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
 	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
@@ -155,7 +167,7 @@ async function test9_createStopwatch() {
 	// let x=createStopwatch(d);
 
 }
-async function test9_mToggleElem() {
+async function test1_mToggleElem() {
 	await loadAssetsStatic(); //console.log(M.superdi.airplane);
 	let elems = mLayoutTLMRS(rColor(), dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
 	mStyle(dTop, { paleft: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
@@ -164,7 +176,7 @@ async function test9_mToggleElem() {
 	//mToggle1Elem(d,'bee',1,{html:'0'},{html:'1'},{html:'2'});
 	let tAction = mToggleElem(d, 'state', { relax: 'green', work: 'red', sleep: 'blue' }, ['work', 'relax', 'work', 'sleep'], 0, registerAction);
 }
-async function test8_mKey() {
+async function test1_mKey() {
 	await loadAssetsStatic(); //console.log(M.superdi.airplane);
 	window.onkeydown = keyDownHandler;
 	window.onkeyup = keyUpHandler;
@@ -183,14 +195,14 @@ async function test8_mKey() {
 		//onHoverTooltip(elem, `${key} (${type})`)
 	}
 }
-async function test8_mLayout() {
+async function test0_mLayout() {
 	await loadAssetsStatic(); //console.log(M.superdi.airplane);
 	let elems = mLayoutTLM(rColor(), dPage);
 	for (const i of range(12)) elems = mLayoutTMS(rColor(), `dMain${i == 0 ? '' : i - 1}`, i);
 	console.log(elems);
 	elems.map(x => mStyle(x, { bg: rColor() }))
 }
-async function test7() {
+async function test0_mDom_statt_key() {
 	await loadAssetsStatic(); //console.log(M.superdi.airplane);
 
 	mStyle(dPage, { w: '100%', h: '100%', bg: 'navy', 'caret-color': '#ffffff00' });
@@ -252,7 +264,7 @@ async function test7() {
 		return;
 	}
 }
-async function test6() {
+async function test0_mKey() {
 	await loadAssetsStatic(); //console.log(M.superdi.airplane);
 
 	mStyle(dPage, { w: '100%', h: '100%', bg: 'navy' });
@@ -288,7 +300,7 @@ async function test6() {
 	console.log(mBy('a', 'class').map(x => [x.innerHTML, x.getAttribute('menu'), x.getAttribute('kennzahl')].join(',')));
 	//d.click();
 }
-async function test5_mMenuV() {
+async function test0_mMenuV() {
 	await loadAssetsStatic();
 	mStyle(dPage, { w: '100%', h: '100%', bg: 'sienna' }); //page coloring
 	let names = M.divNames = mAreas(dPage, ` 'dLogo dTop' 'dLeft dMain' `, '140px 1fr', 'auto 1fr');
@@ -308,7 +320,7 @@ async function test5_mMenuV() {
 	console.log(mBy('a', 'class').map(x => [x.innerHTML, x.getAttribute('menu'), x.getAttribute('kennzahl')].join(',')));
 	d.click();
 }
-async function _test4() {
+async function test0_mShade() {
 	await loadAssetsStatic();
 	mStyle(dPage, { w: '100%', h: '100%', bg: 'sienna' }); //page coloring
 	let names = M.divNames = mAreas(dPage, ` 'dLeft dRight' `, '140px 1fr', '100%');
@@ -341,7 +353,7 @@ async function _test4() {
 	mMenuH(dTop, 'HALLO', {}, onclickExample, 'right');
 	mMenuH(dTop, 'EXAMPLE', {}, onclickExample, 'right');
 }
-async function _test3() {
+async function test0_mAreas() {
 	await loadAssetsStatic();
 	let dPage = document.getElementById('dPage');
 	mStyle(dPage, { w: '100%', h: '100%', bg: 'sienna' }); //page coloring
@@ -359,10 +371,10 @@ async function _test3() {
 	mLinkMenu(dTop, 'GAME', {}, onclickGame, 'top');
 	mLinkMenu(dTop, 'ZONE', {}, onclickZone, 'top');
 }
-async function test2() {
+async function test0_assets() {
 	await loadAssetsStatic();
 }
-async function test1() {
+async function test0_mSleep_p5() {
 	await loadColors();
 	await mSleep(2000);
 	mClear('dPage');
@@ -370,7 +382,7 @@ async function test1() {
 	console.log("Window loaded, initializing p5.js...");
 	var sketch = new p5(sketch1); console.log(sketch)
 }
-async function test0() {
+async function test0_p5() {
 	new p5(sketch0);
 }
 

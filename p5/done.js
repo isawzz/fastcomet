@@ -1,4 +1,5 @@
 
+//#region apps
 async function app0_stopwatch() {
 	await loadAssetsStatic(); //console.log(M.superdi.airplane);
 	let di = await actionLoadAll(); //console.log(Serverdata);
@@ -19,6 +20,28 @@ async function app0_stopwatch() {
 	// let x=createStopwatch(d);
 
 }
+//#endregion
+
+//#region key handling
+function globalKeyHandling() {
+	DA.hotkeys = {};
+	DA.keysToCheck = {};
+	document.addEventListener('keydown', keyDownHandler);
+	document.addEventListener('keyup', keyUpHandler);
+	document.addEventListener('keydown', hotkeyHandler);
+}
+function hotkeyHandler(ev) {
+	let k = ev.key;
+	let handler = lookup(DA, ['hotkeys', ev.key]);
+	//console.log('pressed', ev.key, DA.hotkeys, 'handler for', ev.key, handler);
+	if (handler) { handler(ev); }
+}
+function hotkeyActivate(key, handler) { DA.hotkeys[key] = handler; }
+function hotkeyDeactivate(key) { delete DA.hotkeys[key]; }
+function keyDownHandler(ev) {	DA.keysToCheck[ev.key] = true; }
+function keyUpHandler(ev) { delete DA.keysToCheck[ev.key]; }
+
+//#endregion
 
 function allNumbers(s) {
 	//returns array of all numbers within string s

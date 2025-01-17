@@ -1,5 +1,4 @@
 
-
 function createEmojiInput(dParent) {
 
 	// Create the input element
@@ -127,6 +126,38 @@ function measureEmojiWidth(text, fontSize = 16) {
 	document.body.removeChild(container);
 
 	return width;
+}
+function mGatherSelect(d, styles = {}, opts = {}) {
+	return new Promise((resolve, _) => {
+		let dShield = mShield();
+		let fCancel = _ => { dShield.remove(); hotkeyDeactivate('Escape'); resolve(null) };
+		let fSuccess = val => { dShield.remove(); hotkeyDeactivate('Escape'); resolve(val) };
+		dShield.onclick = fCancel;
+		hotkeyActivate('Escape', fCancel);
+
+		let [box, inp] = mInBox(mSelect, dShield, styles, {}, dictMerge(opts, { fSuccess })); 
+
+		mAlign(box, d, { align: 'bl', offx: 20 });
+		inp.focus();
+
+
+	});
+}
+function mGatherYesNo(d, styles = {}, opts = {}) {
+	return new Promise((resolve, _) => {
+		let dShield = mShield();
+		let fCancel = _ => { dShield.remove(); hotkeyDeactivate('Escape'); resolve(null) };
+		let fSuccess = val => { dShield.remove(); hotkeyDeactivate('Escape'); resolve(val) };
+		dShield.onclick = fCancel;
+		hotkeyActivate('Escape', fCancel);
+
+		let [box, inp] = mInBox(mSelect, dShield, styles, {}, dictMerge(opts, { onChange:fSuccess, list: ['yes', 'no'] })); 
+
+		mAlign(box, d, { align: 'bl', offx: 20 });
+		inp.focus();
+
+
+	});
 }
 function mImgAsync(src, d, styles = {}, opts = {}, callback = null) {
 	return new Promise((resolve, reject) => {
@@ -352,6 +383,26 @@ function mSymSizeToFz(info, fz) { let f = fz / 100; return { fz: fz, w: info.w *
 function mSymSizeToH(info, h) { let f = h / info.h; return { fz: 100 * f, w: info.w * f, h: h }; }
 
 function mSymSizeToW(info, w) { let f = w / info.w; return { fz: 100 * f, w: w, h: info.h * f }; }
+function mShield(dParent, resolve,styles = {}, opts = {}) {
+	function close(){
+		console.log('close!');
+		mBy('shield').remove();
+		hotkeyDeactivate('Escape'); resolve(null);
+	}
+	addKeys({ bg: '#00000080' }, styles);
+	addKeys({ id:'shield', hideOnClick: true, hideOnEscape: true }, opts);
+	dParent = toElem(dParent); //console.log(dParent);
+	let d = mDom(dParent, styles, opts);
+	mIfNotRelative(dParent);
+
+	mStyle(d, { position: 'absolute', left: 0, top: 0, w: '100%', h: '100%' });
+	if (opts.onclick) d.onclick = opts.onclick;
+	else if (opts.hideOnClick) d.onclick = ev => { evNoBubble(ev); close(); };
+	else d.onclick = ev => { evNoBubble(ev); };
+	if (opts.hideOnEscape) hotkeyActivate('Escape', ev => { evNoBubble(ev); close(); });
+	mClass(d, 'topmost');
+	return d;
+}
 function mToggle(ev) {
 	let key = ev.target.getAttribute('data-toggle');
 	let t = DA.toggle[key];

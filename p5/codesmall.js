@@ -725,11 +725,6 @@ function isNumber(x) { return x !== ' ' && x !== true && x !== false && isdef(x)
 function isString(param) { return typeof param == 'string'; }
 function isdef(x) { return x !== null && x !== undefined && x !== 'undefined'; }
 function jsCopy(o) { return JSON.parse(JSON.stringify(o)); }
-function keyDownHandler(ev) {
-	if (nundef(DA.keysToCheck)) DA.keysToCheck = {};
-	DA.keysToCheck[ev.key] = true; //console.log(ev.key)
-}
-function keyUpHandler(ev) { DA.keysToCheck[ev.key] = false; }
 function last(arr) {
 	return arr.length > 0 ? arr[arr.length - 1] : null;
 }
