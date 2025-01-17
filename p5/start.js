@@ -9,7 +9,10 @@ async function test4_mMultiGather() {
 	let elems = mLayoutTM('pink', 'dPage');
 	let d=mDom('dMain',{gap:10,padding:10});
 	mCenterCenterFlex(d);
-	let board = drawHexBoard(3, 3, d, { bg: 'transparent', padding: 10 }, { w: 70, h: 72, bg:rColor(),border:'white',classes: 'hexframe' }); //, {padding:10});
+	//let dhex = hexFromCenter(d, { x: 100, y: 100 }, {w:100,h:100,bg:rColor()});
+
+	let board = drawHexBoard(3, 3, d, { bg: 'blue',border:'red', padding: 10, className:'hop1' }, { sz:50, bg:rColor()},{gap:3}); 
+	console.log(board)
 
 }
 
