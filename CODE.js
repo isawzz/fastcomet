@@ -1,4 +1,32 @@
 
+function crap_createNEHexagonSide(dhex, sideLength) {
+	// Calculate dimensions and angles
+	const hexHeight = Math.sqrt(3) * sideLength; // Height of the hexagon
+	const topOffset = hexHeight / 2; // Vertical offset for NE side
+	const sideWidth = sideLength / 2; // Horizontal base for the NE triangle
+
+	// Create the NE side div
+	const neSide = document.createElement('div');
+	neSide.style.position = 'absolute';
+	neSide.style.width = `${sideLength}px`;
+	neSide.style.height = `${hexHeight}px`;
+	neSide.style.clipPath = `polygon(50% 0%, 100% 50%, 50% 100%)`;
+	neSide.style.backgroundColor = 'rgba(255, 0, 0, 0.5)'; // Semi-transparent red for visibility
+	neSide.style.transformOrigin = 'center center';
+
+	// Position the NE side relative to its parent
+	neSide.style.top = `${topOffset - hexHeight / 4}px`; // Adjust vertical alignment
+	neSide.style.left = `${sideLength}px`; // Adjust horizontal alignment
+	
+	// Append to the parent container
+	const parent = dhex; // document.querySelector(dhex);
+	if (parent) {
+			parent.style.position = 'relative'; // Ensure parent is relatively positioned
+			parent.appendChild(neSide);
+	} else {
+			console.error(`Parent element with selector '${dhex}' not found.`);
+	}
+}
 function mDropdown(dParent, styles = {}, opts = {}) {
 	let list = toNameValueList(opts.list);
 	addKeys({ tag: 'select' }, opts);

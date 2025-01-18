@@ -34,6 +34,160 @@ function mCreateFrom(htmlString) {
 	return div.firstChild;
 }
 
+//#region poly
+function getPoly(offsets, x, y, w, h) {
+	//, modulo) {
+	let poly = [];
+	for (let p of offsets) {
+		let px = Math.round(x + p[0] * w); //  %modulo;
+		//px -= px%modulo;
+		//if (px % modulo != 0) px =px % modulo; //-= 1;
+		let py = Math.round(y + p[1] * h); //%modulo;
+		//py -= py%modulo;
+		//if (py % modulo != 0) py -= 1;
+		poly.push({ x: px, y: py });
+	}
+	return poly;
+}
+function getHexPoly(x, y, w, h) {
+	// returns hex poly points around center x,y
+	let hex = [[0, -0.5], [0.5, -0.25], [0.5, 0.25], [0, 0.5], [-0.5, 0.25], [-0.5, -0.25]];
+	return getPoly(hex, x, y, w, h);
+}
+function getQuadPoly(x, y, w, h) {
+	// returns hex poly points around center x,y
+	q = [[0.5, -0.5], [0.5, 0.5], [-0.5, 0.5], [-0.5, -0.5]];
+	return getPoly(q, x, y, w, h);
+}
+function getTriangleUpPoly(x, y, w, h) {
+	// returns hex poly points around center x,y
+	let triup = [[0, -0.5], [0.5, 0.5], [-0.5, 0.5]];
+	return getPoly(triup, x, y, w, h);
+}
+function getTriangleDownPoly(x, y, w, h) {
+	// returns hex poly points around center x,y
+	let tridown = [[-0.5, 0.5], [0.5, 0.5], [-0.5, 0.5]];
+	return getPoly(tridown, x, y, w, h);
+}
+
+//#endregion
+
+//#region draw
+function drawCircleOnCanvas(canvas, cx, cy, sz, color) {
+  const ctx = canvas.getContext('2d');
+  ctx.beginPath();
+  ctx.arc(cx, cy, sz / 2, 0, 2 * Math.PI);
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+function drawCircleOnDiv(dParent, cx, cy, sz, bg = 'red') {
+  let o = { cx, cy, x: cx - sz / 2, y: cy - sz / 2, sz, bg };
+  let [w, h] = [sz, sz];
+  o.div = mDom(dParent, { w, h, position: 'absolute', round: true, x: cx - sz / 2, y: cy - sz / 2, bg });
+  return o;
+}
+function drawEllipseOnCanvas(canvas, cx, cy, w, h, color = 'orange', stroke = 0, border = 'red') {
+  const ctx = canvas.getContext('2d');
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, w / 2, h / 2, 0, 0, 2 * Math.PI);
+  if (stroke > 0) { ctx.strokeStyle = border; ctx.lineWidth = stroke; ctx.stroke(); }
+  if (color) { ctx.fillStyle = color; ctx.fill(); }
+}
+function drawHexBoard(topside, side, dParent, styles = {}, itemStyles = {}, opts = {}) {
+  addKeys({ box: true }, styles);
+  let dOuter = mDom(dParent, styles, opts);
+  let d = mDom(dOuter, { position: 'relative', });
+  let [centers, rows, maxcols] = hexBoardCenters(topside, side);
+  let [w, h] = mSizeSuccession(itemStyles, 24);
+  let gap = valf(opts.gap, -.5);
+  let items = [];
+  if (gap != 0) copyKeys({ w: w - gap, h: h - gap }, itemStyles);
+  for (const c of centers) {
+    let dhex = hexFromCenter(d, { x: c.x * w, y: c.y * h }, itemStyles);
+    let item = { div: dhex, cx: c.x, cy: c.y, row: c.row, col: c.col };
+    items.push(item);
+  }
+  let [wBoard, hBoard] = [maxcols * w, rows * h * .75 + h * .25];
+  mStyle(d, { w: wBoard, h: hBoard });
+  return { div: dOuter, topside, side, centers, rows, maxcols, boardShape: 'hex', w, h, wBoard, hBoard, items }
+}
+function drawInteractiveLine(d, p1, p2, color = 'black', thickness = 10) {
+  const offs = thickness / 2;
+  let [x1, y1, x2, y2] = [p1.x, p1.y, p2.x, p2.y];
+  const distance = Math.hypot(x2 - x1, y2 - y1);
+  const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+  const line = mDom(d, { left: x1, top: y1 - offs, bg: color, opacity: .1, className: 'line1', w: distance, h: thickness, transform: `rotate(${angle}deg)` })
+  line.dataset.x1 = x1;
+  line.dataset.y1 = y1;
+  line.dataset.x2 = x2;
+  line.dataset.y2 = y2;
+  line.dataset.thickness = thickness;
+  return line;
+}
+function drawLineOnCanvas(canvas, x1, y1, x2, y2, stroke = 1) {
+  const ctx = canvas.getContext('2d');
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = stroke;
+  ctx.stroke();
+}
+function drawMeeple(dParent, p) {
+  let addLabel = true;
+  let html = isdef(p.owner) && addLabel ? p.owner[0].toUpperCase() : ''; //p.id.substring(1) : ''
+  let d1 = p.div = mDom(dParent, { fz: p.sz * .75, left: p.x + p.sz / 2, top: p.y + p.sz / 2, w: p.sz, h: p.sz, position: 'absolute', bg: p.bg, fg: 'contrast' }, { html, id: p.id });
+  mCenterCenterFlex(d1);
+  d1.style.cursor = 'default';
+}
+function drawPix(ctx, x, y, color = 'red', sz = 5) {
+  ctx.fillStyle = color;
+  ctx.fillRect(x - sz / 2, y - sz / 2, sz, sz)
+}
+function drawPixFrame(ctx, x, y, color = 'red', sz = 5) {
+  ctx.strokeStyle = color;
+  ctx.strokeRect(x - sz / 2, y - sz / 2, sz, sz)
+}
+function drawPoint(dParent, p, addLabel = true) {
+  let html = isdef(p.owner) && addLabel ? p.owner[0].toUpperCase() : '';
+  addKeys({ sz: 20, bg: rColor(), id: getUID() }, p);
+  let d1 = p.div = mDom(dParent, { round: true, left: p.x, top: p.y, w: p.sz, h: p.sz, position: 'absolute', bg: p.bg, align: 'center', fg: 'contrast' }, { html, id: p.id });
+  d1.style.cursor = 'default';
+  if (isdef(p.border)) mStyle(d1, { outline: `solid ${p.border} 4px` });
+  let rect = getRect(d1);
+  p.cx = p.x + p.sz / 2; p.cy = p.y + p.sz / 2;
+  p.xPage = rect.x; p.yPage = rect.y;
+  p.cxPage = rect.x + p.sz / 2; p.cyPage = rect.y + p.sz / 2;
+  return p;
+}
+function drawPointStar(p1, d, sz) {
+  let starSizes = [1, .4, 1, 1, 1, .8, 1, .6, 1];
+  let itype = p1.type % starSizes.length;
+  p1.sz = sz = 30 * starSizes[itype];
+  let img = p1.div = cloneImage(M.starImages[itype], d, p1.x, p1.y, sz, sz);
+  img.id = p1.id = `p${p1.x}_${p1.y}`;
+}
+function drawPointType(dParent, p, addLabel = true) {
+  let html = isdef(p.owner) && addLabel ? p.owner[0].toUpperCase() : '';
+  addKeys({ sz: 20, bg: rColor(), id: getUID() }, p);
+  let d1 = p.div = mDom(dParent, { round: true, left: p.x, top: p.y, w: p.sz, h: p.sz, position: 'absolute', bg: p.bg, align: 'center', fg: 'contrast' }, { html, id: p.id });
+  d1.style.cursor = 'default';
+  if (isdef(p.border)) mStyle(d1, { outline: `solid ${p.border} 4px` });
+  let rect = getRect(d1);
+  p.cx = p.x + p.sz / 2; p.cy = p.y + p.sz / 2;
+  p.xPage = rect.x; p.yPage = rect.y;
+  p.cxPage = rect.x + p.sz / 2; p.cyPage = rect.y + p.sz / 2;
+  return p;
+}
+function drawShape(key, dParent, styles, classes, sizing) {
+  if (nundef(styles)) styles = { w: 96, h: 96, bg: 'random' };
+  if (nundef(sizing)) sizing = { hgrow: true, wgrow: true };
+  let d = mDiv(dParent, styles, null, null, classes, sizing);
+  if (key == 'circle' || key == 'ellipse') mStyle(d, { rounding: '50%' });
+  else mStyle(d, { 'clip-path': PolyClips[key] });
+  return d;
+}
+//#endregion
 
 //#region mGather uiType
 function clamp(x, min, max) { return Math.min(Math.max(x, min), max); }

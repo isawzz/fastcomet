@@ -1,4 +1,5 @@
 
+function iDiv(i) { return isdef(i.live) ? i.live.div : valf(i.div, i.ui, i); } //isdef(i.div) ? i.div : i; }
 function mGather(f, d, styles = {}, opts = {}) {
 	return new Promise((resolve, _) => {
 		let dShield = mShield();

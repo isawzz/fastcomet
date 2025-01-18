@@ -1,11 +1,48 @@
+function calcClipPoints(x, y, w, h, clipPath) {
+	// Parse the clip-path percentages into an array of points
+	const percentagePoints = clipPath
+		.match(/polygon\((.*?)\)/)[1] // Extract the points inside `polygon()`
+		.split(',')                  // Split into individual points
+		.map(point => point.trim())  // Remove extra spaces
+		.map(point => point.split(' ').map(value => parseFloat(value))); // Convert to [x, y]
+
+	// Convert percentage points to actual pixel coordinates
+	const pixelPoints = percentagePoints.map(([xPercent, yPercent]) => {
+		const x = x + (xPercent - 50) * (w / 100);
+		const y = y + (yPercent - 50) * (h / 100);
+		return { x, y };
+	});
+
+	return pixelPoints;
+}
+function calculatePolygonPointsFromClipPath(center, width, height, clipPath) {
+	// const [cx, cy] = center;
+	const [cx, cy] = [center.cx, center.cy]; //console.log('center',center)
+
+	// Parse the clip-path percentages into an array of points
+	const percentagePoints = clipPath
+		.match(/polygon\((.*?)\)/)[1] // Extract the points inside `polygon()`
+		.split(',')                  // Split into individual points
+		.map(point => point.trim())  // Remove extra spaces
+		.map(point => point.split(' ').map(value => parseFloat(value))); // Convert to [x, y]
+
+	// Convert percentage points to actual pixel coordinates
+	const pixelPoints = percentagePoints.map(([xPercent, yPercent]) => {
+		const x = cx + (xPercent - 50) * (width / 100);
+		const y = cy + (yPercent - 50) * (height / 100);
+		return [x, y];
+	});
+
+	return pixelPoints;
+}
 
 function drawHexBoard(topside, side, dParent, styles = {}, itemStyles = {}, opts = {}) {
 	addKeys({ box: true }, styles);
 	let dOuter = mDom(dParent, styles, opts);
 	let d = mDom(dOuter, { position: 'relative', });
-	let [centers, rows, maxcols] = hexBoardCenters(topside, side);
+	let [centers, rows, maxcols] = hexBoardCenters(topside, side); //console.log(centers)
 	let [w, h] = mSizeSuccession(itemStyles, 24);
-	let gap = valf(opts.gap, -.5);
+	let gap = valf(styles.gap, -.5);
 	let items = [];
 	if (gap != 0) copyKeys({ w: w - gap, h: h - gap }, itemStyles);
 	for (const c of centers) {
@@ -44,17 +81,6 @@ function hexFromCenter(dParent, center, styles = {}, opts = {}) {
 	let d = mDom(dParent, { position: 'absolute', left, top, 'clip-path': 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }, opts);
 	mStyle(d, styles);
 	return d;
-}
-function mSizeSuccession(styles = {}, szDefault = 100, fromWidth = true) {
-	let [w, h] = [styles.w, styles.h];
-	if (fromWidth) {
-		w = valf(w, styles.sz, h, szDefault);
-		h = valf(h, styles.sz, w, szDefault);
-	} else {
-		h = valf(h, styles.sz, w, szDefault);
-		w = valf(w, styles.sz, h, szDefault);
-	}
-	return [w, h];
 }
 
 

@@ -1,19 +1,46 @@
 
 onload = start;
 
-async function start() { await test4_mMultiGather(); }
+async function start() { await test4_hex(); }
 
-async function test4_mMultiGather() {
+async function test4_hex() {
 	await loadAssetsStatic();
 	globalKeyHandling();
 	let elems = mLayoutTM('pink', 'dPage');
-	let d=mDom('dMain',{gap:10,padding:10});
-	mCenterCenterFlex(d);
-	//let dhex = hexFromCenter(d, { x: 100, y: 100 }, {w:100,h:100,bg:rColor()});
+	let d = mDom('dMain', { gap: 10, padding: 10 });
+	//mCenterCenterFlex(d);
+	let p={ x: 100, y: 100 };
+	let [w,h]=[100,100];
+	let dhex = hexFromCenter(d, p, { w,h, bg: rColor() });
+	drawCircleOnDiv(d, p.x, p.y, 10);
+	let pts = calculatePolygonPointsFromClipPath(item, sz, sz, clip);
 
-	let board = drawHexBoard(3, 3, d, { bg: 'blue',border:'red', padding: 10, className:'hop1' }, { sz:50, bg:rColor()},{gap:3}); 
-	console.log(board)
+}
+async function muell() {
 
+	let sz = 50;
+	let board = drawHexBoard(3, 3, d, { bg: 'blue', border: '1px solid red', padding: 10, gap: 4 }, { sz, bg: rColor() });
+	//console.log(board)
+	let item = board.items[0];
+	let dboard = iDiv(board);
+	let r = getRect(dboard);
+	let [dx, dy] = [r.x, r.y];
+
+	let clip = 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)';
+	let pts = calculatePolygonPointsFromClipPath(item, sz, sz, clip);
+
+
+	// let corners = calcHexCorners(item, sz, sz);
+	// for(const c of corners){
+	// 	let d=mDom(board.div,{position:'absolute',left:c[0],top:c[1],w:10,h:10,bg:'red',round:true});
+
+	// }
+	//console.log(pts);
+	let p1 = [pts[0][0] + dx, pts[0][1] + dy];
+	let p2 = [pts[1][0] + dx, pts[1][1] + dy];
+	mIfNotRelative(dboard);
+	mDom(dboard, { position: 'absolute', top: p1[1] - 5, left: p1[0] = 5, w: 10, h: 10, bg: 'black' });
+	createLineBetweenPoints(iDiv(board), p1, p2, 2)
 }
 
 async function test4_mGather() {
