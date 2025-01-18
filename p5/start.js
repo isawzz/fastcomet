@@ -3,17 +3,38 @@ onload = start;
 
 async function start() { await test4_hex(); }
 
+async function test4_hexboard() {
+	await loadAssetsStatic();
+	globalKeyHandling();
+	let elems = mLayoutTM('pink', 'dPage');
+	let d = mDom('dMain', { gap: 10, padding: 10 });
+	//mCenterCenterFlex(d);
+	let p = { x: 100, y: 100 };
+	let sz = 100;
+	let [w, h] = mSizeSuccession({ sz });
+	let dhex = hexFromCenter(d, p, { w, h, bg: rColor() });
+	drawCircleOnDiv(d, p.x, p.y, 10);
+	let clip = 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)';
+	let pts = calcClipPoints(p.x, p.y, sz, sz, clip);
+	console.log(pts);
+	for (const pt of pts) drawCircleOnDiv(d, pt.x, pt.y, 2)
+
+}
 async function test4_hex() {
 	await loadAssetsStatic();
 	globalKeyHandling();
 	let elems = mLayoutTM('pink', 'dPage');
 	let d = mDom('dMain', { gap: 10, padding: 10 });
 	//mCenterCenterFlex(d);
-	let p={ x: 100, y: 100 };
-	let [w,h]=[100,100];
-	let dhex = hexFromCenter(d, p, { w,h, bg: rColor() });
+	let p = { x: 100, y: 100 };
+	let sz = 100;
+	let [w, h] = mSizeSuccession({ sz });
+	let dhex = hexFromCenter(d, p, { w, h, bg: rColor() });
 	drawCircleOnDiv(d, p.x, p.y, 10);
-	let pts = calculatePolygonPointsFromClipPath(item, sz, sz, clip);
+	let clip = 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)';
+	let pts = calcClipPoints(p.x, p.y, sz, sz, clip);
+	console.log(pts);
+	for (const pt of pts) drawCircleOnDiv(d, pt.x, pt.y, 2)
 
 }
 async function muell() {

@@ -1,4 +1,4 @@
-function calcClipPoints(x, y, w, h, clipPath) {
+function calcClipPoints(x0, y0, w, h, clipPath) {
 	// Parse the clip-path percentages into an array of points
 	const percentagePoints = clipPath
 		.match(/polygon\((.*?)\)/)[1] // Extract the points inside `polygon()`
@@ -8,8 +8,8 @@ function calcClipPoints(x, y, w, h, clipPath) {
 
 	// Convert percentage points to actual pixel coordinates
 	const pixelPoints = percentagePoints.map(([xPercent, yPercent]) => {
-		const x = x + (xPercent - 50) * (w / 100);
-		const y = y + (yPercent - 50) * (h / 100);
+		const x = x0 + (xPercent - 50) * (w / 100);
+		const y = y0 + (yPercent - 50) * (h / 100);
 		return { x, y };
 	});
 
