@@ -1,5 +1,5 @@
 
-function centerAtPos(elem, x, y) {
+function centerAt(elem, x, y) {
   const rect = elem.getBoundingClientRect();
   const offsetX = x - rect.width / 2;
   const offsetY = y - rect.height / 2;

@@ -9,7 +9,6 @@ function colorBucket(s){
 	let c=di[s];
 	if (isEmpty(c)) c=s;
 	return rChoose(Object.keys(dicolor[c]));
-
 }
 function mShape(shape, dParent, styles = {}, opts = {}) {
 	styles = jsCopy(styles);
@@ -21,6 +20,7 @@ function mShape(shape, dParent, styles = {}, opts = {}) {
 	if (nundef(clip)) styles.round = true; else styles.clip = clip;
 	let d = mDom(dParent, styles, opts);
 	if (isdef(opts.pos)) { mPlace(d, opts.pos); }
+	else if (isdef(opts.center)) centerAt(d, opts.center.x, opts.center.y);
 	return d;
 }
 

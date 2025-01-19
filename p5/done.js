@@ -552,6 +552,12 @@ function mLayout(bg, dParent, rowlist, colt, rowt) {
 	mShade(newNames);
 	return names.map(x => mBy(x));
 }
+function mLayoutM(bg, dParent, suffix = '') {
+	let styles = {margin:0,padding:0,width:'100%',height:'100%',bg};
+	let opts = {id:`dMain${suffix}`};
+	lookupAddIfToList(M,['divNames'],opts.id);
+	return mDom(dParent,styles, opts);
+}
 function mLayoutTLM(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
 	let rowlist = [`dTop${suffix} dTop${suffix}`, `dLeft${suffix} dMain${suffix}`];
 	let colt = `minmax(${wcol}px, auto) 1fr`;

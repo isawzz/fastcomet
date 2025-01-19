@@ -2,6 +2,9 @@
 ho:tee+scho
 
 _______ 7:19 AM 1/19/2025 airport 21000
+s1: ak 4:58 PM 1/19/2025-5:33 PM 1/19/2025
+math: 5:33 PM 1/19/2025-5:50 PM 1/19/2025
+9*850*0.3ml*1.4g/ml = 1071g = 1.071 kg
 geht wieder los! diesmal muss ich mit sicherheit 2 stations schaffen!
 - open globals
 - mach ein shape mShape

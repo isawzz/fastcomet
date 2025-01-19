@@ -1143,7 +1143,7 @@ function paletteTransWhiteBlack(n = 9) {
 	return pal;
 }
 function rChoose(arr, n = 1, func = null, exceptIndices = null) {
-	if (isDict(arr)) arr = dict2list(arr, 'key');
+	if (isDict(arr)) {arr = dict2list(arr, 'key'); console.log(arr);}
 	let indices = arrRange(0, arr.length - 1);
 	if (isdef(exceptIndices)) {
 		for (const i of exceptIndices) removeInPlace(indices, i);

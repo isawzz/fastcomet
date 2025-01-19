@@ -1,8 +1,32 @@
 
 onload = start;
 
-async function start() { await test4_shape(); }
+async function start() { await test4_mShape(); }
 
+async function test4_mShape() {
+	await loadAssetsStatic();
+	globalKeyHandling();
+	let color = colorBucket('child'); console.log(color);
+	let elems = mLayoutM(color, 'dPage');
+	let d = mDom('dMain', { gap: 10, padding: 10 }); //mCenterCenterFlex(d);
+	let center = { x: 100, y: 100 };
+	let sz = 100;
+	//let o=rChoose(PolyClips); let [shape,clip] = [o.key,o.value];
+	let [shape,clip]=['hex',PolyClips.hex];console.log(shape,clip);
+	let d1 = mShape(shape, d, { sz, background: colorGradient('yellow,pink,white') },{center}); 
+	mShape('circle',d,{bg:'blue',sz:20},{center});
+	let pts = calcClipPoints(center.x, center.y, sz, sz, clip);
+
+	center.x+=100;
+	let d2 = mShape(shape, d, { sz, background: colorGradient('yellow,pink,white') },{center}); 
+	mShape('circle',d,{bg:'blue',sz:20},{center}); //drawCircleOnDiv(d, center.x, center.y, 10);
+	pts=pts.concat(calcClipPoints(center.x, center.y, sz, sz, clip))
+
+	console.log(pts);
+
+	for (const pt of pts) drawCircleOnDiv(d, pt.x, pt.y, 6);
+	drawCircleOnDiv(d, center.x, center.y, 10);
+}
 async function test4_shape() {
 	await loadAssetsStatic();
 	globalKeyHandling();
@@ -19,7 +43,7 @@ async function test4_shape() {
 	let shape = rChoose(shapes);
 	let clip = PolyClips[shape];
 	let d1 = mShape(shape, d, { sz, background: colorGradient('yellow,pink,white') }); console.log(shape); console.log(d1);
-	centerAtPos(d1, p.x, p.y);
+	centerAt(d1, p.x, p.y);
 	drawCircleOnDiv(d, p.x, p.y, 10);
 	let pts = calcClipPoints(p.x, p.y, sz, sz, clip);
 	console.log(pts);
