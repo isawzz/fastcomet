@@ -109,6 +109,26 @@ function _createSelect(dParent, styles = {}, opts = {}) {
 	});
 
 }
+function calculatePolygonPointsFromClipPath(center, width, height, clipPath) {
+	// const [cx, cy] = center;
+	const [cx, cy] = [center.cx, center.cy]; //console.log('center',center)
+
+	// Parse the clip-path percentages into an array of points
+	const percentagePoints = clipPath
+		.match(/polygon\((.*?)\)/)[1] // Extract the points inside `polygon()`
+		.split(',')                  // Split into individual points
+		.map(point => point.trim())  // Remove extra spaces
+		.map(point => point.split(' ').map(value => parseFloat(value))); // Convert to [x, y]
+
+	// Convert percentage points to actual pixel coordinates
+	const pixelPoints = percentagePoints.map(([xPercent, yPercent]) => {
+		const x = cx + (xPercent - 50) * (width / 100);
+		const y = cy + (yPercent - 50) * (height / 100);
+		return [x, y];
+	});
+
+	return pixelPoints;
+}
 
 
 //#region key handling

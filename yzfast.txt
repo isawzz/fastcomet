@@ -1,6 +1,10 @@
 24.1. lib renew
 ho:tee+scho
 
+_______ 7:19 AM 1/19/2025 airport 21000
+- open globals
+- mach ein shape mShape
+- search mShape
 _______ 6:53 AM 1/18/2025 airport 20000
 los gehts!
 s1 ak -
@@ -9,7 +13,6 @@ schatten der vergangenheit
 alice, darling
 unaufhaltsam
 schatten der vergangenheit
-
 _______ 6:12 AM 1/17/2025 airport 19000
 s2: 5:35 PM 1/17/2025
 s1: 11:48 AM 1/17/2025-12:14 PM 1/17/2025

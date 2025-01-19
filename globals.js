@@ -97,6 +97,8 @@ var Zones = {};
 var PolyClips = {
   diamond: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
   hex: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+  pentagon: 'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
+  octagon: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)',
   test1: 'inset(50% 0% 100% 25% 100% 75% 50% 100% 0% 75% 0% 25% round 10px)',
   test0: 'inset(45% 0% 33% 10% round 10px)',
   hexagon: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
@@ -117,6 +119,10 @@ var PolyClips = {
   trileft: 'polygon(0% 50%, 100% 0%, 100% 100%)',
   triLeft: 'polygon(0% 50%, 100% 0%, 100% 100%)',
   splayup: 'polygon(0% 70%, 100% 70%, 100% 100%, 0% 100%)',
+  splayleft: 'polygon(0% 0%, 15% 0%, 15% 100%, 0% 100%)',
+  splay: 'polygon(0% 0%, 20% 0%, 20% 100%, 0% 100%)',
+  splayright: 'polygon(80% 0%, 100% 0%, 100% 100%, 80% 100%)',
+  splaydown: 'polygon(0% 0%, 100% 0%, 100% 30%, 0% 30%)',
 }
 const BLUE = '#4363d8';
 const BROWN = '#96613d';
@@ -151,6 +157,7 @@ const STYLE_PARAMS_2 = {
   bgImage: 'background-image',
   bgRepeat: 'background-repeat',
   bgSize: 'background-size',
+  clip: 'clip-path',
   deco: 'text-decoration',
   dir: 'flex-direction',
   family: 'font-family',
@@ -166,7 +173,7 @@ const STYLE_PARAMS_2 = {
   jcontent: 'justify-content',
   jitems: 'justify-items',
   justify: 'justify-content',
-  iplace:'place-items', //bei display:grid
+  iplace: 'place-items', //bei display:grid
   matop: 'margin-top',
   maleft: 'margin-left',
   mabottom: 'margin-bottom',

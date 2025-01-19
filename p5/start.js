@@ -1,23 +1,32 @@
 
 onload = start;
 
-async function start() { await test4_hex(); }
+async function start() { await test4_shape(); }
 
-async function test4_hexboard() {
+async function test4_shape() {
 	await loadAssetsStatic();
 	globalKeyHandling();
-	let elems = mLayoutTM('pink', 'dPage');
-	let d = mDom('dMain', { gap: 10, padding: 10 });
-	//mCenterCenterFlex(d);
+	let color = colorFromBucket('pink'); console.log(color);
+	let elems = mLayoutTM(color, 'dPage');
+	let d = mDom('dMain', { gap: 10, padding: 10 }); //mCenterCenterFlex(d);
+
+	//mStyle(d,{w:200,h:200,background:'linear-gradient(45deg, red, blue)'},{html:'hallo'}); return;
+
 	let p = { x: 100, y: 100 };
 	let sz = 100;
 	let [w, h] = mSizeSuccession({ sz });
+	let shapes = Object.keys(PolyClips); console.log(shapes);
+	let shape = rChoose(shapes);
+	let d1 = mShape(shape, d, { sz,background:colorGradient('yellow,orange,pink,white') }); console.log(shape); console.log(d1);
+
+	return;
 	let dhex = hexFromCenter(d, p, { w, h, bg: rColor() });
 	drawCircleOnDiv(d, p.x, p.y, 10);
 	let clip = 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)';
 	let pts = calcClipPoints(p.x, p.y, sz, sz, clip);
 	console.log(pts);
-	for (const pt of pts) drawCircleOnDiv(d, pt.x, pt.y, 2)
+	for (const pt of pts) drawCircleOnDiv(d, pt.x, pt.y, 2);
+
 
 }
 async function test4_hex() {
