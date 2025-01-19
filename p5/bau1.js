@@ -4,7 +4,7 @@ function colorGradient(sColors,type='linear',param=null){
 	if (param) param=`${param},`; else param='';
 	return `${type}-gradient(${param}${sColors})`;
 }
-function colorFromBucket(s){
+function colorBucket(s){
 	let di={black:'',blue:'',bluered:'bluemagenta',child:'childrenRoomColors',cyan:'',sky:'cyanblue',rich:'deepRichColors',green:'',greenblue:'greencyan',magenta:'',pink:'magentapink',modern:'modernColors',orange:'',orangered:'',orangeyellow:'',player:'playerColors',red:'',vibrant:'vibrantColors',yellow:'',lime:'yellowgreen'};
 	let c=di[s];
 	if (isEmpty(c)) c=s;

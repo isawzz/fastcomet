@@ -2,6 +2,7 @@
 ho:tee+scho
 
 _______ 7:19 AM 1/19/2025 airport 21000
+geht wieder los! diesmal muss ich mit sicherheit 2 stations schaffen!
 - open globals
 - mach ein shape mShape
 - search mShape

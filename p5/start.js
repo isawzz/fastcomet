@@ -6,7 +6,7 @@ async function start() { await test4_shape(); }
 async function test4_shape() {
 	await loadAssetsStatic();
 	globalKeyHandling();
-	let color = colorFromBucket('pink'); console.log(color);
+	let color = colorBucket('child'); console.log(color);
 	let elems = mLayoutTM(color, 'dPage');
 	let d = mDom('dMain', { gap: 10, padding: 10 }); //mCenterCenterFlex(d);
 
@@ -17,9 +17,15 @@ async function test4_shape() {
 	let [w, h] = mSizeSuccession({ sz });
 	let shapes = Object.keys(PolyClips); console.log(shapes);
 	let shape = rChoose(shapes);
-	let d1 = mShape(shape, d, { sz,background:colorGradient('yellow,orange,pink,white') }); console.log(shape); console.log(d1);
-
-	return;
+	let clip = PolyClips[shape];
+	let d1 = mShape(shape, d, { sz, background: colorGradient('yellow,pink,white') }); console.log(shape); console.log(d1);
+	centerAtPos(d1, p.x, p.y);
+	drawCircleOnDiv(d, p.x, p.y, 10);
+	let pts = calcClipPoints(p.x, p.y, sz, sz, clip);
+	console.log(pts);
+	for (const pt of pts) drawCircleOnDiv(d, pt.x, pt.y, 6);
+}
+async function test4_hexPoints() {
 	let dhex = hexFromCenter(d, p, { w, h, bg: rColor() });
 	drawCircleOnDiv(d, p.x, p.y, 10);
 	let clip = 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)';
