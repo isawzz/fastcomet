@@ -13,29 +13,21 @@ async function test4_mShape() {
 	let sz = 100;
 	//let o=rChoose(PolyClips); let [shape,clip] = [o.key,o.value];
 	let [shape, clip] = ['hex', PolyClips.hex];// console.log(shape, clip);
-	let c1=rColor();
-	let x=M.colorByHex[c1]; console.log(c1,x)
-	let c2=colorComplement(c1);
-	let cmix=x.lighter(.5); //colorMix(c1,c2,50);
-	mStyle('dPage',{bg:cmix});
+	let c1 = rColor();
+	let x = M.colorByHex[c1]; console.log(c1, x);
+	let c2 = colorComplement(c1);
+	let cmix = x.lighter(.5); //colorMix(c1,c2,50);
+	mStyle('dPage', { bg: cmix });
 	let bg = colorGradient(`${c1},${c2}`); //'linear-gradient(90deg,#ff5733,#33ff57,#3357ff)';// colorGradient(); console.log(bg)
 	//elem.style.backgroundColor = 'linear-gradient(90deg,#ff5733,#33ff57,#3357ff)';
-	let d1 = mShape(shape, d, { sz,bg }, { center });
-
-
+	let d1 = mShape(shape, d, { sz, bg }, { center });
 	mShape('circle', d, { bg: 'blue', sz: 20 }, { center });
 	let pts = calcClipPoints(center.x, center.y, sz, sz, clip);
-
 	center.x += 100;
 	let d2 = mShape(shape, d, { sz, bg }, { center });
 	mShape('circle', d, { bg: 'blue', sz: 20 }, { center }); //drawCircleOnDiv(d, center.x, center.y, 10);
 	pts = pts.concat(calcClipPoints(center.x, center.y, sz, sz, clip));	//console.log(pts);
-
-	for (const pt of pts) mShape('circle', d, { bg: 'blue', sz: 20 }, { center:pt }); //drawCircleOnDiv(d, pt.x, pt.y, 6);
-
-
-
-
+	for (const pt of pts) mShape('circle', d, { bg: 'blue', sz: 20 }, { center: pt }); //drawCircleOnDiv(d, pt.x, pt.y, 6);
 }
 async function test4_shape() {
 	await loadAssetsStatic();

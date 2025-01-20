@@ -2,11 +2,16 @@
 ho:tee+scho
 
 _______ 8:27 AM 1/20/2025 airport 22000
+dicolor
+colorByHex
+colorByName
+colorList
+colorNames
+- eine gute lib fuer colors
 - ueberlege wie ich wirklich die colors handle!
 - welche funcs hat w3Color?
 - ich sollte bei rColor eine von meinem dict zurueckgeben!
 ok - mStyle mit gradient irgendwie!
-
 _______ 7:19 AM 1/19/2025 airport 21000
 s1: ak 4:58 PM 1/19/2025-5:33 PM 1/19/2025
 math: 5:33 PM 1/19/2025-5:50 PM 1/19/2025
