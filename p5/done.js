@@ -553,10 +553,14 @@ function mLayout(bg, dParent, rowlist, colt, rowt) {
 	return names.map(x => mBy(x));
 }
 function mLayoutM(bg, dParent, suffix = '') {
-	let styles = {margin:0,padding:0,width:'100%',height:'100%',bg};
+	dParent = toElem(dParent);
+	mStyle(dParent, { bg });
+	let styles = {margin:0,padding:0,width:'100%',height:'100%'};
 	let opts = {id:`dMain${suffix}`};
+	if (dParent.id == 'dPage') M.divNames = [];
 	lookupAddIfToList(M,['divNames'],opts.id);
-	return mDom(dParent,styles, opts);
+	let d = mDom(dParent,styles, opts);
+	return [d];
 }
 function mLayoutTLM(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
 	let rowlist = [`dTop${suffix} dTop${suffix}`, `dLeft${suffix} dMain${suffix}`];

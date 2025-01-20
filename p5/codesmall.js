@@ -1074,10 +1074,11 @@ function mStyle(elem, styles = {}, opts = {}) {
 			let bg = nundef(styles.bg) ? mGetStyle(elem, 'bg') : colorFrom(styles.bg);
 			elem.style.setProperty('color', colorIdealText(bg));
 		} else if (k == 'bg') {
-			elem.style.setProperty('background-color', colorFrom(v, styles.alpha));
+			if (v.includes('grad')) elem.style.setProperty('background', v);
+			else elem.style.setProperty('background-color', colorFrom(v, styles.alpha));
 			continue;
 		} else if (k == 'fg') {
-			elem.style.setProperty('color', colorFrom(v));
+			elem.style.setProperty('background-color', colorFrom(v, styles.alpha));
 			continue;
 		} else if (k.startsWith('class')) {
 			mClass(elem, v)
@@ -1143,7 +1144,7 @@ function paletteTransWhiteBlack(n = 9) {
 	return pal;
 }
 function rChoose(arr, n = 1, func = null, exceptIndices = null) {
-	if (isDict(arr)) {arr = dict2list(arr, 'key'); console.log(arr);}
+	if (isDict(arr)) { arr = dict2list(arr, 'key'); console.log(arr); }
 	let indices = arrRange(0, arr.length - 1);
 	if (isdef(exceptIndices)) {
 		for (const i of exceptIndices) removeInPlace(indices, i);
@@ -1156,19 +1157,23 @@ function rChoose(arr, n = 1, func = null, exceptIndices = null) {
 	arrShuffle(indices);
 	return indices.slice(0, n).map(x => arr[x]);
 }
-function rColor(lum100OrAlpha01 = 1, alpha01 = 1, hueVari = 60) {
+function rColorHex(lum100OrAlpha01 = 50, sat100Alpha01 = 100, hueVari = 60) {
 	let c;
 	if (lum100OrAlpha01 <= 1) {
 		c = '#';
 		for (let i = 0; i < 6; i++) { c += rChoose(['f', 'c', '9', '6', '3', '0']); }
-		alpha01 = lum100OrAlpha01;
+		sat100Alpha01 = lum100OrAlpha01;
 	} else {
 		let hue = rHue(hueVari);
 		let sat = 100;
 		let b = isNumber(lum100OrAlpha01) ? lum100OrAlpha01 : lum100OrAlpha01 == 'dark' ? 25 : lum100OrAlpha01 == 'light' ? 75 : 50;
 		c = colorHsl360ArgsToHex79(hue, sat, b);
 	}
-	return alpha01 < 1 ? colorTrans(c, alpha01) : c;
+	return sat100Alpha01 < 1 ? colorTrans(c, sat100Alpha01) : c;
+}
+function rColor(lum,sat,hue){
+	if (nundef(lum) && isdef(M.colorList)) return rChoose(M.colorList).hex;
+	return rColorHex(lum,sat,hue);
 }
 function rHue(vari = 36) { return (rNumber(0, vari) * Math.round(360 / vari)) % 360; }
 function rKeyType() {
