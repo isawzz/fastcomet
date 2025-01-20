@@ -13,8 +13,6 @@ async function test4_mShape() {
 	let sz = 100;
 	//let o=rChoose(PolyClips); let [shape,clip] = [o.key,o.value];
 	let [shape, clip] = ['hex', PolyClips.hex];// console.log(shape, clip);
-	
-	
 	let c1=rColor();
 	let x=M.colorByHex[c1]; console.log(c1,x)
 	let c2=colorComplement(c1);
