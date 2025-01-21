@@ -94,6 +94,29 @@ var Username;
 var Z;
 var Zones = {};
 
+const BLUE = '#4363d8';
+const BROWN = '#96613d';
+const FIREBRICK = '#800000';
+const GREEN = '#3cb44b';
+const BLUEGREEN = '#004054';
+const LIGHTBLUE = '#42d4f4';
+const LIGHTGREEN = '#afff45';
+const OLIVE = '#808000';
+const ORANGE = '#f58231';
+const NEONORANGE = '#ff6700';
+const PURPLE = '#911eb4';
+const RED = '#e6194B';
+const TEAL = '#469990';
+const YELLOW = '#ffe119';
+const NEONYELLOW = '#efff04';
+const YELLOW2 = '#fff620';
+const ColorList = ['lightgreen', 'lightblue', 'yellow', 'red', 'green', 'blue', 'purple', 'violet', 'lightyellow', 'teal', 'orange', 'brown', 'olive', 'deepskyblue', 'deeppink', 'gold', 'black', 'white', 'grey'];
+const levelColors = [LIGHTGREEN, LIGHTBLUE, YELLOW, 'orange', RED, GREEN, BLUE, PURPLE, YELLOW2, 'deepskyblue',
+  'deeppink', TEAL, ORANGE, 'seagreen', FIREBRICK, OLIVE,
+  '#ffd8b1', '#000075', '#a9a9a9', '#ffffff', '#000000', 'gold', 'orangered', 'skyblue', 'pink', 'deeppink',
+  'palegreen', '#e6194B'];
+const names = ['felix', 'amanda', 'sabine', 'tom', 'taka', 'microbe', 'dwight', 'jim', 'michael', 'pam', 'kevin', 'darryl', 'lauren', 'anuj', 'david', 'holly'];
+var SHAPEFUNCS = { 'circle': 'agCircle', 'hex': 'agHex', 'rect': 'agRect', };
 var PolyClips = {
   diamond: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
   hex: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
@@ -124,29 +147,6 @@ var PolyClips = {
   splayright: 'polygon(80% 0%, 100% 0%, 100% 100%, 80% 100%)',
   splaydown: 'polygon(0% 0%, 100% 0%, 100% 30%, 0% 30%)',
 }
-const BLUE = '#4363d8';
-const BROWN = '#96613d';
-const FIREBRICK = '#800000';
-const GREEN = '#3cb44b';
-const BLUEGREEN = '#004054';
-const LIGHTBLUE = '#42d4f4';
-const LIGHTGREEN = '#afff45';
-const OLIVE = '#808000';
-const ORANGE = '#f58231';
-const NEONORANGE = '#ff6700';
-const PURPLE = '#911eb4';
-const RED = '#e6194B';
-const TEAL = '#469990';
-const YELLOW = '#ffe119';
-const NEONYELLOW = '#efff04';
-const YELLOW2 = '#fff620';
-const ColorList = ['lightgreen', 'lightblue', 'yellow', 'red', 'green', 'blue', 'purple', 'violet', 'lightyellow', 'teal', 'orange', 'brown', 'olive', 'deepskyblue', 'deeppink', 'gold', 'black', 'white', 'grey'];
-const levelColors = [LIGHTGREEN, LIGHTBLUE, YELLOW, 'orange', RED, GREEN, BLUE, PURPLE, YELLOW2, 'deepskyblue',
-  'deeppink', TEAL, ORANGE, 'seagreen', FIREBRICK, OLIVE,
-  '#ffd8b1', '#000075', '#a9a9a9', '#ffffff', '#000000', 'gold', 'orangered', 'skyblue', 'pink', 'deeppink',
-  'palegreen', '#e6194B'];
-const names = ['felix', 'amanda', 'sabine', 'tom', 'taka', 'microbe', 'dwight', 'jim', 'michael', 'pam', 'kevin', 'darryl', 'lauren', 'anuj', 'david', 'holly'];
-var SHAPEFUNCS = { 'circle': 'agCircle', 'hex': 'agHex', 'rect': 'agRect', };
 const STYLE_PARAMS_2 = {
   acontent: 'align-content',
   aitems: 'align-items',

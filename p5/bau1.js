@@ -48,6 +48,10 @@ function colorGradient(sColors, type = 'linear', param = null) {
 	if (param && isNumber(param)) param += 'deg';
 	if (param) param = `${param},`; else param = '';
 	if (nundef(sColors)) sColors = `${rColor()},${rColor()}`;
+	else if (!sColors.includes('#')) {
+		let list = toWords(sColors,true); console.log(list);
+		sColors=list.map(x=>colorFrom(x)).join(', ');
+	}
 	return `${type}-gradient(${param}${sColors})`;
 }
 function colorBucket(s) {

@@ -1157,6 +1157,10 @@ function rChoose(arr, n = 1, func = null, exceptIndices = null) {
 	arrShuffle(indices);
 	return indices.slice(0, n).map(x => arr[x]);
 }
+function rColor(lum,sat,hue){
+	if (nundef(lum) && isdef(M.colorList)) return rChoose(M.colorList).hex;
+	return rColorHex(lum,sat,hue);
+}
 function rColorHex(lum100OrAlpha01 = 50, sat100Alpha01 = 100, hueVari = 60) {
 	let c;
 	if (lum100OrAlpha01 <= 1) {
@@ -1171,10 +1175,7 @@ function rColorHex(lum100OrAlpha01 = 50, sat100Alpha01 = 100, hueVari = 60) {
 	}
 	return sat100Alpha01 < 1 ? colorTrans(c, sat100Alpha01) : c;
 }
-function rColor(lum,sat,hue){
-	if (nundef(lum) && isdef(M.colorList)) return rChoose(M.colorList).hex;
-	return rColorHex(lum,sat,hue);
-}
+function rColorNames(n=1){return rChoose(M.colorNames,n);}
 function rHue(vari = 36) { return (rNumber(0, vari) * Math.round(360 / vari)) % 360; }
 function rKeyType() {
 	return rChoose(getKeyTypes());

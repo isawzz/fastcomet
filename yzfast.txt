@@ -1,13 +1,24 @@
 27.1. lib renew
 ho:tee+scho
 
+when creativity flows, life appears as meaningful
+
+_______ 5:07 AM 1/21/2025 airport 23000
+ich will wieder dieses mit den matching colors wo war es nochmal?
+
+wir alle aus dieser gen und davor sind split
+split personalities koennen snappen
+wenn sie snappen, passieren dinge die fuer alle letztlich schlecht sind
+das ist wie lose-lose situationen (kriege etc.) zustandekommen
+deshalb ist es besser, bei split personalities (die wir alle in dieser gen mindestens sind!) vorsichtig miteinander umzugehen und win-win kompromisse anzustreben bei denen keiner over the edge getrieben wird.
+das ist meine sichtweise, aber selbst die zu sharen mit gewissen personen ist bereits triggernd und kann snapping hervorrufen
+
 _______ 8:27 AM 1/20/2025 airport 22000
 dicolor
 colorByHex
 colorByName
 colorList
 colorNames
-
 - eine gute lib fuer colors
 - ueberlege wie ich wirklich die colors handle!
 - welche funcs hat w3Color?

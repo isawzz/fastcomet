@@ -1,8 +1,18 @@
 
 onload = start;
 
-async function start() { await test4_mShape(); }
+async function start() { await test4_color(); }
 
+async function test4_color() {
+	await loadAssetsStatic();
+	globalKeyHandling();
+	//let clist = paletteContrastVariety(['pink']); console.log(clist)
+	let elems = mLayoutTLMRS(rColor(), 'dPage');
+	let d=mDom('dMain', { gap: 10, padding: 10 });
+	let ui = await uiTypePalette(d,rColor(), 'white','../assets/img/emo/abacus.png');
+
+
+}
 async function test4_mShape() {
 	await loadAssetsStatic();
 	globalKeyHandling();
@@ -10,13 +20,17 @@ async function test4_mShape() {
 	let elems = mLayoutM(color, 'dPage');
 	let d = mDom('dMain', { gap: 10, padding: 10 }); //mCenterCenterFlex(d);
 	let center = { x: 100, y: 100 };
-	let sz = 100;
+	let sz = 100, shape = 'hexflat';
 	//let o=rChoose(PolyClips); let [shape,clip] = [o.key,o.value];
-	let [shape, clip] = ['hex', PolyClips.hex];// console.log(shape, clip);
-	let c1 = rColor();
+	let clip = PolyClips[shape];// console.log(shape, clip);
+
+	let c1 = colorFrom(rChoose(M.colorNames)); //rColor();
 	let x = M.colorByHex[c1]; console.log(c1, x);
 	let c2 = colorComplement(c1);
 	let cmix = x.lighter(.5); //colorMix(c1,c2,50);
+
+	//[c1, c2, cmix] = rColorNames(3); console.log(c1, c2, cmix)
+
 	mStyle('dPage', { bg: cmix });
 	let bg = colorGradient(`${c1},${c2}`); //'linear-gradient(90deg,#ff5733,#33ff57,#3357ff)';// colorGradient(); console.log(bg)
 	//elem.style.backgroundColor = 'linear-gradient(90deg,#ff5733,#33ff57,#3357ff)';
