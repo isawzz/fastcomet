@@ -15,6 +15,19 @@ function getCenterRelativeToParent(div) {
     y: rect.top + rect.height / 2 - parentRect.top
   };
 }
+function mShape(shape, dParent, styles = {}, opts = {}) {
+	styles = jsCopy(styles);
+	styles.display = 'inline-block';
+	let [w, h] = mSizeSuccession(styles, 100);
+	//if (nundef(styles.bg)) styles.background = 'conic-gradient(green,red,blue,yellow,green)';
+	addKeys({ w, h }, styles);
+	let clip = PolyClips[shape];
+	if (nundef(clip)) styles.round = true; else styles.clip = clip;
+	let d = mDom(dParent, styles, opts);
+	if (isdef(opts.pos)) { mPlace(d, opts.pos); }
+	else if (isdef(opts.center)) centerAt(d, opts.center.x, opts.center.y);
+	return d;
+}
 
 
 

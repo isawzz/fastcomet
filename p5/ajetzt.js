@@ -1,3 +1,19 @@
+//#region mFlex
+function mFlex(d, or = 'h') {
+  d = toElem(d);
+  d.style.display = 'flex';
+  d.style.flexFlow = (or == 'v' ? 'column' : 'row') + ' ' + (or == 'w' ? 'wrap' : 'nowrap');
+}
+function mFlexBaseline(d) { mStyle(d, { display: 'flex', 'align-items': 'baseline' }); }
+function mFlexLine(d, startEndCenter = 'center') { mStyle(d, { display: 'flex', 'justify-content': startEndCenter, 'align-items': 'center' }); }
+function mFlexLR(d) { mStyle(d, { display: 'flex', 'justify-content': 'space-between', 'align-items': 'center' }); }
+function mFlexSpacebetween(d) { mFlexLR(d); }
+function mFlexV(d) { mStyle(d, { display: 'flex', 'align-items': 'center' }); }
+function mFlexVWrap(d) { mStyle(d, { display: 'flex', 'align-items': 'center', 'flex-flow': 'row wrap' }); }
+function mFlexWrap(d) { mFlex(d, 'w'); }
+
+//#endregion
+
 function getUID(pref = '') {
 	UIDCounter += 1;
 	return pref + '_' + UIDCounter;
@@ -568,7 +584,7 @@ function uiTypeExtraWorker(w) {
 }
 async function uiTypePalette(dParent, color, fg, src, blendMode) {
 	let fill = color;
-	let bgBlend = getBlendCanvas(blendMode);
+	let bgBlend = getBlendModeForCanvas(blendMode);
 	let d = mDom(dParent, { w100: true, gap: 4 }); mCenterFlex(d);
 	let NewValues = { fg, bg: color };
 	let palette = [color];

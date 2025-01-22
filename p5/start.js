@@ -1,15 +1,43 @@
 
 onload = start;
 
-async function start() { await test4_color(); }
+async function start() { await test4_mPalette(); }
 
-async function test4_color() {
+async function test4_mPalette() {
 	await loadAssetsStatic();
 	globalKeyHandling();
 	//let clist = paletteContrastVariety(['pink']); console.log(clist)
-	let elems = mLayoutTLMRS(rColor(), 'dPage');
-	let d=mDom('dMain', { gap: 10, padding: 10 });
-	let ui = await uiTypePalette(d,rColor(), 'white','../assets/img/emo/abacus.png');
+	let elems = mLayoutTLMRS('white', 'dPage');
+	let d=mDom('dMain', { gap: 10, padding: 10 }); mFlexWrap(d)
+	let src='../assets/img/emo/abacus.png';
+	for(const i of range(100)){
+		let d1=mDom(d, { gap: 10, padding: 10 })
+		let pal=await mPalette(d1,src,true,true); console.log(pal)
+		//showPaletteMini(d,pal)
+		src=rChoose(M.allImages).path;
+	}
+	//mPalette('dMain',src);
+	//mPalette('dMain','beetle')
+	//let ui = await uiTypePalette(d,'white', 'white','../assets/img/emo/abacus.png');
+
+
+}
+async function test4_colorThief() {
+	await loadAssetsStatic();
+	globalKeyHandling();
+	//let clist = paletteContrastVariety(['pink']); console.log(clist)
+	let elems = mLayoutTLMRS('white', 'dPage');
+	let d=mDom('dMain', { gap: 10, padding: 10 }); mFlexWrap(d)
+	let src='../assets/img/emo/abacus.png';
+	for(const i of range(100)){
+		let d1=mDom(d, { display:'none', gap: 10, padding: 10 })
+		let pal=await mPalette(d1,src,false); console.log(pal)
+		showPaletteMini(d,pal)
+		src=rChoose(M.allImages).path;
+	}
+	//mPalette('dMain',src);
+	//mPalette('dMain','beetle')
+	//let ui = await uiTypePalette(d,'white', 'white','../assets/img/emo/abacus.png');
 
 
 }

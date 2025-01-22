@@ -761,7 +761,11 @@ async function loadAssetsStatic() {
 		lookupAddIfToList(byFriendly, [o.friendly], k)
 		if (isdef(o.img)) {
 			let fname = stringAfterLast(o.img, '/')
-			allImages[fname] = { fname, path: o.img, k };
+			allImages[k] = { fname, path: o.img, key:k };
+		}
+		if (isdef(o.photo)) {
+			let fname = stringAfterLast(o.photo, '/')
+			allImages[k+'_photo'] = { fname, path: o.photo, key:k };
 		}
 	}
 	M.allImages = allImages;
@@ -1060,6 +1064,8 @@ function mStyle(elem, styles = {}, opts = {}) {
 		vpadding: (elem, v) => elem.style.padding = `${v}px ${valf(styles.hpadding, 0)}px`,
 		hmargin: (elem, v) => elem.style.margin = `0 ${v}px`,
 		vmargin: (elem, v) => elem.style.margin = `${v}px ${valf(styles.hmargin, 0)}px`,
+		w100: elem => elem.style.width = '100%',
+		h100: elem => elem.style.height = '100%',
 		round: elem => elem.style.borderRadius = '50%',
 		wbox: (elem, v) => elem.style.boxSizing = v ? 'border-box' : 'content-box',
 		wrap: (elem, v) => { if (v == 'hard') elem.setAttribute('wrap', 'hard'); else elem.style.flexWrap = 'wrap'; }
@@ -1078,7 +1084,7 @@ function mStyle(elem, styles = {}, opts = {}) {
 			else elem.style.setProperty('background-color', colorFrom(v, styles.alpha));
 			continue;
 		} else if (k == 'fg') {
-			elem.style.setProperty('background-color', colorFrom(v, styles.alpha));
+			elem.style.setProperty('color', colorFrom(v, styles.alpha));
 			continue;
 		} else if (k.startsWith('class')) {
 			mClass(elem, v)
@@ -1144,7 +1150,7 @@ function paletteTransWhiteBlack(n = 9) {
 	return pal;
 }
 function rChoose(arr, n = 1, func = null, exceptIndices = null) {
-	if (isDict(arr)) { arr = dict2list(arr, 'key'); console.log(arr); }
+	if (isDict(arr)) { arr = dict2list(arr, 'key'); } //console.log(arr); }
 	let indices = arrRange(0, arr.length - 1);
 	if (isdef(exceptIndices)) {
 		for (const i of exceptIndices) removeInPlace(indices, i);
