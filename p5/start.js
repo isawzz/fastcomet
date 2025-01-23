@@ -1,9 +1,45 @@
 
 onload = start;
 
-async function start() { await test4_mPalette(); }
+async function start() { await test4_getYaml(); }
 
-async function test4_mPalette() {
+async function test4_getYaml() {
+	await loadAssetsStatic();
+	globalKeyHandling();
+	let blogs = await loadStaticYaml('zdata/blogs.yaml');
+	console.log(blogs); 
+
+	//list blogs by data (key)
+	let elems = mLayoutTLMRS('silver', 'dPage');
+	let d=mDom('dMain');
+	let dates = Object.keys(blogs);
+	dates.sort((a, b) => new Date(b) - new Date(a));
+	for(const date of dates){
+		//parse date
+		let o=blogs[date];
+		let d1=mDom(d, { gap: 10, padding: 10 })
+		mDom(d1, { fz: 20 }, {html:date});
+		mDom(d1, { fz: 20 }, {html:o.title});
+		mDom(d1, { fz: 20 }, {html:o.text});
+
+	}
+
+	return;
+	//let clist = paletteContrastVariety(['pink']); console.log(clist)
+	d=mDom('dMain', { gap: 10, padding: 10 }); mFlexWrap(d)
+	let src='../assets/img/emo/abacus.png';
+	for(const i of range(100)){
+		let d1=mDom(d, {  })
+		let pal=await mPalette(d1,src,true,true); console.log(pal)
+		//showPaletteMini(d,pal)
+		src=rChoose(M.allImages).path;
+	}
+	//mPalette('dMain',src);
+	//mPalette('dMain','beetle')
+	//let ui = await uiTypePalette(d,'white', 'white','../assets/img/emo/abacus.png');
+
+
+}async function test4_mPalette() {
 	await loadAssetsStatic();
 	globalKeyHandling();
 	//let clist = paletteContrastVariety(['pink']); console.log(clist)
@@ -11,7 +47,7 @@ async function test4_mPalette() {
 	let d=mDom('dMain', { gap: 10, padding: 10 }); mFlexWrap(d)
 	let src='../assets/img/emo/abacus.png';
 	for(const i of range(100)){
-		let d1=mDom(d, { gap: 10, padding: 10 })
+		let d1=mDom(d, {  })
 		let pal=await mPalette(d1,src,true,true); console.log(pal)
 		//showPaletteMini(d,pal)
 		src=rChoose(M.allImages).path;

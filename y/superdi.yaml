@@ -30082,24 +30082,9 @@ owl:
     - animal
   colls:
     - emo
-owl1:
-  friendly: owl1
-  img: ../assets/img/owls/owl1.png
-  cats: []
-  colls: []
-owl100:
-  friendly: owl100
-  img: ../assets/img/owls/owl100.png
-  cats: []
-  colls: []
 owl111:
   friendly: owl111
-  img: ../assets/img/owls/owl111.png
-  cats: []
-  colls: []
-owls1:
-  friendly: owls1
-  img: ../assets/img/owls/owls1.png
+  img: ../assets/img/extra/owl111.png
   cats: []
   colls: []
 ox:

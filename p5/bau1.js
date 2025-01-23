@@ -1,4 +1,11 @@
 
+function sortDatesDescending(dates) {
+	return dates.sort((a, b) => new Date(b) - new Date(a));
+}
+function parseDate(dateStr) {
+	const [month, day, year] = dateStr.split('/').map(Number);
+	return new Date(year, month - 1, day);
+}
 async function mPalette(dParent, src, showPal = true, showImg = false) {
 	async function getPaletteFromCanvas(canvas, n) {
 		if (nundef(ColorThiefObject)) ColorThiefObject = new ColorThief();
@@ -17,7 +24,7 @@ async function mPalette(dParent, src, showPal = true, showImg = false) {
 		});
 	}
 	let dc=mDom(dParent,{display:showImg?'inline':'none'})
-	let ca = await getCanvasCtx(dc, { sz: 100, fill: 'white' }, { src });
+	let ca = await getCanvasCtx(dc, { w:100, h:100, fill: 'white' }, { src });
 	let palette = await getPaletteFromCanvas(ca.cv);
 	if (!showImg) dc.remove();
 	if (showPal) showPaletteMini(dParent, palette);

@@ -1,12 +1,12 @@
 onload = start;
 DA.FASTCOMET = 'php';
 
-async function start() { await test1_php_echowritepostyaml(); } //_php_echowritepostyaml(); }
+async function start() { await test2_php_writesimple(); } //_php_echowritepostyaml(); }
 
 async function test2_php_writesimple() {
 	await loadAssetsStatic();
 
-	let res = await mPostPhp({ text: 'hello' }, `../../zdata/f2.yaml`);
+	let res = await mPostPhp({ text: 'hello', wer:'hallo' }, `../../zdata/f2.yaml`);
 	console.log(res);
 }
 async function test1_yaml_dump() {

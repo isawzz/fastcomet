@@ -806,12 +806,13 @@ function mKey(imgKey, d, styles = {}, opts = {}) {
 }
 async function mPostPhp(o, path) {
 	let sessionType = detectSessionType();
+	o.path = path;
 	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
 	let res = await fetch(server + 'todo/php/echowritepost.php',
 		{
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ filePath: 'output.txt', text: 'Hello, world!', }),
+			body: JSON.stringify({ path, text: JSON.stringify(o) }),
 		}
 	);
 	if (res.ok) {
