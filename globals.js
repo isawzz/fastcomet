@@ -91,7 +91,7 @@ var UID = 0;
 var UIDCounter = 0;
 var UIROOT;
 var Username;
-var Z;
+var Z = {};
 var Zones = {};
 
 const BLUE = '#4363d8';
@@ -157,6 +157,7 @@ const STYLE_PARAMS_2 = {
   bgImage: 'background-image',
   bgRepeat: 'background-repeat',
   bgSize: 'background-size',
+  caret: 'caret-color',
   clip: 'clip-path',
   deco: 'text-decoration',
   dir: 'flex-direction',

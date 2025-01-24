@@ -6,11 +6,11 @@ async function start() { await test4_getYaml(); }
 async function test4_getYaml() {
 	await loadAssetsStatic();
 	globalKeyHandling();
-	let blogs = await loadStaticYaml('zdata/blogs.yaml');
+	let blogs = Z.blogs = await loadStaticYaml('zdata/blogs.yaml');
 	console.log(blogs); 
 
 	//list blogs by data (key)
-	let elems = mLayoutTLMRS('silver', 'dPage');
+	let elems = mLayoutTLMRS('raspberry', 'dPage');
 	let d=mDom('dMain');
 	let dates = Object.keys(blogs);
 	dates.sort((a, b) => new Date(b) - new Date(a));
@@ -20,7 +20,8 @@ async function test4_getYaml() {
 		let d1=mDom(d, { gap: 10, padding: 10 })
 		mDom(d1, { fz: 20 }, {html:date});
 		mDom(d1, { fz: 20 }, {html:o.title});
-		mDom(d1, { fz: 20 }, {html:o.text});
+		mDom(d1, { fz: 20,caret:'white' }, {html:o.text, contenteditable:true }); 
+		d1.onblur=ev=>saveBlogs(date,d1);
 
 	}
 

@@ -1,4 +1,32 @@
 
+async function _mPalette(dParent, src, showPal = true, showImg = false) {
+	async function getPaletteFromCanvas(canvas, n = 10) {
+			if (typeof ColorThiefObject === 'undefined') ColorThiefObject = new ColorThief();
+			const dataUrl = canvas.toDataURL();
+			const img = new Image();
+			img.src = dataUrl;
+
+			return new Promise((resolve, reject) => {
+					img.onload = () => {
+							try {
+									const palette = ColorThiefObject.getPalette(img, n);
+									resolve(palette ? palette.map(colorFrom) : ['black', 'white']);
+							} catch (error) {
+									reject(new Error('Failed to extract the palette: ' + error.message));
+							}
+					};
+					img.onerror = () => reject(new Error('Failed to load the image from canvas.'));
+			});
+	}
+
+	const { cv } = await getCanvasCtx(dParent, { sz: 100, fill: 'white' }, { src });
+	const palette = await getPaletteFromCanvas(cv);
+	
+	if (!showImg) cv.remove();
+	if (showPal) showPaletteMini(dParent, palette);
+	
+	return palette;
+}
 function crap_createNEHexagonSide(dhex, sideLength) {
 	// Calculate dimensions and angles
 	const hexHeight = Math.sqrt(3) * sideLength; // Height of the hexagon
