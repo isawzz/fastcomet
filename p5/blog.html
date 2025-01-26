@@ -5,81 +5,20 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Simple Blog</title>
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-			padding: 20px;
-		}
-
-		#posts {
-			margin-top: 20px;
-		}
-
-		.post {
-			margin-bottom: 20px;
-			padding: 10px;
-			border: 1px solid #ddd;
-			border-radius: 5px;
-		}
-
-		.post-title {
-			font-weight: bold;
-		}
-
-		.post-timestamp {
-			font-size: 0.9em;
-			color: gray;
-		}
-	</style>
 </head>
 
 <body>
-	<h1>Simple Blog</h1>
-	<form id="new-post-form">
-		<input type="text" id="title" placeholder="Title" required>
-		<textarea id="content" placeholder="Content" required></textarea>
-		<button type="submit">Add Post</button>
-	</form>
-	<div id="posts"></div>
+	<div contenteditable="true" onblur="handleBlur(this)" style="border: 1px solid black; padding: 10px; width: 300px;">
+		Edit me and click away to trigger the blur event.
+	</div>
 
 	<script>
-		const postsContainer = document.getElementById('posts');
-		const form = document.getElementById('new-post-form');
-
-		// Fetch and display posts
-		async function loadPosts() {
-			const response = await fetch('php/blog.php');
-			const posts = await response.json();
-			postsContainer.innerHTML = posts.map(post => `
-                <div class="post">
-                    <div class="post-title">${post.title}</div>
-                    <div class="post-timestamp">${post.timestamp}</div>
-                    <div class="post-content">${post.content}</div>
-                </div>
-            `).join('');
+		function handleBlur(element) {
+			console.log("Editing completed! Current content:", element.innerHTML);
+			// Perform additional actions here
 		}
-
-		// Add a new post
-		form.addEventListener('submit', async (event) => {
-			event.preventDefault();
-			const title = document.getElementById('title').value;
-			const content = document.getElementById('content').value;
-
-			const response = await fetch('blog.php', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ title, content }),
-			});
-
-			if (response.ok) {
-				form.reset();
-				loadPosts();
-			}
-		});
-
-		// Initial load
-		loadPosts();
 	</script>
+
 </body>
 
 </html>

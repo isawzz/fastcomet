@@ -2,56 +2,58 @@
 onload = start;
 
 async function start() { await test4_getYaml(); }
-
 async function test4_getYaml() {
 	await loadAssetsStatic();
 	globalKeyHandling();
-	let blogs = Z.blogs = await loadStaticYaml('zdata/blogs.yaml');
-	console.log(blogs); 
+	let blog = Z.blog = await loadStaticYaml('zdata/blog.yaml');
+	console.log(blog);
 
 	//list blogs by data (key)
 	let elems = mLayoutTLMRS('raspberry', 'dPage');
-	let d=mDom('dMain');
-	let dates = Object.keys(blogs);
+	let d = mDom('dMain');
+	let dates = Object.keys(blog);
 	dates.sort((a, b) => new Date(b) - new Date(a));
-	for(const date of dates){
+	for (const date of dates) {
 		//parse date
-		let o=blogs[date];
-		let d1=mDom(d, { gap: 10, padding: 10 })
-		mDom(d1, { fz: 20 }, {html:date});
-		mDom(d1, { fz: 20 }, {html:o.title});
-		mDom(d1, { fz: 20,caret:'white' }, {html:o.text, contenteditable:true }); 
-		d1.onblur=ev=>saveBlogs(date,d1);
+		let o = blog[date];
+		let d1 = mDom(d, { gap: 10, padding: 10 })
+		mDom(d1, { fz: 20 }, { html: date });
+		mDom(d1, { fz: 20 }, { html: o.title });
+		let d2 = mDom(d1, { fz: 20, caret: 'white' }, { html: o.text, contenteditable: true });
+		d2.setAttribute('contenteditable', true);//, onblur:"handleBlur(this)" 
+		d2.onblur = ev => saveBlog(date,ev.target);
+		//d2.addEventListener('blur', () => { console.log('Editing completed! Current content:', this.innerHTML); });
 
 	}
 
+
 	return;
 	//let clist = paletteContrastVariety(['pink']); console.log(clist)
-	d=mDom('dMain', { gap: 10, padding: 10 }); mFlexWrap(d)
-	let src='../assets/img/emo/abacus.png';
-	for(const i of range(100)){
-		let d1=mDom(d, {  })
-		let pal=await mPalette(d1,src,true,true); console.log(pal)
+	d = mDom('dMain', { gap: 10, padding: 10 }); mFlexWrap(d)
+	let src = '../assets/img/emo/abacus.png';
+	for (const i of range(100)) {
+		let d1 = mDom(d, {})
+		let pal = await mPalette(d1, src, true, true); console.log(pal)
 		//showPaletteMini(d,pal)
-		src=rChoose(M.allImages).path;
+		src = rChoose(M.allImages).path;
 	}
 	//mPalette('dMain',src);
 	//mPalette('dMain','beetle')
 	//let ui = await uiTypePalette(d,'white', 'white','../assets/img/emo/abacus.png');
 
 
-}async function test4_mPalette() {
+} async function test4_mPalette() {
 	await loadAssetsStatic();
 	globalKeyHandling();
 	//let clist = paletteContrastVariety(['pink']); console.log(clist)
 	let elems = mLayoutTLMRS('white', 'dPage');
-	let d=mDom('dMain', { gap: 10, padding: 10 }); mFlexWrap(d)
-	let src='../assets/img/emo/abacus.png';
-	for(const i of range(100)){
-		let d1=mDom(d, {  })
-		let pal=await mPalette(d1,src,true,true); console.log(pal)
+	let d = mDom('dMain', { gap: 10, padding: 10 }); mFlexWrap(d)
+	let src = '../assets/img/emo/abacus.png';
+	for (const i of range(100)) {
+		let d1 = mDom(d, {})
+		let pal = await mPalette(d1, src, true, true); console.log(pal)
 		//showPaletteMini(d,pal)
-		src=rChoose(M.allImages).path;
+		src = rChoose(M.allImages).path;
 	}
 	//mPalette('dMain',src);
 	//mPalette('dMain','beetle')
@@ -64,13 +66,13 @@ async function test4_colorThief() {
 	globalKeyHandling();
 	//let clist = paletteContrastVariety(['pink']); console.log(clist)
 	let elems = mLayoutTLMRS('white', 'dPage');
-	let d=mDom('dMain', { gap: 10, padding: 10 }); mFlexWrap(d)
-	let src='../assets/img/emo/abacus.png';
-	for(const i of range(100)){
-		let d1=mDom(d, { display:'none', gap: 10, padding: 10 })
-		let pal=await mPalette(d1,src,false); console.log(pal)
-		showPaletteMini(d,pal)
-		src=rChoose(M.allImages).path;
+	let d = mDom('dMain', { gap: 10, padding: 10 }); mFlexWrap(d)
+	let src = '../assets/img/emo/abacus.png';
+	for (const i of range(100)) {
+		let d1 = mDom(d, { display: 'none', gap: 10, padding: 10 })
+		let pal = await mPalette(d1, src, false); console.log(pal)
+		showPaletteMini(d, pal)
+		src = rChoose(M.allImages).path;
 	}
 	//mPalette('dMain',src);
 	//mPalette('dMain','beetle')

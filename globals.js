@@ -161,6 +161,7 @@ const STYLE_PARAMS_2 = {
   clip: 'clip-path',
   deco: 'text-decoration',
   dir: 'flex-direction',
+  editable: 'contenteditable',
   family: 'font-family',
   fontSize: 'font-size',
   fStyle: 'font-style',

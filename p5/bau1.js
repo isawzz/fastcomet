@@ -32,9 +32,13 @@ function parseDate(dateStr) {
 	const [month, day, year] = dateStr.split('/').map(Number);
 	return new Date(year, month - 1, day);
 }
-async function saveBlogs(key,elem){
+function handleBlur(element) {
+	console.log("Editing completed! Current content:", element.innerHTML);
+	// Perform additional actions here
+}
+async function saveBlog(key,elem){
 	console.log('saving', key);
-	lookupSetOverride(Z.blog,[key,'text'],elem.innerHTML);
+	lookupSetOverride(Z,['blog',key,'text'],elem.innerHTML);
 	let text = jsyaml.dump(Z.blog);
 	let res = await mPhpPostFile(text, 'zdata/blog.yaml');
 	console.log(res);
