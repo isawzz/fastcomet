@@ -1,139 +1,120 @@
 
-function createLineBetweenPoints(dboard, pointA, pointB, thickness = 10) {
-	const [x1, y1] = pointA;
-	const [x2, y2] = pointB;
+function resizeImage(file, maxWidth, maxHeight, callback) {
+	const reader = new FileReader();
 
-	// Calculate the distance between the points (length of the line)
-	const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+	reader.onload = (event) => {
+		const img = new Image();
 
-	// Calculate the angle of rotation (in degrees)
-	const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+		img.onload = () => {
+			// Create a canvas to resize the image
+			const canvas = document.createElement("canvas");
+			const ctx = canvas.getContext("2d");
 
-	// Create the line div
-	const line = document.createElement('div');
-	line.style.position = 'absolute';
-	line.style.width = `${length}px`;
-	line.style.height = `${thickness}px`;
-	line.style.backgroundColor = 'black'; // Customize line color
-	line.style.top = `${y1}px`; // Set starting position
-	line.style.left = `${x1}px`;
-	line.style.transformOrigin = '0 50%'; // Rotate around the starting point
-	line.style.transform = `rotate(${angle}deg)`;
+			// Calculate the new dimensions while maintaining the aspect ratio
+			let { width, height } = img;
+			if (width > maxWidth || height > maxHeight) {
+				const scale = Math.min(maxWidth / width, maxHeight / height);
+				width = Math.round(width * scale);
+				height = Math.round(height * scale);
+			}
 
-	// Append the line to the parent container
-	const parent = toElem(dboard); //document.querySelector(dboard);
-	if (parent) {
-			parent.style.position = 'relative'; // Ensure the parent is relatively positioned
-			parent.appendChild(line);
-	} else {
-			console.error(`Parent element with selector '${dboard}' not found.`);
+			canvas.width = width;
+			canvas.height = height;
+
+			// Draw the resized image on the canvas
+			ctx.drawImage(img, 0, 0, width, height);
+
+			// Get the resized image as a Base64 string
+			const resizedDataUrl = canvas.toDataURL("image/jpeg", 0.8); // Quality: 0.8 (optional)
+			callback(resizedDataUrl);
+		};
+
+		img.onerror = () => {
+			console.error("Error loading image.");
+			callback(null);
+		};
+
+		img.src = event.target.result;
+	};
+
+	reader.onerror = () => {
+		console.error("Error reading file.");
+		callback(null);
+	};
+
+	reader.readAsDataURL(file);
+}
+
+function handleImageDrop(event) {
+	event.preventDefault();
+
+	const dataTransfer = event.dataTransfer;
+
+	if (dataTransfer.items) {
+		for (const item of dataTransfer.items) {
+			if (item.kind === "file" && item.type.startsWith("image/")) {
+				const file = item.getAsFile();
+
+				resizeImage(file, 300, 300, (resizedDataUrl) => {
+					if (resizedDataUrl) {
+						console.log("Resized Image Data URL:", resizedDataUrl);
+
+						// Save the resized data as text (or do whatever you need with it)
+						const textArea = document.getElementById("resized-image-data");
+						textArea.value = resizedDataUrl;
+					}
+				});
+			}
+		}
 	}
 }
-function calcClipPoints(x0, y0, w, h, clipPath) {
-	// Parse the clip-path percentages into an array of points
-	const percentagePoints = clipPath
-		.match(/polygon\((.*?)\)/)[1] // Extract the points inside `polygon()`
-		.split(',')                  // Split into individual points
-		.map(point => point.trim())  // Remove extra spaces
-		.map(point => point.split(' ').map(value => parseFloat(value))); // Convert to [x, y]
 
-	// Convert percentage points to actual pixel coordinates
-	const pixelPoints = percentagePoints.map(([xPercent, yPercent]) => {
-		const x = x0 + (xPercent - 50) * (w / 100);
-		const y = y0 + (yPercent - 50) * (h / 100);
-		return { x, y };
+
+function getImageSize(src) {
+	return new Promise((resolve, reject) => {
+		const img = new Image();
+
+		img.onload = () => {
+			resolve({ width: img.width, height: img.height });
+		};
+
+		img.onerror = () => {
+			reject(new Error(`Failed to load the image from: ${src}`));
+		};
+
+		img.src = src;
 	});
-
-	return pixelPoints;
 }
-function calcHexCorners(center, width, height) {
-	const [cx, cy] = [center.cx,center.cy]; console.log('center',center)
-	const points = [];
-	const angleStep = (2 * Math.PI) / 6; // 360° / 6 = 60° in radians
+function handleImageDrop(ev) {
+	ev.preventDefault(); // Prevent default behavior (e.g., opening the dropped file)
 
-	// Calculate the radius from the width and height
-	const rx = width / 2; // Horizontal radius
-	const ry = height / 2; // Vertical radius
+	const dataTransfer = ev.dataTransfer;
+	console.log('types', dataTransfer.types); //return;
 
-	// Loop through each vertex of the hexagon
-	for (let i = 0; i < 6; i++) {
-			const angle = angleStep * i; // Current angle in radians
-			const x = cx + rx * Math.cos(angle);
-			const y = cy + ry * Math.sin(angle);
-			points.push([x, y]);
+	const files = dataTransfer.files;
+	if (files.length > 0) {
+		const reader = new FileReader();
+		reader.onload = async (evReader) => {
+			let data = evReader.target.result;
+			let size = await getImageSize(data);
+			console.log('size', size);
+			if (size.width > 500) {
+				let ratio = 500 / size.width;
+				size.width = 500;
+				size.height = Math.round(size.height * ratio);
+				console.log('size', size);
+			}
+			mDom(ev.target, { wmax: 500 }, { tag: 'img', src: data, draggable: false });
+		};
+		reader.readAsDataURL(files[0]);
 	}
+	// Check if the type `text/uri-list` is included in the dropped data
+	if (dataTransfer.types.includes("text/html")) {
+		let text = dataTransfer.getData("text/html");
 
-	return points;
-}
-function computeColorX(c) {
-	let res = c;
-	if (isList(c)) return rChoose(c);
-	else if (isString(c) && c.startsWith('rand')) {
-		res = rColor();
-		let spec = c.substring(4);
-		if (isdef(window['color' + spec])) {
-			res = window['color' + spec](res);
-		}
+		let x = stringAfter(text, 'src="');
+		let y = stringBefore(x, '"');
+		console.log('text', y);
 	}
-	return res;
 }
-function drawHexBoard(topside, side, dParent, styles = {}, itemStyles = {}, opts = {}) {
-	addKeys({ box: true }, styles);
-	let dOuter = mDom(dParent, styles, opts);
-	let d = mDom(dOuter, { position: 'relative', });
-	let [centers, rows, maxcols] = hexBoardCenters(topside, side); //console.log(centers)
-	let [w, h] = mSizeSuccession(itemStyles, 24);
-	let gap = valf(styles.gap, -.5);
-	let items = [];
-	if (gap != 0) copyKeys({ w: w - gap, h: h - gap }, itemStyles);
-	for (const c of centers) {
-		let dhex = hexFromCenter(d, { x: c.x * w, y: c.y * h }, itemStyles);
-		let item = { div: dhex, cx: c.x, cy: c.y, row: c.row, col: c.col };
-		items.push(item);
-	}
-	let [wBoard, hBoard] = [maxcols * w, rows * h * .75 + h * .25];
-	mStyle(d, { w: wBoard, h: hBoard });
-	return { div: dOuter, topside, side, centers, rows, maxcols, boardShape: 'hex', w, h, wBoard, hBoard, items }
-}
-function hexBoardCenters(topside, side) {
-	if (nundef(topside)) topside = 4;
-	if (nundef(side)) side = topside;
-	let [rows, maxcols] = [side + side - 1, topside + side - 1];
-	assertion(rows % 2 == 1, `hex with even rows ${rows} top:${topside} side:${side}!`);
-	let centers = [];
-	let cols = topside;
-	let y = 0.5;
-	for (i of range(rows)) {
-		let n = cols;
-		let x = (maxcols - n) / 2 + .5;
-		for (const c of range(n)) {
-			centers.push({ x, y, row: i + 1, col: x * 2 }); x++;
-		}
-		y += .75
-		if (i < (rows - 1) / 2) cols += 1; else cols -= 1;
-	}
-	assertion(cols == topside - 1, `END OF COLS WRONG ${cols}`)
-	return [centers, rows, maxcols];
-}
-function hexFromCenter(dParent, center, styles = {}, opts = {}) {
-	let [w, h] = mSizeSuccession(styles);
-	let [left, top] = [center.x - w / 2, center.y - h / 2];
-	let d = mDom(dParent, { position: 'absolute', left, top, 'clip-path': 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }, opts);
-	mStyle(d, styles);
-	return d;
-}
-
-
-function mPickOneOfGrid(dParent, styles = {}, opts = {}) {
-	let d0 = mDom(dParent, dictMerge(styles,{gap:6}), opts);
-	mGrid(d0);
-
-	function onclick(ev) {
-		evNoBubble(ev);
-		if (isdef(opts.fSuccess)) opts.fSuccess(ev.target.innerHTML);
-	}
-	for (const html of opts.list) {
-		mDom(d0, {  }, { tag: 'button', html, onclick });
-	}
-	return d0;
-}
+//https://media.istockphoto.com/id/2157926151/photo/cute-cat-outdoors-in-summer.jpg?s=1024x1024&w=is&k=20&c=SG0hCGPnE1MnZI3Vwes2eIbX15Rp3a9RzSEWfX3040s=

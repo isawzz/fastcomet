@@ -7,11 +7,30 @@ body {
   caret-color: #ffffff00;
 }
 
+.centerCentered {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+}
+
+.centered {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 input {
   caret-color: black;
 }
 
-a, button, input, select {
+a,
+button,
+input,
+select {
   padding: 5px 10px;
   /* margin: 5px 10px; */
   font-size: 18px;
@@ -24,12 +43,15 @@ a, button, input, select {
   cursor: pointer;
 }
 
-a:hover, button:hover {
+a:hover,
+button:hover {
   background: #ffffff80 !important;
 }
-a:active, button:active {
+
+a:active,
+button:active {
   background: white !important;
-  color:black !important;
+  color: black !important;
 }
 
 /* .a {
@@ -73,7 +95,7 @@ a:active, button:active {
 
 .hop1:hover {
   color: 'red';
-  background:'white';
+  background: 'white';
 }
 
 /* .input {
@@ -142,12 +164,14 @@ a:active, button:active {
   width: 200px;
   font-family: Arial, sans-serif;
 }
+
 .selected {
   padding: 10px;
   border: 1px solid #ccc;
   background: #fff;
   cursor: pointer;
 }
+
 .options {
   position: absolute;
   top: 100%;
@@ -163,10 +187,12 @@ a:active, button:active {
   display: none;
   z-index: 1000;
 }
+
 .options li {
   padding: 10px;
   cursor: pointer;
 }
+
 .options li:hover {
   background: #f0f0f0;
 }

@@ -1,137 +1,26 @@
 
-function makeEditable(elem) {
-	elem.setAttribute('contenteditable', 'true');
-	elem.style.border = '1px solid #ccc'; // Optional: Visual indication
-	elem.style.padding = '5px';          // Optional: Add some padding
-}
-async function mPalette(dParent, src, showPal = true, showImg = false) {
-	async function getPaletteFromCanvas(canvas, n) {
-		if (nundef(ColorThiefObject)) ColorThiefObject = new ColorThief();
-		const dataUrl = canvas.toDataURL();
-		const img = new Image();
-		img.src = dataUrl;
-		return new Promise((resolve, reject) => {
-			img.onload = () => {
-				const palette = ColorThiefObject.getPalette(img, n);
-				//showPaletteMini('dMain',palette)
-				resolve(palette ? palette.map(x => colorFrom(x)) : ['black', 'white']);
-			};
-			img.onerror = () => {
-				reject(new Error('Failed to load the image from canvas.'));
-			};
-		});
-	}
-	let dc=mDom(dParent,{display:showImg?'inline':'none'})
-	let ca = await getCanvasCtx(dc, { w:100, h:100, fill: 'white' }, { src });
-	let palette = await getPaletteFromCanvas(ca.cv);
-	if (!showImg) dc.remove();
-	if (showPal) showPaletteMini(dParent, palette);
-	return palette;
-}
-function parseDate(dateStr) {
-	const [month, day, year] = dateStr.split('/').map(Number);
-	return new Date(year, month - 1, day);
-}
-function handleBlur(element) {
-	console.log("Editing completed! Current content:", element.innerHTML);
-	// Perform additional actions here
-}
-async function saveBlog(key,elem){
-	console.log('saving', key);
-	lookupSetOverride(Z,['blog',key,'text'],elem.innerHTML);
-	let text = jsyaml.dump(Z.blog);
-	let res = await mPhpPostFile(text, 'zdata/blog.yaml');
-	console.log(res);
-}
-function sortDatesDescending(dates) {
-	return dates.sort((a, b) => new Date(b) - new Date(a));
-}
-async function uiTypePalette(dParent, color, fg, src, blendMode) {
-	let fill = color;
-	let bgBlend = getBlendModeForCanvas(blendMode);
-	let d = mDom(dParent, { wbox: true }); //, { w100: true, gap: 4 }); //mFlex(d);
-	let NewValues = { fg, bg: color };
-	let palette = [color];
-	let w = 350;
-	let dContainer = mDom(d, { w, padding: 0, wbox: true });
-	if (isdef(src)) {
-		let ca = await getCanvasCtx(dContainer, { w, fill, bgBlend }, { src });
-		palette = await getPaletteFromCanvas(ca.cv);
-		palette.unshift(fill);
-	} else {
-		palette = arrCycle(paletteShades(color), 4);
-	}
-
-	//console.log('palette', palette.map(x => colorO(x).hex));
-	let dominant = palette[0];
-	let palContrast = paletteContrastVariety(palette, palette.length);
-	mLinebreak(d);
-	let bgItems = showPaletteMini(d, palette);
-	mLinebreak(d);
-	let fgItems = showPaletteMini(d, palContrast);
-	mLinebreak(d);
-
-	// mIfNotRelative(dParent);
-	// let dText = mDom(dParent, { 'pointer-events': 'none', align: 'center', fg: 'white', fz: 30, position: 'absolute', top: 0, left: 0, w100: true, h100: true });
-	// mCenterFlex(dText);
-	// dText.innerHTML = `<br>HALLO<br>das<br>ist ein Text`
-
-	for (const item of fgItems) {
-		let div = iDiv(item);
-		mStyle(div, { cursor: 'pointer' });
-		div.onclick = () => {
-			mStyle(dText, { fg: item.bg });
-			NewValues.fg = item.bg;
-			console.log('NewValues', NewValues);
-		}
-	}
-	for (const item of bgItems) {
-		let div = iDiv(item);
-		mStyle(div, { cursor: 'pointer' });
-		div.onclick = async () => {
-			if (isdef(src)) {
-				mClear(dContainer);
-				let fill = item.bg;
-				await getCanvasCtx(dContainer, { w: 500, h: 300, fill, bgBlend }, { src });
-			}
-			mStyle(dParent, { bg: item.bg });
-			NewValues.bg = item.bg;
-		}
-	}
-}
-async function rest() {
-
-	for (const item of fgItems) {
-		let div = iDiv(item);
-		mStyle(div, { cursor: 'pointer' });
-		div.onclick = () => {
-			mStyle(dText, { fg: item.bg });
-			NewValues.fg = item.bg;
-			console.log('NewValues', NewValues);
-		}
-	}
-	for (const item of bgItems) {
-		let div = iDiv(item);
-		mStyle(div, { cursor: 'pointer' });
-		div.onclick = async () => {
-			if (isdef(src)) {
-				mClear(dContainer);
-				let fill = item.bg;
-				await getCanvasCtx(dContainer, { w: 500, h: 300, fill, bgBlend }, { src });
-			}
-			mStyle(dParent, { bg: item.bg });
-			NewValues.bg = item.bg;
-		}
-	}
-	async function onclickSaveMyTheme() {
-		if (U.fg == NewValues.fg && U.color == NewValues.bg) return;
-		U.fg = NewValues.fg;
-		U.color = NewValues.bg;
-		await updateUserTheme();
-		await onclickSettMyTheme();
-	}
-	//mButton('Save', onclickSaveMyTheme, dParent, { matop: 10, className: 'button' })
-	return { pal: palette.map(x => colorO(x)), palContrast };
+async function ondropImage(src, sisi) {
+  let sz = 400;
+  let dPopup = mDom(document.body, { position: 'fixed', top: 40, left: 0, wmin: sz, hmin: sz, bg: 'pink' });
+  let dParent = mDom(dPopup);
+  let d = mDom(dParent, { w: sz, h: sz, border: 'dimgray', margin: 10 });
+  let canvas = createPanZoomCanvas(d, src, sz, sz);
+  let instr = mDom(dPopup, { align: 'center', mabot: 10 }, { html: `- panzoom image to your liking -` })
+  let dinp = mDom(dPopup, { padding: 10, align: 'right', display: 'inline-block' })
+  mDom(dinp, { display: 'inline-block' }, { html: 'Name: ' });
+  let inpFriendly = mDom(dinp, { outline: 'none', w: 200 }, { className: 'input', name: 'friendly', tag: 'input', type: 'text', placeholder: `<enter name>` });
+  let defaultName = '';
+  let iDefault = 1;
+  let k = sisi.masterKeys.find(x => x == `${sisi.name}${iDefault}`);
+  while (isdef(k)) { iDefault++; k = sisi.masterKeys.find(x => x == `${sisi.name}${iDefault}`); }
+  defaultName = `${sisi.name}${iDefault}`;
+  inpFriendly.value = defaultName;
+  mDom(dinp, { h: 1 });
+  mDom(dinp, { display: 'inline-block' }, { html: 'Categories: ' })
+  let inpCats = mDom(dinp, { outline: 'none', w: 200 }, { className: 'input', name: 'cats', tag: 'input', type: 'text', placeholder: `<enter categories>` });
+  let db2 = mDom(dPopup, { padding: 10, display: 'flex', gap: 10, 'justify-content': 'end' });
+  mButton('Cancel', () => dPopup.remove(), db2, { w: 70 }, 'input');
+  mButton('Save', () => simpleFinishEditing(canvas, dPopup, inpFriendly, inpCats, sisi), db2, { w: 70 }, 'input');
 }
 
 

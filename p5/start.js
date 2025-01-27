@@ -1,7 +1,33 @@
 
 onload = start;
 
-async function start() { await test4_getYaml(); }
+async function start() { await test4_dropImage(); }
+async function test4_dropImage() {
+	await loadAssetsStatic();
+	globalKeyHandling();
+	let blog = Z.blog = await loadStaticYaml('zdata/blog.yaml');
+	let elems = mLayoutTLMRS('raspberry', 'dPage');
+	let d = mDom('dMain');
+	let dates = Object.keys(blog);
+	dates.sort((a, b) => new Date(b) - new Date(a));
+	for (const date of dates) {
+		let o = blog[date];
+		let d1 = mDom(d, { gap: 10, padding: 10 })
+		mDom(d1, { fz: 20 }, { html: date });
+		mDom(d1, { fz: 20 }, { html: o.title });
+		let d2 = mDom(d1, { fz: 20, caret: 'white' }, { html: o.text, contenteditable: true });
+		d2.setAttribute('contenteditable', true);//, onblur:"handleBlur(this)" 
+		d2.onblur = ev => saveBlog(date, ev.target);
+		d2.addEventListener("dragover", (event) => event.preventDefault()); // Allow dropping
+		d2.addEventListener("drop", handleImageDrop);
+
+		// Example usage
+		const dropZone = document.getElementById("drop-zone");
+		// Add drag-and-drop event listeners
+		dropZone.addEventListener("dragover", (event) => event.preventDefault()); // Allow dropping
+		dropZone.addEventListener("drop", handleImageDrop);
+	}
+}
 async function test4_getYaml() {
 	await loadAssetsStatic();
 	globalKeyHandling();
@@ -21,10 +47,32 @@ async function test4_getYaml() {
 		mDom(d1, { fz: 20 }, { html: o.title });
 		let d2 = mDom(d1, { fz: 20, caret: 'white' }, { html: o.text, contenteditable: true });
 		d2.setAttribute('contenteditable', true);//, onblur:"handleBlur(this)" 
-		d2.onblur = ev => saveBlog(date,ev.target);
+		d2.onblur = ev => saveBlog(date, ev.target);
 		//d2.addEventListener('blur', () => { console.log('Editing completed! Current content:', this.innerHTML); });
 
+		//usage drag drop
+		// d2.setAttribute('draggable', true)
+		// d2.ondragstart = ev => { ev.dataTransfer.setData('itemkey', key); }
+		//enableDataDrop(d2, ondropSomething)
+
+		// Example usage
+		//const dropZone = document.getElementById("drop-zone");
+		// Add drag-and-drop event listeners
+		d2.addEventListener("dragover", (event) => event.preventDefault()); // Allow dropping
+		//d2.addEventListener("drop", logDroppedDataTypes);
+		d2.addEventListener("drop", handleImageDrop);
+
+
+
+		// // Example usage
+		// const dropZone = document.getElementById("drop-zone");
+		// // Add drag-and-drop event listeners
+		// dropZone.addEventListener("dragover", (event) => event.preventDefault()); // Allow dropping
+		// dropZone.addEventListener("drop", handleImageDrop);
+
 	}
+
+
 
 
 	return;
@@ -42,7 +90,8 @@ async function test4_getYaml() {
 	//let ui = await uiTypePalette(d,'white', 'white','../assets/img/emo/abacus.png');
 
 
-} async function test4_mPalette() {
+}
+async function test4_mPalette() {
 	await loadAssetsStatic();
 	globalKeyHandling();
 	//let clist = paletteContrastVariety(['pink']); console.log(clist)

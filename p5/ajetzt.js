@@ -1,18 +1,328 @@
-//#region mFlex
-function mFlex(d, or = 'h') {
-  d = toElem(d);
-  d.style.display = 'flex';
-  d.style.flexFlow = (or == 'v' ? 'column' : 'row') + ' ' + (or == 'w' ? 'wrap' : 'nowrap');
-}
-function mFlexBaseline(d) { mStyle(d, { display: 'flex', 'align-items': 'baseline' }); }
-function mFlexLine(d, startEndCenter = 'center') { mStyle(d, { display: 'flex', 'justify-content': startEndCenter, 'align-items': 'center' }); }
-function mFlexLR(d) { mStyle(d, { display: 'flex', 'justify-content': 'space-between', 'align-items': 'center' }); }
-function mFlexSpacebetween(d) { mFlexLR(d); }
-function mFlexV(d) { mStyle(d, { display: 'flex', 'align-items': 'center' }); }
-function mFlexVWrap(d) { mStyle(d, { display: 'flex', 'align-items': 'center', 'flex-flow': 'row wrap' }); }
-function mFlexWrap(d) { mFlex(d, 'w'); }
 
-//#endregion
+//#region collect functions from bau1-4
+
+function createLineBetweenPoints(dboard, pointA, pointB, thickness = 10) {
+	const [x1, y1] = pointA;
+	const [x2, y2] = pointB;
+
+	// Calculate the distance between the points (length of the line)
+	const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+
+	// Calculate the angle of rotation (in degrees)
+	const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+
+	// Create the line div
+	const line = document.createElement('div');
+	line.style.position = 'absolute';
+	line.style.width = `${length}px`;
+	line.style.height = `${thickness}px`;
+	line.style.backgroundColor = 'black'; // Customize line color
+	line.style.top = `${y1}px`; // Set starting position
+	line.style.left = `${x1}px`;
+	line.style.transformOrigin = '0 50%'; // Rotate around the starting point
+	line.style.transform = `rotate(${angle}deg)`;
+
+	// Append the line to the parent container
+	const parent = toElem(dboard); //document.querySelector(dboard);
+	if (parent) {
+			parent.style.position = 'relative'; // Ensure the parent is relatively positioned
+			parent.appendChild(line);
+	} else {
+			console.error(`Parent element with selector '${dboard}' not found.`);
+	}
+}
+function calcClipPoints(x0, y0, w, h, clipPath) {
+	// Parse the clip-path percentages into an array of points
+	const percentagePoints = clipPath
+		.match(/polygon\((.*?)\)/)[1] // Extract the points inside `polygon()`
+		.split(',')                  // Split into individual points
+		.map(point => point.trim())  // Remove extra spaces
+		.map(point => point.split(' ').map(value => parseFloat(value))); // Convert to [x, y]
+
+	// Convert percentage points to actual pixel coordinates
+	const pixelPoints = percentagePoints.map(([xPercent, yPercent]) => {
+		const x = x0 + (xPercent - 50) * (w / 100);
+		const y = y0 + (yPercent - 50) * (h / 100);
+		return { x, y };
+	});
+
+	return pixelPoints;
+}
+function calcHexCorners(center, width, height) {
+	const [cx, cy] = [center.cx,center.cy]; console.log('center',center)
+	const points = [];
+	const angleStep = (2 * Math.PI) / 6; // 360° / 6 = 60° in radians
+
+	// Calculate the radius from the width and height
+	const rx = width / 2; // Horizontal radius
+	const ry = height / 2; // Vertical radius
+
+	// Loop through each vertex of the hexagon
+	for (let i = 0; i < 6; i++) {
+			const angle = angleStep * i; // Current angle in radians
+			const x = cx + rx * Math.cos(angle);
+			const y = cy + ry * Math.sin(angle);
+			points.push([x, y]);
+	}
+
+	return points;
+}
+function computeColorX(c) {
+	let res = c;
+	if (isList(c)) return rChoose(c);
+	else if (isString(c) && c.startsWith('rand')) {
+		res = rColor();
+		let spec = c.substring(4);
+		if (isdef(window['color' + spec])) {
+			res = window['color' + spec](res);
+		}
+	}
+	return res;
+}
+function drawHexBoard(topside, side, dParent, styles = {}, itemStyles = {}, opts = {}) {
+	addKeys({ box: true }, styles);
+	let dOuter = mDom(dParent, styles, opts);
+	let d = mDom(dOuter, { position: 'relative', });
+	let [centers, rows, maxcols] = hexBoardCenters(topside, side); //console.log(centers)
+	let [w, h] = mSizeSuccession(itemStyles, 24);
+	let gap = valf(styles.gap, -.5);
+	let items = [];
+	if (gap != 0) copyKeys({ w: w - gap, h: h - gap }, itemStyles);
+	for (const c of centers) {
+		let dhex = hexFromCenter(d, { x: c.x * w, y: c.y * h }, itemStyles);
+		let item = { div: dhex, cx: c.x, cy: c.y, row: c.row, col: c.col };
+		items.push(item);
+	}
+	let [wBoard, hBoard] = [maxcols * w, rows * h * .75 + h * .25];
+	mStyle(d, { w: wBoard, h: hBoard });
+	return { div: dOuter, topside, side, centers, rows, maxcols, boardShape: 'hex', w, h, wBoard, hBoard, items }
+}
+function hexBoardCenters(topside, side) {
+	if (nundef(topside)) topside = 4;
+	if (nundef(side)) side = topside;
+	let [rows, maxcols] = [side + side - 1, topside + side - 1];
+	assertion(rows % 2 == 1, `hex with even rows ${rows} top:${topside} side:${side}!`);
+	let centers = [];
+	let cols = topside;
+	let y = 0.5;
+	for (i of range(rows)) {
+		let n = cols;
+		let x = (maxcols - n) / 2 + .5;
+		for (const c of range(n)) {
+			centers.push({ x, y, row: i + 1, col: x * 2 }); x++;
+		}
+		y += .75
+		if (i < (rows - 1) / 2) cols += 1; else cols -= 1;
+	}
+	assertion(cols == topside - 1, `END OF COLS WRONG ${cols}`)
+	return [centers, rows, maxcols];
+}
+function hexFromCenter(dParent, center, styles = {}, opts = {}) {
+	let [w, h] = mSizeSuccession(styles);
+	let [left, top] = [center.x - w / 2, center.y - h / 2];
+	let d = mDom(dParent, { position: 'absolute', left, top, 'clip-path': 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }, opts);
+	mStyle(d, styles);
+	return d;
+}
+
+
+function mPickOneOfGrid(dParent, styles = {}, opts = {}) {
+	let d0 = mDom(dParent, dictMerge(styles,{gap:6}), opts);
+	mGrid(d0);
+
+	function onclick(ev) {
+		evNoBubble(ev);
+		if (isdef(opts.fSuccess)) opts.fSuccess(ev.target.innerHTML);
+	}
+	for (const html of opts.list) {
+		mDom(d0, {  }, { tag: 'button', html, onclick });
+	}
+	return d0;
+}
+
+function centerAt(elem, x, y) {
+  const rect = elem.getBoundingClientRect();
+  const offsetX = x - rect.width / 2;
+  const offsetY = y - rect.height / 2;
+  elem.style.position = 'absolute';
+  elem.style.left = `${offsetX}px`;
+  elem.style.top = `${offsetY}px`;
+}
+function getCenterRelativeToParent(div) {
+  const rect = div.getBoundingClientRect();
+  const parentRect = div.parentNode.getBoundingClientRect();
+  return {
+    x: rect.left + rect.width / 2 - parentRect.left,
+    y: rect.top + rect.height / 2 - parentRect.top
+  };
+}
+function mShape(shape, dParent, styles = {}, opts = {}) {
+	styles = jsCopy(styles);
+	styles.display = 'inline-block';
+	let [w, h] = mSizeSuccession(styles, 100);
+	//if (nundef(styles.bg)) styles.background = 'conic-gradient(green,red,blue,yellow,green)';
+	addKeys({ w, h }, styles);
+	let clip = PolyClips[shape];
+	if (nundef(clip)) styles.round = true; else styles.clip = clip;
+	let d = mDom(dParent, styles, opts);
+	if (isdef(opts.pos)) { mPlace(d, opts.pos); }
+	else if (isdef(opts.center)) centerAt(d, opts.center.x, opts.center.y);
+	return d;
+}
+
+function iDiv(i) { return isdef(i.live) ? i.live.div : valf(i.div, i.ui, i); } //isdef(i.div) ? i.div : i; }
+function mGather(f, d, styles = {}, opts = {}) {
+	return new Promise((resolve, _) => {
+		let dShield = mShield();
+		let fCancel = _ => { dShield.remove(); hotkeyDeactivate('Escape'); resolve(null) };
+		let fSuccess = val => { dShield.remove(); hotkeyDeactivate('Escape'); resolve(val) };
+		dShield.onclick = fCancel;
+		hotkeyActivate('Escape', fCancel);
+
+		let [box, inp] = mInBox(f, dShield, styles, {}, dictMerge(opts, { fSuccess }));
+
+		mAlign(box, d, { align: 'bl', offx: 20 });
+		inp.focus();
+	});
+}
+function mInBox(f, dParent, boxStyles = {}, inpStyles = {}, opts = {}) {
+	let dbox = mDom(dParent, boxStyles);
+	let dinp = f(dbox, inpStyles, opts);
+	return [dbox, dinp];
+}
+function mInput(dParent, styles = {}, opts = {}) {
+	addKeys({ tag:'input', id: getUID(), placeholder: '', autocomplete:"off", value: '', selectOnClick: true, type: "text" }, opts);
+	let d=mDom(dParent,styles,opts);
+	d.onclick = opts.selectOnClick ? ev => { evNoBubble(ev); d.select(); } : ev => { evNoBubble(ev); };
+	d.onkeydown = ev => {
+		if (ev.key == 'Enter' && isdef(opts.fSuccess)) { evNoBubble(ev); opts.fSuccess(d.value); }
+		else if (ev.key == 'Escape' && isdef(opts.fCancel)) { evNoBubble(ev); opts.fCancel(); }
+	}
+	return d;
+}
+function mSelect(dParent, styles = {}, opts = {}) {
+	let d0 = mDom(dParent, dictMerge(styles,{gap:6}), opts);
+	mCenterCenterFlex(d0);
+
+	function onclick(ev) {
+		evNoBubble(ev);
+		if (isdef(opts.fSuccess)) opts.fSuccess(ev.target.innerHTML);
+	}
+	for (const html of opts.list) {
+		mDom(d0, {  }, { tag: 'button', html, onclick });
+	}
+	return d0;
+}
+function mYesNo(dParent,  styles = {}, opts = {}) {
+	return mSelect(dParent, styles, dictMerge(opts, { list: ['yes', 'no'] }));
+}
+function mShield(dParent,styles = {}, opts = {}) {
+	addKeys({ bg: '#00000080' }, styles);
+	addKeys({ id:'shield' }, opts);
+	dParent = valf(toElem(dParent),document.body); //console.log(dParent);
+	let d = mDom(dParent, styles, opts);
+	mIfNotRelative(dParent);
+	mStyle(d, { position: 'absolute', left: 0, top: 0, w: '100%', h: '100%' });
+	mClass(d, 'topmost');
+	return d;
+}
+
+function makeEditable(elem) {
+	elem.setAttribute('contenteditable', 'true');
+	elem.style.border = '1px solid #ccc'; // Optional: Visual indication
+	elem.style.padding = '5px';          // Optional: Add some padding
+}
+async function mPalette(dParent, src, showPal = true, showImg = false) {
+	async function getPaletteFromCanvas(canvas, n) {
+		if (nundef(ColorThiefObject)) ColorThiefObject = new ColorThief();
+		const dataUrl = canvas.toDataURL();
+		const img = new Image();
+		img.src = dataUrl;
+		return new Promise((resolve, reject) => {
+			img.onload = () => {
+				const palette = ColorThiefObject.getPalette(img, n);
+				//showPaletteMini('dMain',palette)
+				resolve(palette ? palette.map(x => colorFrom(x)) : ['black', 'white']);
+			};
+			img.onerror = () => {
+				reject(new Error('Failed to load the image from canvas.'));
+			};
+		});
+	}
+	let dc=mDom(dParent,{display:showImg?'inline':'none'})
+	let ca = await getCanvasCtx(dc, { w:100, h:100, fill: 'white' }, { src });
+	let palette = await getPaletteFromCanvas(ca.cv);
+	if (!showImg) dc.remove();
+	if (showPal) showPaletteMini(dParent, palette);
+	return palette;
+}
+function parseDate(dateStr) {
+	const [month, day, year] = dateStr.split('/').map(Number);
+	return new Date(year, month - 1, day);
+}
+async function saveBlog(key,elem){
+	console.log('saving', key);
+	lookupSetOverride(Z,['blog',key,'text'],elem.innerHTML);
+	let text = jsyaml.dump(Z.blog);
+	let res = await mPhpPostFile(text, 'zdata/blog.yaml');
+	console.log(res);
+}
+function sortDatesDescending(dates) {
+	return dates.sort((a, b) => new Date(b) - new Date(a));
+}
+async function uiTypePalette(dParent, color, fg, src, blendMode) {
+	let fill = color;
+	let bgBlend = getBlendModeForCanvas(blendMode);
+	let d = mDom(dParent, { wbox: true }); //, { w100: true, gap: 4 }); //mFlex(d);
+	let NewValues = { fg, bg: color };
+	let palette = [color];
+	let w = 350;
+	let dContainer = mDom(d, { w, padding: 0, wbox: true });
+	if (isdef(src)) {
+		let ca = await getCanvasCtx(dContainer, { w, fill, bgBlend }, { src });
+		palette = await getPaletteFromCanvas(ca.cv);
+		palette.unshift(fill);
+	} else {
+		palette = arrCycle(paletteShades(color), 4);
+	}
+
+	//console.log('palette', palette.map(x => colorO(x).hex));
+	let dominant = palette[0];
+	let palContrast = paletteContrastVariety(palette, palette.length);
+	mLinebreak(d);
+	let bgItems = showPaletteMini(d, palette);
+	mLinebreak(d);
+	let fgItems = showPaletteMini(d, palContrast);
+	mLinebreak(d);
+
+	// mIfNotRelative(dParent);
+	// let dText = mDom(dParent, { 'pointer-events': 'none', align: 'center', fg: 'white', fz: 30, position: 'absolute', top: 0, left: 0, w100: true, h100: true });
+	// mCenterFlex(dText);
+	// dText.innerHTML = `<br>HALLO<br>das<br>ist ein Text`
+
+	for (const item of fgItems) {
+		let div = iDiv(item);
+		mStyle(div, { cursor: 'pointer' });
+		div.onclick = () => {
+			mStyle(dText, { fg: item.bg });
+			NewValues.fg = item.bg;
+			console.log('NewValues', NewValues);
+		}
+	}
+	for (const item of bgItems) {
+		let div = iDiv(item);
+		mStyle(div, { cursor: 'pointer' });
+		div.onclick = async () => {
+			if (isdef(src)) {
+				mClear(dContainer);
+				let fill = item.bg;
+				await getCanvasCtx(dContainer, { w: 500, h: 300, fill, bgBlend }, { src });
+			}
+			mStyle(dParent, { bg: item.bg });
+			NewValues.bg = item.bg;
+		}
+	}
+}
 
 function getUID(pref = '') {
 	UIDCounter += 1;
@@ -48,42 +358,6 @@ function mCreateFrom(htmlString) {
 	var div = document.createElement('div');
 	div.innerHTML = htmlString.trim();
 	return div.firstChild;
-}
-
-//#region poly
-function getPoly(offsets, x, y, w, h) {
-	//, modulo) {
-	let poly = [];
-	for (let p of offsets) {
-		let px = Math.round(x + p[0] * w); //  %modulo;
-		//px -= px%modulo;
-		//if (px % modulo != 0) px =px % modulo; //-= 1;
-		let py = Math.round(y + p[1] * h); //%modulo;
-		//py -= py%modulo;
-		//if (py % modulo != 0) py -= 1;
-		poly.push({ x: px, y: py });
-	}
-	return poly;
-}
-function getHexPoly(x, y, w, h) {
-	// returns hex poly points around center x,y
-	let hex = [[0, -0.5], [0.5, -0.25], [0.5, 0.25], [0, 0.5], [-0.5, 0.25], [-0.5, -0.25]];
-	return getPoly(hex, x, y, w, h);
-}
-function getQuadPoly(x, y, w, h) {
-	// returns hex poly points around center x,y
-	q = [[0.5, -0.5], [0.5, 0.5], [-0.5, 0.5], [-0.5, -0.5]];
-	return getPoly(q, x, y, w, h);
-}
-function getTriangleUpPoly(x, y, w, h) {
-	// returns hex poly points around center x,y
-	let triup = [[0, -0.5], [0.5, 0.5], [-0.5, 0.5]];
-	return getPoly(triup, x, y, w, h);
-}
-function getTriangleDownPoly(x, y, w, h) {
-	// returns hex poly points around center x,y
-	let tridown = [[-0.5, 0.5], [0.5, 0.5], [-0.5, 0.5]];
-	return getPoly(tridown, x, y, w, h);
 }
 
 //#endregion
@@ -203,6 +477,415 @@ function drawShape(key, dParent, styles, classes, sizing) {
   else mStyle(d, { 'clip-path': PolyClips[key] });
   return d;
 }
+//#endregion
+
+//#region drag drop
+function createPanZoomCanvas(parentElement, src, wCanvas, hCanvas) {
+  const canvas = document.createElement('canvas');
+  canvas.width = wCanvas;
+  canvas.height = hCanvas;
+  parentElement.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  let image = new Image();
+  image.src = src;
+  let scale = 1;
+  let originX = 0;
+  let originY = 0;
+  let startX = 0;
+  let startY = 0;
+  let isDragging = false;
+  image.onload = () => {
+    if (image.width < canvas.width) canvas.width = image.width;
+    if (image.height < canvas.height) canvas.height = image.height;
+    const scaleX = canvas.width / image.width;
+    const scaleY = canvas.height / image.height;
+    scale = Math.min(scaleX, scaleY, 1);
+    originX = (canvas.width - image.width * scale) / 2;
+    originY = (canvas.height - image.height * scale) / 2;
+    draw();
+  };
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(originX, originY);
+    ctx.scale(scale, scale);
+    ctx.drawImage(image, 0, 0);
+    ctx.restore();
+  }
+  canvas.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startX = e.clientX - originX;
+    startY = e.clientY - originY;
+    canvas.style.cursor = 'grabbing';
+  });
+  canvas.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      originX = e.clientX - startX;
+      originY = e.clientY - startY;
+      draw();
+    }
+  });
+  canvas.addEventListener('mouseup', () => {
+    isDragging = false;
+    canvas.style.cursor = 'grab';
+  });
+  canvas.addEventListener('mouseout', () => {
+    isDragging = false;
+    canvas.style.cursor = 'grab';
+  });
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const zoom = Math.exp(e.deltaY * -0.0005);
+    scale *= zoom;
+    if (scale >= 1) scale = 1;
+    const mouseX = e.clientX - canvas.offsetLeft;
+    const mouseY = e.clientY - canvas.offsetTop;
+    originX = mouseX - (mouseX - originX) * zoom;
+    originY = mouseY - (mouseY - originY) * zoom;
+    draw();
+  });
+  let touchStartX = 0;
+  let touchStartY = 0;
+  canvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      isDragging = true;
+      touchStartX = e.touches[0].clientX - originX;
+      touchStartY = e.touches[0].clientY - originY;
+      canvas.style.cursor = 'grabbing';
+    }
+  });
+  canvas.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1 && isDragging) {
+      originX = e.touches[0].clientX - touchStartX;
+      originY = e.touches[0].clientY - touchStartY;
+      draw();
+    }
+  });
+  canvas.addEventListener('touchend', () => {
+    isDragging = false;
+    canvas.style.cursor = 'grab';
+  });
+  return canvas;
+}
+function drag(ev) {
+  let elem = ev.target;
+  dragStartOffset = getRelCoords(ev, elem);
+  draggedElement = elem;
+}
+function drop(ev) {
+  ev.preventDefault();
+  let targetElem = findDragTarget(ev);
+  targetElem.appendChild(draggedElement);
+  setDropPosition(ev, draggedElement, targetElem, isdef(draggedElement.dropPosition) ? draggedElement.dropPosition : dropPosition);
+}
+function enableDataDrop(elem, onDropCallback) {
+  const originalBorderStyle = elem.style.border;
+  elem.addEventListener('dragover', ev => { ev.preventDefault(); }); // Prevent default behavior for dragover and drop events to allow drop
+  elem.addEventListener('dragenter', ev => {
+    //console.log(ev);
+    let els = ev.srcElement;
+    if (isAncestorOf(els, elem)) return;
+    elem.style.border = '2px solid red';
+  });
+  elem.addEventListener('drop', ev => {
+    ev.preventDefault();
+    elem.style.border = originalBorderStyle;
+		console.log('dropped onto',elem)
+		console.log(ev.target);
+		console.log(ev.dataTransfer.types);
+    //console.log('border', elem.style.border)
+    //onDropCallback(ev, elem);
+  });
+}
+function enableImageDrop(element, onDropCallback) {
+  const originalBorderStyle = element.style.border;
+  element.addEventListener('dragover', function (event) {
+    event.preventDefault();
+  });
+  element.addEventListener('dragenter', function (event) {
+    element.style.border = '2px solid red';
+  });
+  element.addEventListener('drop', function (event) {
+    event.preventDefault();
+    element.style.border = originalBorderStyle;
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) { // Check if the dropped file is an image
+        onDropCallback(file);
+      }
+    }
+  });
+  element.addEventListener('dragleave', function (event) {
+    element.style.border = originalBorderStyle;
+  });
+}
+function findDragTarget(ev) {
+  let targetElem = ev.target;
+  while (!targetElem.ondragover) targetElem = targetElem.parentNode;
+  return targetElem;
+}
+function getRelCoords(ev, elem) {
+  let x = ev.pageX - elem.offset().left;
+  let y = ev.pageY - elem.offset().top;
+  return { x: x, y: y };
+}
+function isAncestorOf(elem, elemAnc) {
+  while (elem) {
+    if (elem === elemAnc) {
+      return true;
+    }
+    elem = elem.parentNode;
+  }
+  return false;
+}
+function isAtLeast(n, num = 1) { return n >= num; }
+function isBetween(n, a, b) { return n >= a && n <= b }
+function isCloseTo(n, m, acc = 10) { return Math.abs(n - m) <= acc + 1; }
+function isColor(s) { return isdef(M.colorByName[s]) || s.length == 7 && s[0] == '#'; }
+function makeElemDraggableTo(elem, target, key) {
+	if (isdef(key)) {
+		if (nundef(target.ddKeys)) target.ddKeys = [];
+		if (nundef(elem.ddKeys)) elem.ddKeys = [];
+		addIf(target.ddKeys, key);
+		addIf(elem.ddKeys, key);
+	}
+	if (nundef(elem.id)) elem.id = getUID();
+	elem.draggable = true;
+	elem.ondragstart = isdef(key) ? dragKey : drag;
+	target.ondragover = isdef(key) ? allowDropKey : allowDrop;
+	target.ondrop = isdef(key) ? dropKey : drop;
+}
+function mDraggable(item) {
+	let d = iDiv(item);
+	d.draggable = true;
+	d.ondragstart = drag;
+}
+function mDroppable(item, handler, dragoverhandler) {
+	function allowDrop(ev) { ev.preventDefault(); }
+
+	let d = iDiv(item);
+	//console.log('item', item);
+	d.ondragover = isdef(dragoverhandler) ? dragoverhandler : allowDrop;
+	//if (isdef(dragEnterHandler)) d.ondragenter = dragEnterHandler;
+	d.ondrop = handler;
+}
+function mDropZone(dropZone, onDrop) {
+  dropZone.setAttribute('allowDrop', true)
+  dropZone.addEventListener('dragover', function (event) {
+    event.preventDefault();
+    dropZone.style.border = '2px dashed #007bff';
+  });
+  dropZone.addEventListener('dragleave', function (event) {
+    event.preventDefault();
+    dropZone.style.border = '2px dashed #ccc';
+  });
+  dropZone.addEventListener('drop', function (event) {
+    event.preventDefault();
+    dropZone.style.border = '2px dashed #ccc';
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        onDrop(ev.target.result);
+      };
+      reader.readAsDataURL(files[0]);
+    }
+  });
+  return dropZone;
+}
+function mDropZone1(dropZone, onDrop) {
+  dropZone.addEventListener('dragover', function (event) {
+    event.preventDefault();
+    dropZone.style.border = '2px dashed #007bff';
+  });
+  dropZone.addEventListener('dragleave', function (event) {
+    event.preventDefault();
+    dropZone.style.border = '2px dashed #ccc';
+  });
+  dropZone.addEventListener('drop', function (evDrop) {
+    evDrop.preventDefault();
+    dropZone.style.border = '2px dashed #ccc';
+    const files = evDrop.dataTransfer.files;
+    if (files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = evReader => {
+        onDrop(evReader.target.result, dropZone);
+      };
+      reader.readAsDataURL(files[0]);
+    }
+  });
+  return dropZone;
+}
+async function ondropPreviewImage(dParent, url, key) {
+  if (isdef(key)) {
+    let o = M.superdi[key];
+    UI.imgColl.value = o.cats[0];
+    UI.imgName.value = o.friendly;
+  }
+  assertion(dParent == UI.dDrop, `problem bei ondropPreviewImage parent:${dParent}, dDrop:${UI.dDrop}`)
+  dParent = UI.dDrop;
+  let dButtons = UI.dButtons;
+  let dTool = UI.dTool;
+  dParent.innerHTML = '';
+  dButtons.innerHTML = '';
+  dTool.innerHTML = '';
+  let img = UI.img = mDom(dParent, {}, { tag: 'img', src: url });
+  img.onload = async () => {
+    img.onload = null;
+    UI.img_orig = new Image(img.offsetWidth, img.offsetHeight);
+    UI.url = url;
+    let tool = UI.cropper = mCropResizePan(dParent, img);
+    addToolX(tool, dTool)
+    mDom(dButtons, { w: 120 }, { tag: 'button', html: 'Upload', onclick: onclickUpload, className: 'input' })
+    mButton('Restart', () => ondropPreviewImage(url), dButtons, { w: 120, maleft: 12 }, 'input');
+  }
+}
+async function ondropShowImage(url, dDrop) {
+  mClear(dDrop);
+  let img = await imgAsync(dDrop, { hmax: 300 }, { src: url });
+  console.log('img dims', img.width, img.height); //works!!!
+  mStyle(dDrop, { w: img.width, h: img.height + 30, align: 'center' });
+  mDom(dDrop, { fg: colorContrastPickFromList(dDrop, ['blue', 'lime', 'yellow']) }, { className: 'blink', html: 'DONE! now click on where you think the image should be centered!' })
+  console.log('DONE! now click on where you think the image should be centered!')
+  img.onclick = storeMouseCoords;
+}
+
+function setDropPosition(ev, elem, targetElem, dropPos) {
+  if (dropPos == 'mouse') {
+    var elm = $(targetElem);
+    x = ev.pageX - elm.offset().left - dragStartOffset.x;
+    y = ev.pageY - elm.offset().top - dragStartOffset.y;
+    posXY(elem, targetElem, x, y);
+  } else if (dropPos == 'none') {
+    return;
+  } else if (dropPos == 'center') {
+    elem.style.position = elem.style.left = elem.style.top = '';
+    elem.classList.add('centeredTL');
+  } else if (dropPos == 'centerCentered') {
+    elem.style.position = elem.style.left = elem.style.top = '';
+    elem.classList.add('centerCentered');
+  } else {
+    dropPos(ev, elem, targetElem);
+  }
+}
+async function simpleOnDropImage(ev, elem) {
+  let dt = ev.dataTransfer;
+  if (dt.types.includes('itemkey')) {
+    let data = ev.dataTransfer.getData('itemkey');
+    await simpleOnDroppedItem(data);
+  } else {
+    const files = ev.dataTransfer.files;
+    if (files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = async (evReader) => {
+        let data = evReader.target.result;
+        await simpleOnDroppedUrl(data, UI.simple);
+      };
+      reader.readAsDataURL(files[0]);
+    }
+  }
+}
+async function simpleOnDroppedItem(itemOrKey, key, sisi) {
+  if (nundef(sisi)) sisi = UI.simple;
+  let item;
+  if (isString(itemOrKey)) { key = itemOrKey; item = M.superdi[key]; } else { item = itemOrKey; }
+  assertion(isdef(key), 'NO KEY!!!!!');
+  lookupAddIfToList(item, ['colls'], sisi.name);
+  let o = M.superdi[key];
+  if (isdef(o)) {
+    console.log(`HA! ${key} already there`);
+    let changed = false;
+    for (const k in item) {
+      let val = item[k];
+      if (isLiteral(val) && o[k] != item[k]) { changed = true; break; }
+      else if (isList(val) && !sameList(val, o[k])) { changed = true; break; }
+    }
+    if (!changed) return;
+  }
+  console.log(`........But changed!!!`);
+  let di = {}; di[key] = item;
+  await updateSuperdi(di);
+  simpleInit(sisi.name, sisi)
+}
+async function simpleOnDroppedUrl(src, sisi) {
+  let sz = 400;
+  let dPopup = mDom(document.body, { position: 'fixed', top: 40, left: 0, wmin: sz, hmin: sz, bg: 'pink' });
+  let dParent = mDom(dPopup);
+  let d = mDom(dParent, { w: sz, h: sz, border: 'dimgray', margin: 10 });
+  let canvas = createPanZoomCanvas(d, src, sz, sz);
+  let instr = mDom(dPopup, { align: 'center', mabot: 10 }, { html: `- panzoom image to your liking -` })
+  let dinp = mDom(dPopup, { padding: 10, align: 'right', display: 'inline-block' })
+  mDom(dinp, { display: 'inline-block' }, { html: 'Name: ' });
+  let inpFriendly = mDom(dinp, { outline: 'none', w: 200 }, { className: 'input', name: 'friendly', tag: 'input', type: 'text', placeholder: `<enter name>` });
+  let defaultName = '';
+  let iDefault = 1;
+  let k = sisi.masterKeys.find(x => x == `${sisi.name}${iDefault}`);
+  while (isdef(k)) { iDefault++; k = sisi.masterKeys.find(x => x == `${sisi.name}${iDefault}`); }
+  defaultName = `${sisi.name}${iDefault}`;
+  inpFriendly.value = defaultName;
+  mDom(dinp, { h: 1 });
+  mDom(dinp, { display: 'inline-block' }, { html: 'Categories: ' })
+  let inpCats = mDom(dinp, { outline: 'none', w: 200 }, { className: 'input', name: 'cats', tag: 'input', type: 'text', placeholder: `<enter categories>` });
+  let db2 = mDom(dPopup, { padding: 10, display: 'flex', gap: 10, 'justify-content': 'end' });
+  mButton('Cancel', () => dPopup.remove(), db2, { w: 70 }, 'input');
+  mButton('Save', () => simpleFinishEditing(canvas, dPopup, inpFriendly, inpCats, sisi), db2, { w: 70 }, 'input');
+}
+//#endregion
+
+//#region format date time
+function formatDate(d) {
+	const date = isdef(d) ? d : new Date();
+	const month = ('0' + date.getMonth()).slice(0, 2);
+	const day = date.getDate();
+	const year = date.getFullYear();
+	const dateString = `${month}/${day}/${year}`;
+	return dateString;
+}
+function formatDate1(d) {
+	if (nundef(d)) d = Date.now();
+	let ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
+	let mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(d);
+	let da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
+	return `${da}-${mo}-${ye}`;
+}
+function formatDate2(d) { if (nundef(d)) d = new Date(); return d.toISOString().slice(0, 19).replace("T", " "); }
+function formatDate3(d) { if (nundef(d)) d = new Date(); return d.toISOString().slice(0, 19).replace(/-/g, "/").replace("T", " "); }
+function formatNow() { return new Date().toISOString().slice(0, 19).replace("T", " "); }
+function getFormattedDate() {
+	const date = new Date();
+
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+	const day = String(date.getDate()).padStart(2, '0'); // Add leading zero if needed
+
+	return `${year}-${month}-${day}`;
+}
+function getFormattedTime() {
+	const date = new Date();
+
+	const hours = String(date.getHours()).padStart(2, '0'); // Get hours (24-hour format)
+	const minutes = String(date.getMinutes()).padStart(2, '0'); // Get minutes
+
+	return `${hours}:${minutes}`;
+}
+
+//#endregion
+
+//#region mFlex
+function mFlex(d, or = 'h') {
+  d = toElem(d);
+  d.style.display = 'flex';
+  d.style.flexFlow = (or == 'v' ? 'column' : 'row') + ' ' + (or == 'w' ? 'wrap' : 'nowrap');
+}
+function mFlexBaseline(d) { mStyle(d, { display: 'flex', 'align-items': 'baseline' }); }
+function mFlexLine(d, startEndCenter = 'center') { mStyle(d, { display: 'flex', 'justify-content': startEndCenter, 'align-items': 'center' }); }
+function mFlexLR(d) { mStyle(d, { display: 'flex', 'justify-content': 'space-between', 'align-items': 'center' }); }
+function mFlexSpacebetween(d) { mFlexLR(d); }
+function mFlexV(d) { mStyle(d, { display: 'flex', 'align-items': 'center' }); }
+function mFlexVWrap(d) { mStyle(d, { display: 'flex', 'align-items': 'center', 'flex-flow': 'row wrap' }); }
+function mFlexWrap(d) { mFlex(d, 'w'); }
+
 //#endregion
 
 //#region mGather uiType
@@ -678,41 +1361,40 @@ function uiTypeSelect(any, dParent, styles = {}, opts = {}) {
 
 //#endregion
 
-//#region format date time
-function formatDate(d) {
-	const date = isdef(d) ? d : new Date();
-	const month = ('0' + date.getMonth()).slice(0, 2);
-	const day = date.getDate();
-	const year = date.getFullYear();
-	const dateString = `${month}/${day}/${year}`;
-	return dateString;
+//#region poly
+function getPoly(offsets, x, y, w, h) {
+	//, modulo) {
+	let poly = [];
+	for (let p of offsets) {
+		let px = Math.round(x + p[0] * w); //  %modulo;
+		//px -= px%modulo;
+		//if (px % modulo != 0) px =px % modulo; //-= 1;
+		let py = Math.round(y + p[1] * h); //%modulo;
+		//py -= py%modulo;
+		//if (py % modulo != 0) py -= 1;
+		poly.push({ x: px, y: py });
+	}
+	return poly;
 }
-function formatDate1(d) {
-	if (nundef(d)) d = Date.now();
-	let ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
-	let mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(d);
-	let da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
-	return `${da}-${mo}-${ye}`;
+function getHexPoly(x, y, w, h) {
+	// returns hex poly points around center x,y
+	let hex = [[0, -0.5], [0.5, -0.25], [0.5, 0.25], [0, 0.5], [-0.5, 0.25], [-0.5, -0.25]];
+	return getPoly(hex, x, y, w, h);
 }
-function formatDate2(d) { if (nundef(d)) d = new Date(); return d.toISOString().slice(0, 19).replace("T", " "); }
-function formatDate3(d) { if (nundef(d)) d = new Date(); return d.toISOString().slice(0, 19).replace(/-/g, "/").replace("T", " "); }
-function formatNow() { return new Date().toISOString().slice(0, 19).replace("T", " "); }
-function getFormattedDate() {
-	const date = new Date();
-
-	const year = date.getFullYear();
-	const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-	const day = String(date.getDate()).padStart(2, '0'); // Add leading zero if needed
-
-	return `${year}-${month}-${day}`;
+function getQuadPoly(x, y, w, h) {
+	// returns hex poly points around center x,y
+	q = [[0.5, -0.5], [0.5, 0.5], [-0.5, 0.5], [-0.5, -0.5]];
+	return getPoly(q, x, y, w, h);
 }
-function getFormattedTime() {
-	const date = new Date();
-
-	const hours = String(date.getHours()).padStart(2, '0'); // Get hours (24-hour format)
-	const minutes = String(date.getMinutes()).padStart(2, '0'); // Get minutes
-
-	return `${hours}:${minutes}`;
+function getTriangleUpPoly(x, y, w, h) {
+	// returns hex poly points around center x,y
+	let triup = [[0, -0.5], [0.5, 0.5], [-0.5, 0.5]];
+	return getPoly(triup, x, y, w, h);
+}
+function getTriangleDownPoly(x, y, w, h) {
+	// returns hex poly points around center x,y
+	let tridown = [[-0.5, 0.5], [0.5, 0.5], [-0.5, 0.5]];
+	return getPoly(tridown, x, y, w, h);
 }
 
 //#endregion
