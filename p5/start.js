@@ -22,10 +22,10 @@ async function test4_dropImage() {
 		d2.addEventListener("drop", handleImageDrop);
 
 		// Example usage
-		const dropZone = document.getElementById("drop-zone");
+		//const dropZone = document.getElementById("drop-zone");
 		// Add drag-and-drop event listeners
-		dropZone.addEventListener("dragover", (event) => event.preventDefault()); // Allow dropping
-		dropZone.addEventListener("drop", handleImageDrop);
+		// dropZone.addEventListener("dragover", (ev) => ev.preventDefault()); // Allow dropping
+		// dropZone.addEventListener("drop", handleImageDrop);
 	}
 }
 async function test4_getYaml() {

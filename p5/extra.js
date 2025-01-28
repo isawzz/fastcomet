@@ -1,4 +1,99 @@
 
+//#region drag drop
+async function ondropImage(src, sisi) {
+	let sz = 400;
+	let dPopup = mDom(document.body, { position: 'fixed', top: 40, left: 0, wmin: sz, hmin: sz, bg: 'pink' });
+	let dParent = mDom(dPopup);
+	let d = mDom(dParent, { w: sz, h: sz, border: 'dimgray', margin: 10 });
+	let canvas = createPanZoomCanvas(d, src, sz, sz);
+	let instr = mDom(dPopup, { align: 'center', mabot: 10 }, { html: `- panzoom image to your liking -` })
+	let dinp = mDom(dPopup, { padding: 10, align: 'right', display: 'inline-block' })
+	mDom(dinp, { display: 'inline-block' }, { html: 'Name: ' });
+	let inpFriendly = mDom(dinp, { outline: 'none', w: 200 }, { className: 'input', name: 'friendly', tag: 'input', type: 'text', placeholder: `<enter name>` });
+	let defaultName = '';
+	let iDefault = 1;
+	let k = sisi.masterKeys.find(x => x == `${sisi.name}${iDefault}`);
+	while (isdef(k)) { iDefault++; k = sisi.masterKeys.find(x => x == `${sisi.name}${iDefault}`); }
+	defaultName = `${sisi.name}${iDefault}`;
+	inpFriendly.value = defaultName;
+	mDom(dinp, { h: 1 });
+	mDom(dinp, { display: 'inline-block' }, { html: 'Categories: ' })
+	let inpCats = mDom(dinp, { outline: 'none', w: 200 }, { className: 'input', name: 'cats', tag: 'input', type: 'text', placeholder: `<enter categories>` });
+	let db2 = mDom(dPopup, { padding: 10, display: 'flex', gap: 10, 'justify-content': 'end' });
+	mButton('Cancel', () => dPopup.remove(), db2, { w: 70 }, 'input');
+	mButton('Save', () => simpleFinishEditing(canvas, dPopup, inpFriendly, inpCats, sisi), db2, { w: 70 }, 'input');
+}
+function logDroppedDataTypes(event) {
+	event.preventDefault(); // Prevent the default behavior (e.g., opening a link/file)
+
+	const dataTransfer = event.dataTransfer;
+
+	console.log("Dropped data types and values:");
+
+	// Iterate through all available data types
+	for (const type of dataTransfer.types) {
+			const value = dataTransfer.getData(type);
+			console.log(`Type: ${type}, Value: ${value}`);
+	}
+}
+function ondropSomething(ev) {
+	return new Promise((resolve, reject) => {
+		let dt = ev.dataTransfer;
+		if (dt.types.includes('itemkey')) {
+			let data = ev.dataTransfer.getData('itemkey');
+			console.log('dropped', data);
+			resolve(data);
+		} else {
+			const files = ev.dataTransfer.files;
+			if (files.length > 0) {
+				const reader = new FileReader();
+				reader.onload = async (evReader) => {
+					let data = evReader.target.result;
+					console.log('dropped', data);
+					resolve(data);
+				};
+				reader.readAsDataURL(files[0]);
+			}else resolve(ev.dataTransfer);
+		}
+
+	});
+}
+function _handleImageDrop(ev) {
+	ev.preventDefault(); // Prevent default behavior (e.g., opening the dropped file)
+
+	const dataTransfer = ev.dataTransfer;
+	console.log('types', dataTransfer.types); //return;
+
+	const files = dataTransfer.files;
+	if (files.length > 0) {
+		const reader = new FileReader();
+		reader.onload = async (evReader) => {
+			let data = evReader.target.result;
+			let size = await getImageSize(data);
+			console.log('size', size);
+			if (size.width > 500) {
+				let ratio = 500 / size.width;
+				size.width = 500;
+				size.height = Math.round(size.height * ratio);
+				console.log('size', size);
+			}
+			mDom(ev.target, { wmax: 500 }, { tag: 'img', src: data, draggable: false });
+		};
+		reader.readAsDataURL(files[0]);
+	}
+	// Check if the type `text/uri-list` is included in the dropped data
+	if (dataTransfer.types.includes("text/html")) {
+		let text = dataTransfer.getData("text/html");
+
+		let x = stringAfter(text, 'src="');
+		let y = stringBefore(x, '"');
+		console.log('text', y);
+	}
+}
+//https://media.istockphoto.com/id/2157926151/photo/cute-cat-outdoors-in-summer.jpg?s=1024x1024&w=is&k=20&c=SG0hCGPnE1MnZI3Vwes2eIbX15Rp3a9RzSEWfX3040s=
+
+//#endregion
+
 function createEmojiInput(dParent) {
 
 	// Create the input element
