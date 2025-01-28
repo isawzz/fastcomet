@@ -58,22 +58,21 @@ async function handleImageDrop(ev) {
 			const file = files[0]; // Get the first file
 			const fileName = file.name; // Get the file name
 			const fileType = file.type; // Check the file type
-			console.log(fileName,fileType);
+			console.log(fileName, fileType);
 			if (fileType.startsWith('image/')) {
-				fileNameDisplay.textContent = `Dropped file name: ${fileName}`;
+				fileNameDisplay.textContent = `Dropped image: ${stringBefore(fileName, '.')}.${stringAfter(fileName, '.')}`;
+				//image should be resized, saved on php server, and src returned via resolve
+				//
+				const reader = new FileReader();
+				reader.onload = async (evReader) => {
+					let data = evReader.target.result;
+					//console.log('dropped', data);
+					resolve(data);
+				};
+				reader.readAsDataURL(files[0]);
 			} else {
 				fileNameDisplay.textContent = 'Please drop a valid image file.';
 			}
-		} 
-		if (files.length > 0) {
-			let x = Object.keys(files[0]); console.log(x);
-			const reader = new FileReader();
-			reader.onload = async (evReader) => {
-				let data = evReader.target.result;
-				console.log('dropped', data);
-				resolve(data);
-			};
-			reader.readAsDataURL(files[0]);
 		}
 	});
 }
