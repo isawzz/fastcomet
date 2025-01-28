@@ -48,10 +48,8 @@ function resizeImage(file, maxWidth, maxHeight) {
 }
 
 async function handleImageDrop(ev) {
-
 	return new Promise((resolve, reject) => {
 		ev.preventDefault();
-
 		const files = ev.dataTransfer.files;
 		let fileNameDisplay = ev.target;
 		if (files.length > 0) {
@@ -66,6 +64,7 @@ async function handleImageDrop(ev) {
 				const reader = new FileReader();
 				reader.onload = async (evReader) => {
 					let data = evReader.target.result;
+					let resized = await resizeImage(file, 420, 300);
 					//console.log('dropped', data);
 					resolve(data);
 				};
