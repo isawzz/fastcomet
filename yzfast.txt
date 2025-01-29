@@ -1,10 +1,9 @@
 27.1. lib renew
 ho:tee+scho
 
-
-
 _______ 5:36 AM 1/29/2025 airport 31000
 mark manson
+kann ich mich auf R freuen? es gibt den Costco mit pizza und ich kann ohne daempfer geige ueben. ausserdem bin ich alleine, alleine, allein!!!! 
 _______ 5:49 AM 1/28/2025 airport 30000
 treppenlift geo,funktion
 kurvenfahrt prozent,funktion
@@ -13,8 +12,6 @@ scheunentor funktion,integral
 aufgabe: Weg mit mehreren Vektoren a,b,c durch 1 Vektor ersetzen:
 1. addiere komponentenweise. ax+bx+cx, ...
 2. neuer Vektor hat gleichen startpunkt und endpunkt wie Weg
-
-
 _______ 6:18 AM 1/27/2025 airport 29000
 dd bilder
 _______ 7:06 AM 1/26/2025 airport 28000
