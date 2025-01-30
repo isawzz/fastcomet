@@ -1,6 +1,20 @@
 27.1. lib renew
 ho:tee+scho
 
+next: convert this array into an array
+
+qsort(arr)
+if arr.len <= 1 return arr
+let x=arr[0]
+let lower=[],upper=[]
+for(i=1 to arr.len)
+  if arr[i]<x lower.push(arr[i]) else upper.push(arr[i])
+return qsort(lower) + [x] + qsort(upper)
+
+sort numbers
+aggregate to count+number
+output
+
 Die beiden Orte Nußdorf und Weyregg liegen auf einander gegenüberliegenden Ufern des Attersees. Die Schiffsanlegestellen Nußdorf $(N)$ und Weyregg $(W)$ sind im nachstehenden Koordinatensystem dargestellt. Die Entfernung zwischen den Punkten $N$ und $W$ beträgt $3,5 \mathrm{~km}$.Die Gerade durch die Punkte $N$ und $W$ hat den Richtungsvektor $\vec{v}=\binom{4}{3}$.1) Ermitteln Sie den Vektor $\overrightarrow{N W}$.
 
 download ollama for windows

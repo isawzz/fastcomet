@@ -1,7 +1,16 @@
 
 onload = start;
 
-async function start() { await test4_dropImage(); }
+async function start() { await test4_qsort(); }
+
+async function test4_qsort(){
+	let arr = [];
+	for(const i of range(1,20)) arr.push(rNumber(1,25));
+	console.log(arr);
+	let arr1=qsort(arr);
+	console.log(arr1);
+}
+
 async function test4_dropImage() {
 	await loadAssetsStatic();
 	globalKeyHandling();
