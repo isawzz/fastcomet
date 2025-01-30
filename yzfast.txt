@@ -1,6 +1,12 @@
 27.1. lib renew
 ho:tee+scho
 
+Die beiden Orte Nußdorf und Weyregg liegen auf einander gegenüberliegenden Ufern des Attersees. Die Schiffsanlegestellen Nußdorf $(N)$ und Weyregg $(W)$ sind im nachstehenden Koordinatensystem dargestellt. Die Entfernung zwischen den Punkten $N$ und $W$ beträgt $3,5 \mathrm{~km}$.Die Gerade durch die Punkte $N$ und $W$ hat den Richtungsvektor $\vec{v}=\binom{4}{3}$.1) Ermitteln Sie den Vektor $\overrightarrow{N W}$.
+
+download ollama for windows
+ollama serve
+ollama run deepseek-r1:1.5b
+Bonnie has twice as many cousins as Robert. George has 5 cousins,which is 9 fewer than Bonnie has. How many cousins does Robert have? a. 17 b. 22 c. 4 d. 7
 _______ 5:36 AM 1/29/2025 airport 31000
 mark manson
 kann ich mich auf R freuen? es gibt den Costco mit pizza und ich kann ohne daempfer geige ueben. ausserdem bin ich alleine, alleine, allein!!!! 
