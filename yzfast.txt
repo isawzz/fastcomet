@@ -1,8 +1,27 @@
 27.1. lib renew
-ho:tee+scho
+ho:tee+scho 
+der trick ist: no outcome,no decision making! just list - like robot
 
+_______ 6:21 AM 1/31/2025 airport 33000
+auf auf richtung tage! mit comp!!!
+TAGE BEDIENERIN!!!
+6:32 AM 1/31/2025 pre-fix sum in python
+6:32 AM 1/31/2025 iq
+- max length of contiguous subarray {0,1}
+A erdbeeren,himbeere, mitbringen!
 next: convert this array into an array
-
+let res=[]
+let x=arr[0],cnt=0;
+for(i of range(0,arr.length)){
+ let a=arr[i];
+ if (a==x) cnt++
+ else{
+  res.push({n:x,cnt});
+  x=a;
+  cnt=1;
+ }
+}
+return res;
 qsort(arr)
 if arr.len <= 1 return arr
 let x=arr[0]
@@ -10,13 +29,11 @@ let lower=[],upper=[]
 for(i=1 to arr.len)
   if arr[i]<x lower.push(arr[i]) else upper.push(arr[i])
 return qsort(lower) + [x] + qsort(upper)
-
 sort numbers
 aggregate to count+number
 output
-
 Die beiden Orte Nußdorf und Weyregg liegen auf einander gegenüberliegenden Ufern des Attersees. Die Schiffsanlegestellen Nußdorf $(N)$ und Weyregg $(W)$ sind im nachstehenden Koordinatensystem dargestellt. Die Entfernung zwischen den Punkten $N$ und $W$ beträgt $3,5 \mathrm{~km}$.Die Gerade durch die Punkte $N$ und $W$ hat den Richtungsvektor $\vec{v}=\binom{4}{3}$.1) Ermitteln Sie den Vektor $\overrightarrow{N W}$.
-
+_______ 6:20 AM 1/30/2025 airport 32000
 download ollama for windows
 ollama serve
 ollama run deepseek-r1:1.5b

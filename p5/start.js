@@ -4,11 +4,16 @@ onload = start;
 async function start() { await test4_qsort(); }
 
 async function test4_qsort(){
-	let arr = [];
-	for(const i of range(1,20)) arr.push(rNumber(1,25));
-	console.log(arr);
+	let arr = arrGen(20,0,1);
+	console.log(arr,arrMaxContiguous(arr));
+	return;
 	let arr1=qsort(arr);
 	console.log(arr1);
+	let arr2=arrToCount(arr1);
+	//sort array arr2 by cnt, descending
+	arr2.sort((a,b)=>b.cnt-a.cnt);
+	console.log(arr2.map(x=>x.cnt));
+	
 }
 
 async function test4_dropImage() {
