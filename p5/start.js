@@ -1,8 +1,11 @@
 
 onload = start;
 
-async function start() { await test4_qsort(); }
+async function start() { await test4_dropImage(); }
 
+async function test4_spiel(){
+
+}
 async function test4_qsort(){
 	let arr = arrGen(20,0,1);
 	console.log(arr,arrMaxContiguous(arr));
@@ -15,7 +18,6 @@ async function test4_qsort(){
 	console.log(arr2.map(x=>x.cnt));
 	
 }
-
 async function test4_dropImage() {
 	await loadAssetsStatic();
 	globalKeyHandling();
@@ -222,33 +224,6 @@ async function test4_hex() {
 	for (const pt of pts) drawCircleOnDiv(d, pt.x, pt.y, 2)
 
 }
-async function muell() {
-
-	let sz = 50;
-	let board = drawHexBoard(3, 3, d, { bg: 'blue', border: '1px solid red', padding: 10, gap: 4 }, { sz, bg: rColor() });
-	//console.log(board)
-	let item = board.items[0];
-	let dboard = iDiv(board);
-	let r = getRect(dboard);
-	let [dx, dy] = [r.x, r.y];
-
-	let clip = 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)';
-	let pts = calculatePolygonPointsFromClipPath(item, sz, sz, clip);
-
-
-	// let corners = calcHexCorners(item, sz, sz);
-	// for(const c of corners){
-	// 	let d=mDom(board.div,{position:'absolute',left:c[0],top:c[1],w:10,h:10,bg:'red',round:true});
-
-	// }
-	//console.log(pts);
-	let p1 = [pts[0][0] + dx, pts[0][1] + dy];
-	let p2 = [pts[1][0] + dx, pts[1][1] + dy];
-	mIfNotRelative(dboard);
-	mDom(dboard, { position: 'absolute', top: p1[1] - 5, left: p1[0] = 5, w: 10, h: 10, bg: 'black' });
-	createLineBetweenPoints(iDiv(board), p1, p2, 2)
-}
-
 async function test4_mGather() {
 	await loadAssetsStatic();
 	globalKeyHandling();
