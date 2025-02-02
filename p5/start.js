@@ -3,7 +3,31 @@ onload = start;
 
 async function start() { await test4_dropImage(); }
 
-async function test4_spiel(){
+async function test4_blog(){
+	await loadAssetsStatic();
+	globalKeyHandling();
+	let blog = Z.blog = await loadStaticYaml('zdata/blog1.yaml');
+	let elems = mLayoutTLMRS('raspberry', 'dPage');
+	let d = mDom('dMain');
+	let dates = Object.keys(blog);
+	dates.sort((a, b) => new Date(b) - new Date(a));
+	for (const date of dates) {
+		let o = blog[date];
+		let d1 = mDom(d, { gap: 10, padding: 10 })
+		mDom(d1, { fz: 20 }, { html: date });
+		mDom(d1, { fz: 20 }, { html: o.title });
+		let d2 = mDom(d1, { fz: 20, caret: 'white' }, { html: o.text, contenteditable: true });
+		d2.setAttribute('contenteditable', true);//, onblur:"handleBlur(this)" 
+		d2.onblur = ev => saveBlog(date, ev.target);
+		d2.addEventListener("dragover", (event) => event.preventDefault()); // Allow dropping
+		d2.addEventListener("drop", handleImageDrop);
+
+		// Example usage
+		//const dropZone = document.getElementById("drop-zone");
+		// Add drag-and-drop event listeners
+		// dropZone.addEventListener("dragover", (ev) => ev.preventDefault()); // Allow dropping
+		// dropZone.addEventListener("drop", handleImageDrop);
+	}
 
 }
 async function test4_qsort(){
