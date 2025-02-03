@@ -260,13 +260,6 @@ function parseDate(dateStr) {
 	const [month, day, year] = dateStr.split('/').map(Number);
 	return new Date(year, month - 1, day);
 }
-async function saveBlog(key,elem){
-	console.log('saving', key);
-	lookupSetOverride(Z,['blog',key,'text'],elem.innerHTML);
-	let text = jsyaml.dump(Z.blog);
-	let res = await mPhpPostFile(text, 'zdata/blog.yaml');
-	console.log(res);
-}
 function sortDatesDescending(dates) {
 	return dates.sort((a, b) => new Date(b) - new Date(a));
 }

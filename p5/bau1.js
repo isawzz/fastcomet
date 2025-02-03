@@ -1,4 +1,39 @@
 
+function parseBlogText(text){
+	let html='';
+	for(let item of text){
+		console.log(item);
+		if (item.includes('blogimages/')) html+=`<img src="${item}" width="100%">`;
+		else html+=item;
+	}
+	console.log(html)
+	return html;
+
+}
+async function saveBlog(key,elem){
+	console.log('saving', key);
+	let html=elem.innerHTML;
+	let list = [];
+	while(!isEmpty(html)){
+		let text=stringBefore(html,'<img');
+
+		list.push(text);
+		html=stringAfter(html,'src="');
+		console.log(html);
+		if (!isEmpty(html)){
+			let src=stringBefore(html, '"');
+			list.push(src);
+			html=stringAfter(html, '>');
+		}
+
+	}
+	console.log(list)
+	lookupSetOverride(Z,['blog',key,'text'],list);
+	let text = jsyaml.dump(Z.blog);
+	let res = await mPhpPostFile(text, 'zdata/blog1.yaml');
+	//console.log(res);
+}
+
 function arrMaxContiguous(arr){
 	let cnt=0,el=arr[0],max=0;
 	for(let i=0;i<arr.length;i++){

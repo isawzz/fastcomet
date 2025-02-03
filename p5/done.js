@@ -580,6 +580,12 @@ function mLayoutTLMRS(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
 	let rowt = `minmax(${hrow}px, auto) 1fr minmax(${hrow}px, auto)`;
 	return mLayout(bg, dParent, rowlist, colt, rowt);
 }
+function mLayoutTLMS(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
+	let rowlist = [`dTop${suffix} dTop${suffix}`, `dLeft${suffix} dMain${suffix}`, `dStatus${suffix} dStatus${suffix}`];
+	let colt = `minmax(${wcol}px, auto) 1fr`;
+	let rowt = `minmax(${hrow}px, auto) 1fr minmax(${hrow}px, auto)`;
+	return mLayout(bg, dParent, rowlist, colt, rowt);
+}
 function mLayoutTM(bg, dParent, suffix = '', hrow = 30) {
 	let rowlist = [`dTop${suffix}`, `dMain${suffix}`];
 	let colt = `1fr`;

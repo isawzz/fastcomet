@@ -1,26 +1,29 @@
 
 onload = start;
 
-async function start() { await test4_dropImage(); }
+async function start() { await test4_blog(); }
 
 async function test4_blog(){
 	await loadAssetsStatic();
 	globalKeyHandling();
 	let blog = Z.blog = await loadStaticYaml('zdata/blog1.yaml');
-	let elems = mLayoutTLMRS('raspberry', 'dPage');
-	let d = mDom('dMain');
+	let elems = mLayoutTLMS('raspberry', 'dPage'); mStyle(dPage,{overy:'hidden'})
+	let d = mDom('dMain'); mStyle('dMain', { overy:'scroll' })
 	let dates = Object.keys(blog);
 	dates.sort((a, b) => new Date(b) - new Date(a));
 	for (const date of dates) {
 		let o = blog[date];
 		let d1 = mDom(d, { gap: 10, padding: 10 })
-		mDom(d1, { fz: 20 }, { html: date });
-		mDom(d1, { fz: 20 }, { html: o.title });
-		let d2 = mDom(d1, { fz: 20, caret: 'white' }, { html: o.text, contenteditable: true });
+		//mDom(d1, { fz: 20 }, { html: date });
+		mDom(d1, { }, { tag:'h1', html: `${date}: ${o.title}` });
+		let html=parseBlogText(o.text);
+		let d2 = mDom(d1, { wmax:800, w100:true, fz: 20, caret: 'white' }, { contenteditable: true,html });
 		d2.setAttribute('contenteditable', true);//, onblur:"handleBlur(this)" 
 		d2.onblur = ev => saveBlog(date, ev.target);
 		d2.addEventListener("dragover", (event) => event.preventDefault()); // Allow dropping
 		d2.addEventListener("drop", handleImageDrop);
+		//draw horizontal line after d2
+		let d3=mDom(d,{},{tag:'hr'});
 
 		// Example usage
 		//const dropZone = document.getElementById("drop-zone");
@@ -28,6 +31,7 @@ async function test4_blog(){
 		// dropZone.addEventListener("dragover", (ev) => ev.preventDefault()); // Allow dropping
 		// dropZone.addEventListener("drop", handleImageDrop);
 	}
+	mDom(d,{},{tag:'button',html:'New'})
 
 }
 async function test4_qsort(){
