@@ -1,5 +1,5 @@
 
-function parseBlogText(text){
+function parseListToHtml(text){
 	let html='';
 	for(let item of text){
 		console.log(item);
@@ -8,6 +8,16 @@ function parseBlogText(text){
 	}
 	console.log(html)
 	return html;
+
+}
+async function saveBlogList(ev){
+	let dpart=ev.target;
+	//console.log(dpart);
+	let dparent=findAncestorWith(dpart,{attribute:'key'});
+	//console.log(dpart,dparent);
+	for(const ch of arrChildren(dparent)){
+		
+	}
 
 }
 async function saveBlog(key,elem){

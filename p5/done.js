@@ -38,7 +38,7 @@ function hotkeyHandler(ev) {
 }
 function hotkeyActivate(key, handler) { DA.hotkeys[key] = handler; }
 function hotkeyDeactivate(key) { delete DA.hotkeys[key]; }
-function keyDownHandler(ev) {	DA.keysToCheck[ev.key] = true; }
+function keyDownHandler(ev) { DA.keysToCheck[ev.key] = true; }
 function keyUpHandler(ev) { delete DA.keysToCheck[ev.key]; }
 
 //#endregion
@@ -222,7 +222,11 @@ function evToId(ev) {
 function findAncestorWith(elem, { attribute = null, className = null, id = null }) {
 	elem = toElem(elem);
 	while (elem) {
-		if ((attribute && elem.hasAttribute(attribute)) || (className && elem.classList.contains(className)) || (id && isdef(elem.id))) { return elem; }
+		console.log(elem, typeof elem, attribute, elem.hasAttribute)
+		if ((attribute && elem.hasAttribute && elem.hasAttribute(attribute))
+			|| (className && elem.classList && elem.classList.contains(className))
+			|| (id && isdef(elem.id))) { return elem; }
+		
 		elem = elem.parentNode;
 	}
 	return null;
@@ -494,7 +498,7 @@ function mImgAsync(d, styles = {}, opts = {}, callback = null) {
 async function mKey(imgKey, d, styles = {}, opts = {}) {
 	styles = jsCopy(styles);
 	let type = opts.prefer;
-	let o = type != 'plain'?lookup(M.superdi, [imgKey]):null;
+	let o = type != 'plain' ? lookup(M.superdi, [imgKey]) : null;
 	let src;
 	if (nundef(o) && imgKey.includes('.')) src = imgKey;
 	else if (isdef(o) && (type == 'img' || type == 'photo') && isdef(o[type])) src = o[type];
@@ -555,11 +559,11 @@ function mLayout(bg, dParent, rowlist, colt, rowt) {
 function mLayoutM(bg, dParent, suffix = '') {
 	dParent = toElem(dParent);
 	mStyle(dParent, { bg });
-	let styles = {margin:0,padding:0,width:'100%',height:'100%'};
-	let opts = {id:`dMain${suffix}`};
+	let styles = { margin: 0, padding: 0, width: '100%', height: '100%' };
+	let opts = { id: `dMain${suffix}` };
 	if (dParent.id == 'dPage') M.divNames = [];
-	lookupAddIfToList(M,['divNames'],opts.id);
-	let d = mDom(dParent,styles, opts);
+	lookupAddIfToList(M, ['divNames'], opts.id);
+	let d = mDom(dParent, styles, opts);
 	return [d];
 }
 function mLayoutTLM(bg, dParent, suffix = '', wcol = 30, hrow = 30) {

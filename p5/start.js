@@ -1,29 +1,60 @@
 
 onload = start;
 
-async function start() { await test4_blog(); }
+async function start() { await test4_blogInSections(); }
 
-async function test4_blog(){
+async function test4_blogInSections() {
 	await loadAssetsStatic();
 	globalKeyHandling();
 	let blog = Z.blog = await loadStaticYaml('zdata/blog1.yaml');
-	let elems = mLayoutTLMS('raspberry', 'dPage'); mStyle(dPage,{overy:'hidden'})
-	let d = mDom('dMain'); mStyle('dMain', { overy:'scroll' })
+	let elems = mLayoutTLMS('raspberry', 'dPage'); mStyle(dPage, { overy: 'hidden' })
+	let d = mDom('dMain'); mStyle('dMain', { overy: 'scroll' })
+	let dates = Object.keys(blog);
+	dates.sort((a, b) => new Date(b) - new Date(a));
+	for (const date of dates) {
+		let o = blog[date];
+		let d1 = mDom(d, {gap: 10, padding: 10}, {id:'d1', key: date} )
+		//console.log(d1.getAttribute('datakey'))
+		//mDom(d1, { fz: 20 }, { html: date });
+		mDom(d1, {}, { tag: 'h1', html: `${date}: ${o.title}` });
+		let cnt = 0;
+		for (let item of o.text) {
+			//console.log(item);
+			let d2 = mDom(d1, { wmax: 800, w100: true, fz: 20, caret: 'white' }, { idx: cnt++,id:'d2' });
+			//console.log(d2.parentNode)
+			if (item.includes('blogimages/')) mDom(d2, { w100: true }, { tag: 'img', src: item });
+			else {
+				mStyle(d2, { w100: true,mabottom:10 }, { contenteditable: true, html: item });
+				d2.onblur = saveBlogList;
+			}
+			
+		}
+		let d3 = mDom(d, {}, { tag: 'hr' });
+	}
+	mDom(d, {}, { tag: 'button', html: 'New' })
+
+}
+async function test4_blog() {
+	await loadAssetsStatic();
+	globalKeyHandling();
+	let blog = Z.blog = await loadStaticYaml('zdata/blog1.yaml');
+	let elems = mLayoutTLMS('raspberry', 'dPage'); mStyle(dPage, { overy: 'hidden' })
+	let d = mDom('dMain'); mStyle('dMain', { overy: 'scroll' })
 	let dates = Object.keys(blog);
 	dates.sort((a, b) => new Date(b) - new Date(a));
 	for (const date of dates) {
 		let o = blog[date];
 		let d1 = mDom(d, { gap: 10, padding: 10 })
 		//mDom(d1, { fz: 20 }, { html: date });
-		mDom(d1, { }, { tag:'h1', html: `${date}: ${o.title}` });
-		let html=parseBlogText(o.text);
-		let d2 = mDom(d1, { wmax:800, w100:true, fz: 20, caret: 'white' }, { contenteditable: true,html });
+		mDom(d1, {}, { tag: 'h1', html: `${date}: ${o.title}` });
+		let html = parseListToHtml(o.text);
+		let d2 = mDom(d1, { wmax: 800, w100: true, fz: 20, caret: 'white' }, { contenteditable: true, html });
 		d2.setAttribute('contenteditable', true);//, onblur:"handleBlur(this)" 
 		d2.onblur = ev => saveBlog(date, ev.target);
 		d2.addEventListener("dragover", (event) => event.preventDefault()); // Allow dropping
 		d2.addEventListener("drop", handleImageDrop);
 		//draw horizontal line after d2
-		let d3=mDom(d,{},{tag:'hr'});
+		let d3 = mDom(d, {}, { tag: 'hr' });
 
 		// Example usage
 		//const dropZone = document.getElementById("drop-zone");
@@ -31,20 +62,20 @@ async function test4_blog(){
 		// dropZone.addEventListener("dragover", (ev) => ev.preventDefault()); // Allow dropping
 		// dropZone.addEventListener("drop", handleImageDrop);
 	}
-	mDom(d,{},{tag:'button',html:'New'})
+	mDom(d, {}, { tag: 'button', html: 'New' })
 
 }
-async function test4_qsort(){
-	let arr = arrGen(20,0,1);
-	console.log(arr,arrMaxContiguous(arr));
+async function test4_qsort() {
+	let arr = arrGen(20, 0, 1);
+	console.log(arr, arrMaxContiguous(arr));
 	return;
-	let arr1=qsort(arr);
+	let arr1 = qsort(arr);
 	console.log(arr1);
-	let arr2=arrToCount(arr1);
+	let arr2 = arrToCount(arr1);
 	//sort array arr2 by cnt, descending
-	arr2.sort((a,b)=>b.cnt-a.cnt);
-	console.log(arr2.map(x=>x.cnt));
-	
+	arr2.sort((a, b) => b.cnt - a.cnt);
+	console.log(arr2.map(x => x.cnt));
+
 }
 async function test4_dropImage() {
 	await loadAssetsStatic();
