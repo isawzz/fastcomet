@@ -1,9 +1,9 @@
 
 onload = start;
 
-async function start() { await test4_blogInSections(); }
+async function start() { await test4_blogIn78(); }
 
-async function test4_blogInSections() {
+async function test4_blogIn78() {
 	await loadAssetsStatic();
 	globalKeyHandling();
 	let blog = Z.blog = await loadStaticYaml('zdata/blog1.yaml');
