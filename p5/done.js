@@ -566,6 +566,24 @@ function mLayoutM(bg, dParent, suffix = '') {
 	let d = mDom(dParent, styles, opts);
 	return [d];
 }
+function mLayoutLMR(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
+	let rowlist = [`dLeft${suffix} dMain${suffix} dRight${suffix}`];
+	let colt = `minmax(${wcol}px, auto) 1fr minmax(${wcol}px, auto)`;
+	let rowt = `1fr`;
+	return mLayout(bg, dParent, rowlist, colt, rowt);
+}
+function mLayoutLR(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
+	let rowlist = [`dLeft${suffix} dRight${suffix}`];
+	let colt = `auto 1fr`;
+	let rowt = `1fr`;
+	return mLayout(bg, dParent, rowlist, colt, rowt);
+}
+function mLayoutMR(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
+	let rowlist = [`dMain${suffix} dRight${suffix}`];
+	let colt = `minmax(auto, ${wcol}px) 1fr`;
+	let rowt = `1fr`;
+	return mLayout(bg, dParent, rowlist, colt, rowt);
+}
 function mLayoutTLM(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
 	let rowlist = [`dTop${suffix} dTop${suffix}`, `dLeft${suffix} dMain${suffix}`];
 	let colt = `minmax(${wcol}px, auto) 1fr`;

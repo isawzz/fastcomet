@@ -1,33 +1,72 @@
 
 onload = start;
 
-async function start() { await test4_blogIn78(); }
+async function start() { await test4_mLayout(); }
 
-async function test4_blogIn78() {
+async function test4_mLayout() {
 	await loadAssetsStatic();
 	globalKeyHandling();
 	let blog = Z.blog = await loadStaticYaml('zdata/blog1.yaml');
-	let elems = mLayoutTLMS('raspberry', 'dPage'); mStyle(dPage, { overy: 'hidden' })
-	let d = mDom('dMain'); mStyle('dMain', { overy: 'scroll' })
+	let elems = mLayoutTLMS('raspberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); //mStyle(dPage, { overy: 'hidden' })
+	// let dm = mDom('dMain', { bg: 'blue', h100: true });
+	// let elems1 = mLayoutLR('green', dm,'1'); //let dMain = elems1[1];
+	// mStyle('dLeft1',{w100:true,wmax:500})
+	// return;
+	// mStyle(dMain, { overy: 'scroll' }); //mStyle(dPage, { overy: 'hidden' })
+	mFlex('dMain')
+	let d = mDom(dMain,{wmax: 500,}); let dbuttons=mDom(dMain,{w:100,h:300,bg:'blue',position:'sticky',top:0});
+
 	let dates = Object.keys(blog);
 	dates.sort((a, b) => new Date(b) - new Date(a));
 	for (const date of dates) {
 		let o = blog[date];
-		let d1 = mDom(d, {gap: 10, padding: 10}, {id:'d1', key: date} )
+		let d1 = mDom(d, { gap: 10, padding: 10 }, { id: 'd1', key: date })
 		//console.log(d1.getAttribute('datakey'))
 		//mDom(d1, { fz: 20 }, { html: date });
 		mDom(d1, {}, { tag: 'h1', html: `${date}: ${o.title}` });
 		let cnt = 0;
 		for (let item of o.text) {
 			//console.log(item);
-			let d2 = mDom(d1, { wmax: 800, w100: true, fz: 20, caret: 'white' }, { idx: cnt++,id:'d2' });
+			let d2 = mDom(d1, { w100: true, fz: 20, caret: 'white' }, { idx: cnt++, id: 'd2' });
 			//console.log(d2.parentNode)
 			if (item.includes('blogimages/')) mDom(d2, { w100: true }, { tag: 'img', src: item });
 			else {
-				mStyle(d2, { w100: true,mabottom:10 }, { contenteditable: true, html: item });
+				mStyle(d2, { w100: true, mabottom: 10 }, { contenteditable: true, html: item });
 				d2.onblur = saveBlogList;
 			}
-			
+
+		}
+		let d3 = mDom(d, {}, { tag: 'hr' });
+	}
+	mDom(d, {}, { tag: 'button', html: 'New' })
+
+}
+
+async function test4_blogIn78() {
+	await loadAssetsStatic();
+	globalKeyHandling();
+	let blog = Z.blog = await loadStaticYaml('zdata/blog1.yaml');
+	let elems = mLayoutTLMRS('raspberry', 'dPage'); mStyle(dPage, { overy: 'hidden' })
+	let d = mDom('dMain', {}); mStyle('dMain', { wmax: 300, overy: 'scroll' })
+	let dates = Object.keys(blog);
+	dates.sort((a, b) => new Date(b) - new Date(a));
+	for (const date of dates) {
+		let o = blog[date];
+		let d1 = mDom(d, { gap: 10, padding: 10 }, { id: 'd1', key: date })
+		//console.log(d1.getAttribute('datakey'))
+		//mDom(d1, { fz: 20 }, { html: date });
+		mDom(d1, {}, { tag: 'h1', html: `${date}: ${o.title}` });
+		let cnt = 0;
+		for (let item of o.text) {
+			//console.log(item);
+			let d2 = mDom(d1, { w100: true, fz: 20, caret: 'white' }, { idx: cnt++, id: 'd2' });
+			//console.log(d2.parentNode)
+			if (item.includes('blogimages/')) mDom(d2, { w100: true }, { tag: 'img', src: item });
+			else {
+				mStyle(d2, { w100: true, mabottom: 10 }, { contenteditable: true, html: item });
+				d2.onblur = saveBlogList;
+			}
+
 		}
 		let d3 = mDom(d, {}, { tag: 'hr' });
 	}

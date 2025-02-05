@@ -1,12 +1,45 @@
 
+function addMoveUpDown (elems,dButtons) {
+	let moveUpBtn = mDom(dButtons, {}, { html: 'up', onclick: moveUp });	
+	mLinebreak(dButtons);
+	let moveDownBtn = mDom(dButtons, {}, { html: 'down', onclick: moveDown });	
+	let selectedDiv = null;
+
+	
+	// Add click event listener to each div
+	container.addEventListener("click", function (event) {
+			if (event.target.tagName === "DIV") {
+					if (selectedDiv) {
+							selectedDiv.classList.remove("highlight");
+					}
+					selectedDiv = event.target;
+					selectedDiv.classList.add("highlight");
+			}
+	});
+
+	// Move up function
+	moveUpBtn.addEventListener("click", function () {
+			if (selectedDiv && selectedDiv.previousElementSibling) {
+					container.insertBefore(selectedDiv, selectedDiv.previousElementSibling);
+			}
+	});
+
+	// Move down function
+	moveDownBtn.addEventListener("click", function () {
+			if (selectedDiv && selectedDiv.nextElementSibling) {
+					container.insertBefore(selectedDiv.nextElementSibling, selectedDiv);
+			}
+	});
+}
+
 function parseListToHtml(text){
 	let html='';
 	for(let item of text){
-		console.log(item);
+		//console.log(item);
 		if (item.includes('blogimages/')) html+=`<img src="${item}" width="100%">`;
 		else html+=item;
 	}
-	console.log(html)
+	//console.log(html)
 	return html;
 
 }
@@ -16,7 +49,7 @@ async function saveBlogList(ev){
 	let dparent=findAncestorWith(dpart,{attribute:'key'});
 	//console.log(dpart,dparent);
 	for(const ch of arrChildren(dparent)){
-		
+
 	}
 
 }
