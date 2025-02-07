@@ -93,6 +93,11 @@ button:active {
   }
 }
 
+.framedPicture {
+  outline: solid 8px yellow;
+  outline-offset: -6px;
+}
+
 .hop1:hover {
   color: 'red';
   background: 'white';
@@ -203,23 +208,10 @@ button:active {
 .test0 {
   width: 100%;
   max-width: 800px;
-  background-color: lightgray; /* Just for visibility */
+  background-color: lightgray;
+  /* Just for visibility */
   padding: 20px;
   text-align: center;
 }
 
 /* #_endregion */
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,4 +1,36 @@
 
+async function init(){
+	await loadAssetsStatic();
+	globalKeyHandling();
+	let blog = Z.blog = await loadStaticYaml('zdata/blog1.yaml');
+	return blog;
+}
+async function showBlogs(d,blog){
+	let dates = Object.keys(blog);
+	dates.sort((a, b) => new Date(b) - new Date(a));
+	let di={};
+	for (const date of dates) {
+		let o = blog[date];
+		let d1 = mDom(d, { gap: 10, padding: 10 }, { id: 'd1', key: date })
+		let blogItem = di[date]={o,key:date,div:d1,items:[]}
+		mDom(d1, {}, { tag: 'h1', html: `${date}: ${o.title}` });
+		let cnt = 0;
+		for (let textPart of o.text) {
+			let d2 = mDom(d1, { w100: true, fz: 20, caret: 'white' }, { idx: cnt++, id: 'd2' });
+			let item = {text:textPart,div:d2,type:textPart.includes('blogimages/')?'img':'text'};
+			blogItem.items.push(item);
+			if (textPart.includes('blogimages/')) {
+				mDom(d2, { w100: true }, { tag: 'img', src: textPart });
+			} else {
+				mStyle(d2, { w100: true, mabottom: 10 }, { contenteditable: true, html: textPart });
+				d2.onblur = saveBlogList;
+			}
+		}
+		let d3 = mDom(d, {}, { tag: 'hr' });
+	}
+	return di;
+}
+
 //#region collect functions from bau1-4
 
 function createLineBetweenPoints(dboard, pointA, pointB, thickness = 10) {
