@@ -6,23 +6,6 @@ body {
   width: 100vw;
   caret-color: #ffffff00;
 }
-
-.centerCentered {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-right: -50%;
-  transform: translate(-50%, -50%);
-}
-
-.centered {
-  position: relative;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
 input {
   caret-color: black;
 }
@@ -52,6 +35,23 @@ a:active,
 button:active {
   background: white !important;
   color: black !important;
+}
+
+
+.centerCentered {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+}
+
+.centered {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 /* .a {
@@ -91,6 +91,11 @@ button:active {
   to {
     opacity: 1;
   }
+}
+
+.disabled{
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .framedPicture {

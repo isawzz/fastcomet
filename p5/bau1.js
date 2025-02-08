@@ -1,9 +1,45 @@
 
+function aktivateUpDownIffSelected() {
+	let b=toElem('dMoveUp'); console.log(b);
+	if (isEmpty(DA.selectedPart)) { mClass('dMoveUp', 'disabled'); mClass('dMoveDown', 'disabled'); return; }
+	mClassRemove('dMoveUp', 'disabled');
+	mClassRemove('dMoveDown', 'disabled');
+}
 function onclickMoveUp() {
-	console.log('up', 'current blog is', DA.selectedPart);
+	//console.log('up', 'currently selected', DA.selectedPart);
+	let item = DA.selectedPart[0]; if (!item) return;
+	let idx = DA.blogs[item.key].items.indexOf(item);
+	//console.log('idx', idx);
+	let arr = DA.blogs[item.key].items;
+	let dparent = DA.blogs[item.key].dParts;
+	if (idx == 0) {
+		removeInPlace(arr, item);
+		arr.push(item);
+		dparent.appendChild(item.div);
+	} else {
+		//swap item with item before it in blogItems[key].items
+		let prev = DA.blogs[item.key].items[idx - 1];
+		DA.blogs[item.key].items[idx - 1] = item;
+		DA.blogs[item.key].items[idx] = prev;
+		dparent.insertBefore(item.div, prev.div);
+	}
 }
 function onclickMoveDown() {
-	console.log('down', 'current blog is', DA.selectedPart);
+	let item = DA.selectedPart[0]; if (!item) return;
+	let idx = DA.blogs[item.key].items.indexOf(item);
+	let arr = DA.blogs[item.key].items;
+	let dparent = DA.blogs[item.key].dParts;
+	if (idx == arr.length - 1) {
+		removeInPlace(arr, item);
+		arr.unshift(item);
+		dparent.insertBefore(item.div, dparent.firstChild);
+	} else {
+		//swap item with item after it in blogItems[key].items
+		let next = DA.blogs[item.key].items[idx + 1];
+		DA.blogs[item.key].items[idx + 1] = item;
+		DA.blogs[item.key].items[idx] = next;
+		dparent.insertBefore(next.div, item.div);
+	}
 }
 function toggleSelection(item, selectList, atmost, className = 'framedPicture') {
 	//	console.log(pic)
@@ -20,14 +56,14 @@ function toggleSelection(item, selectList, atmost, className = 'framedPicture') 
 		console.assert(selectList.includes(item), 'PIC NOT IN PICLIST BUT HAS BEEN SELECTED!!!!!!!!!!!!')
 		removeInPlace(selectList, item);
 	}
-	if (isNumber(atmost)){
+	if (isNumber(atmost)) {
 		while (selectList.length > atmost) {
 			let pic = selectList.shift();
 			pic.isSelected = false;
 			let ui = iDiv(pic);
 			mClassRemove(ui, className);
 		}
-	
+
 	}
 }
 

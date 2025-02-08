@@ -1,23 +1,24 @@
 
-async function init(){
+async function init() {
 	await loadAssetsStatic();
 	globalKeyHandling();
 	let blog = Z.blog = await loadStaticYaml('zdata/blog1.yaml');
 	return blog;
 }
-async function showBlogs(d,blog){
+async function showBlogs(d, blog) {
 	let dates = Object.keys(blog);
 	dates.sort((a, b) => new Date(b) - new Date(a));
-	let di={};
+	let di = {};
 	for (const date of dates) {
 		let o = blog[date];
-		let d1 = mDom(d, { gap: 10, padding: 10 }, { id: 'd1', key: date })
-		let blogItem = di[date]={o,key:date,div:d1,items:[]}
-		mDom(d1, {}, { tag: 'h1', html: `${date}: ${o.title}` });
-		let cnt = 0;
+		let dBlog = mDom(d, { gap: 10, padding: 10 }, { key: date })
+		mDom(dBlog, {}, { tag: 'h1', html: `${date}: ${o.title}` });
+		let d1=mDom(dBlog);
+		let blogItem = di[date] = { o, key: date, div: dBlog, dParts:d1, items: [] }
+		let idx = 0;
 		for (let textPart of o.text) {
-			let d2 = mDom(d1, { w100: true, fz: 20, caret: 'white' }, { idx: cnt++, id: 'd2' });
-			let item = {text:textPart,div:d2,type:textPart.includes('blogimages/')?'img':'text'};
+			let d2 = mDom(d1, { w100: true, fz: 20, caret: 'white' });
+			let item = { key:date, text: textPart, div: d2, type: textPart.includes('blogimages/') ? 'img' : 'text' };
 			blogItem.items.push(item);
 			if (textPart.includes('blogimages/')) {
 				mDom(d2, { w100: true }, { tag: 'img', src: textPart });
@@ -57,10 +58,10 @@ function createLineBetweenPoints(dboard, pointA, pointB, thickness = 10) {
 	// Append the line to the parent container
 	const parent = toElem(dboard); //document.querySelector(dboard);
 	if (parent) {
-			parent.style.position = 'relative'; // Ensure the parent is relatively positioned
-			parent.appendChild(line);
+		parent.style.position = 'relative'; // Ensure the parent is relatively positioned
+		parent.appendChild(line);
 	} else {
-			console.error(`Parent element with selector '${dboard}' not found.`);
+		console.error(`Parent element with selector '${dboard}' not found.`);
 	}
 }
 function calcClipPoints(x0, y0, w, h, clipPath) {
@@ -81,7 +82,7 @@ function calcClipPoints(x0, y0, w, h, clipPath) {
 	return pixelPoints;
 }
 function calcHexCorners(center, width, height) {
-	const [cx, cy] = [center.cx,center.cy]; console.log('center',center)
+	const [cx, cy] = [center.cx, center.cy]; console.log('center', center)
 	const points = [];
 	const angleStep = (2 * Math.PI) / 6; // 360° / 6 = 60° in radians
 
@@ -91,10 +92,10 @@ function calcHexCorners(center, width, height) {
 
 	// Loop through each vertex of the hexagon
 	for (let i = 0; i < 6; i++) {
-			const angle = angleStep * i; // Current angle in radians
-			const x = cx + rx * Math.cos(angle);
-			const y = cy + ry * Math.sin(angle);
-			points.push([x, y]);
+		const angle = angleStep * i; // Current angle in radians
+		const x = cx + rx * Math.cos(angle);
+		const y = cy + ry * Math.sin(angle);
+		points.push([x, y]);
 	}
 
 	return points;
@@ -159,7 +160,7 @@ function hexFromCenter(dParent, center, styles = {}, opts = {}) {
 
 
 function mPickOneOfGrid(dParent, styles = {}, opts = {}) {
-	let d0 = mDom(dParent, dictMerge(styles,{gap:6}), opts);
+	let d0 = mDom(dParent, dictMerge(styles, { gap: 6 }), opts);
 	mGrid(d0);
 
 	function onclick(ev) {
@@ -167,26 +168,26 @@ function mPickOneOfGrid(dParent, styles = {}, opts = {}) {
 		if (isdef(opts.fSuccess)) opts.fSuccess(ev.target.innerHTML);
 	}
 	for (const html of opts.list) {
-		mDom(d0, {  }, { tag: 'button', html, onclick });
+		mDom(d0, {}, { tag: 'button', html, onclick });
 	}
 	return d0;
 }
 
 function centerAt(elem, x, y) {
-  const rect = elem.getBoundingClientRect();
-  const offsetX = x - rect.width / 2;
-  const offsetY = y - rect.height / 2;
-  elem.style.position = 'absolute';
-  elem.style.left = `${offsetX}px`;
-  elem.style.top = `${offsetY}px`;
+	const rect = elem.getBoundingClientRect();
+	const offsetX = x - rect.width / 2;
+	const offsetY = y - rect.height / 2;
+	elem.style.position = 'absolute';
+	elem.style.left = `${offsetX}px`;
+	elem.style.top = `${offsetY}px`;
 }
 function getCenterRelativeToParent(div) {
-  const rect = div.getBoundingClientRect();
-  const parentRect = div.parentNode.getBoundingClientRect();
-  return {
-    x: rect.left + rect.width / 2 - parentRect.left,
-    y: rect.top + rect.height / 2 - parentRect.top
-  };
+	const rect = div.getBoundingClientRect();
+	const parentRect = div.parentNode.getBoundingClientRect();
+	return {
+		x: rect.left + rect.width / 2 - parentRect.left,
+		y: rect.top + rect.height / 2 - parentRect.top
+	};
 }
 function mShape(shape, dParent, styles = {}, opts = {}) {
 	styles = jsCopy(styles);
@@ -223,8 +224,8 @@ function mInBox(f, dParent, boxStyles = {}, inpStyles = {}, opts = {}) {
 	return [dbox, dinp];
 }
 function mInput(dParent, styles = {}, opts = {}) {
-	addKeys({ tag:'input', id: getUID(), placeholder: '', autocomplete:"off", value: '', selectOnClick: true, type: "text" }, opts);
-	let d=mDom(dParent,styles,opts);
+	addKeys({ tag: 'input', id: getUID(), placeholder: '', autocomplete: "off", value: '', selectOnClick: true, type: "text" }, opts);
+	let d = mDom(dParent, styles, opts);
 	d.onclick = opts.selectOnClick ? ev => { evNoBubble(ev); d.select(); } : ev => { evNoBubble(ev); };
 	d.onkeydown = ev => {
 		if (ev.key == 'Enter' && isdef(opts.fSuccess)) { evNoBubble(ev); opts.fSuccess(d.value); }
@@ -233,7 +234,7 @@ function mInput(dParent, styles = {}, opts = {}) {
 	return d;
 }
 function mSelect(dParent, styles = {}, opts = {}) {
-	let d0 = mDom(dParent, dictMerge(styles,{gap:6}), opts);
+	let d0 = mDom(dParent, dictMerge(styles, { gap: 6 }), opts);
 	mCenterCenterFlex(d0);
 
 	function onclick(ev) {
@@ -241,17 +242,17 @@ function mSelect(dParent, styles = {}, opts = {}) {
 		if (isdef(opts.fSuccess)) opts.fSuccess(ev.target.innerHTML);
 	}
 	for (const html of opts.list) {
-		mDom(d0, {  }, { tag: 'button', html, onclick });
+		mDom(d0, {}, { tag: 'button', html, onclick });
 	}
 	return d0;
 }
-function mYesNo(dParent,  styles = {}, opts = {}) {
+function mYesNo(dParent, styles = {}, opts = {}) {
 	return mSelect(dParent, styles, dictMerge(opts, { list: ['yes', 'no'] }));
 }
-function mShield(dParent,styles = {}, opts = {}) {
+function mShield(dParent, styles = {}, opts = {}) {
 	addKeys({ bg: '#00000080' }, styles);
-	addKeys({ id:'shield' }, opts);
-	dParent = valf(toElem(dParent),document.body); //console.log(dParent);
+	addKeys({ id: 'shield' }, opts);
+	dParent = valf(toElem(dParent), document.body); //console.log(dParent);
 	let d = mDom(dParent, styles, opts);
 	mIfNotRelative(dParent);
 	mStyle(d, { position: 'absolute', left: 0, top: 0, w: '100%', h: '100%' });
@@ -281,8 +282,8 @@ async function mPalette(dParent, src, showPal = true, showImg = false) {
 			};
 		});
 	}
-	let dc=mDom(dParent,{display:showImg?'inline':'none'})
-	let ca = await getCanvasCtx(dc, { w:100, h:100, fill: 'white' }, { src });
+	let dc = mDom(dParent, { display: showImg ? 'inline' : 'none' })
+	let ca = await getCanvasCtx(dc, { w: 100, h: 100, fill: 'white' }, { src });
 	let palette = await getPaletteFromCanvas(ca.cv);
 	if (!showImg) dc.remove();
 	if (showPal) showPaletteMini(dParent, palette);
@@ -389,280 +390,280 @@ function mCreateFrom(htmlString) {
 
 //#region draw
 function drawCircleOnCanvas(canvas, cx, cy, sz, color) {
-  const ctx = canvas.getContext('2d');
-  ctx.beginPath();
-  ctx.arc(cx, cy, sz / 2, 0, 2 * Math.PI);
-  ctx.fillStyle = color;
-  ctx.fill();
+	const ctx = canvas.getContext('2d');
+	ctx.beginPath();
+	ctx.arc(cx, cy, sz / 2, 0, 2 * Math.PI);
+	ctx.fillStyle = color;
+	ctx.fill();
 }
 function drawCircleOnDiv(dParent, cx, cy, sz, bg = 'red') {
-  let o = { cx, cy, x: cx - sz / 2, y: cy - sz / 2, sz, bg };
-  let [w, h] = [sz, sz];
-  o.div = mDom(dParent, { w, h, position: 'absolute', round: true, x: cx - sz / 2, y: cy - sz / 2, bg });
-  return o;
+	let o = { cx, cy, x: cx - sz / 2, y: cy - sz / 2, sz, bg };
+	let [w, h] = [sz, sz];
+	o.div = mDom(dParent, { w, h, position: 'absolute', round: true, x: cx - sz / 2, y: cy - sz / 2, bg });
+	return o;
 }
 function drawEllipseOnCanvas(canvas, cx, cy, w, h, color = 'orange', stroke = 0, border = 'red') {
-  const ctx = canvas.getContext('2d');
-  ctx.beginPath();
-  ctx.ellipse(cx, cy, w / 2, h / 2, 0, 0, 2 * Math.PI);
-  if (stroke > 0) { ctx.strokeStyle = border; ctx.lineWidth = stroke; ctx.stroke(); }
-  if (color) { ctx.fillStyle = color; ctx.fill(); }
+	const ctx = canvas.getContext('2d');
+	ctx.beginPath();
+	ctx.ellipse(cx, cy, w / 2, h / 2, 0, 0, 2 * Math.PI);
+	if (stroke > 0) { ctx.strokeStyle = border; ctx.lineWidth = stroke; ctx.stroke(); }
+	if (color) { ctx.fillStyle = color; ctx.fill(); }
 }
 function drawHexBoard(topside, side, dParent, styles = {}, itemStyles = {}, opts = {}) {
-  addKeys({ box: true }, styles);
-  let dOuter = mDom(dParent, styles, opts);
-  let d = mDom(dOuter, { position: 'relative', });
-  let [centers, rows, maxcols] = hexBoardCenters(topside, side);
-  let [w, h] = mSizeSuccession(itemStyles, 24);
-  let gap = valf(opts.gap, -.5);
-  let items = [];
-  if (gap != 0) copyKeys({ w: w - gap, h: h - gap }, itemStyles);
-  for (const c of centers) {
-    let dhex = hexFromCenter(d, { x: c.x * w, y: c.y * h }, itemStyles);
-    let item = { div: dhex, cx: c.x, cy: c.y, row: c.row, col: c.col };
-    items.push(item);
-  }
-  let [wBoard, hBoard] = [maxcols * w, rows * h * .75 + h * .25];
-  mStyle(d, { w: wBoard, h: hBoard });
-  return { div: dOuter, topside, side, centers, rows, maxcols, boardShape: 'hex', w, h, wBoard, hBoard, items }
+	addKeys({ box: true }, styles);
+	let dOuter = mDom(dParent, styles, opts);
+	let d = mDom(dOuter, { position: 'relative', });
+	let [centers, rows, maxcols] = hexBoardCenters(topside, side);
+	let [w, h] = mSizeSuccession(itemStyles, 24);
+	let gap = valf(opts.gap, -.5);
+	let items = [];
+	if (gap != 0) copyKeys({ w: w - gap, h: h - gap }, itemStyles);
+	for (const c of centers) {
+		let dhex = hexFromCenter(d, { x: c.x * w, y: c.y * h }, itemStyles);
+		let item = { div: dhex, cx: c.x, cy: c.y, row: c.row, col: c.col };
+		items.push(item);
+	}
+	let [wBoard, hBoard] = [maxcols * w, rows * h * .75 + h * .25];
+	mStyle(d, { w: wBoard, h: hBoard });
+	return { div: dOuter, topside, side, centers, rows, maxcols, boardShape: 'hex', w, h, wBoard, hBoard, items }
 }
 function drawInteractiveLine(d, p1, p2, color = 'black', thickness = 10) {
-  const offs = thickness / 2;
-  let [x1, y1, x2, y2] = [p1.x, p1.y, p2.x, p2.y];
-  const distance = Math.hypot(x2 - x1, y2 - y1);
-  const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
-  const line = mDom(d, { left: x1, top: y1 - offs, bg: color, opacity: .1, className: 'line1', w: distance, h: thickness, transform: `rotate(${angle}deg)` })
-  line.dataset.x1 = x1;
-  line.dataset.y1 = y1;
-  line.dataset.x2 = x2;
-  line.dataset.y2 = y2;
-  line.dataset.thickness = thickness;
-  return line;
+	const offs = thickness / 2;
+	let [x1, y1, x2, y2] = [p1.x, p1.y, p2.x, p2.y];
+	const distance = Math.hypot(x2 - x1, y2 - y1);
+	const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+	const line = mDom(d, { left: x1, top: y1 - offs, bg: color, opacity: .1, className: 'line1', w: distance, h: thickness, transform: `rotate(${angle}deg)` })
+	line.dataset.x1 = x1;
+	line.dataset.y1 = y1;
+	line.dataset.x2 = x2;
+	line.dataset.y2 = y2;
+	line.dataset.thickness = thickness;
+	return line;
 }
 function drawLineOnCanvas(canvas, x1, y1, x2, y2, stroke = 1) {
-  const ctx = canvas.getContext('2d');
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = stroke;
-  ctx.stroke();
+	const ctx = canvas.getContext('2d');
+	ctx.beginPath();
+	ctx.moveTo(x1, y1);
+	ctx.lineTo(x2, y2);
+	ctx.strokeStyle = '#000';
+	ctx.lineWidth = stroke;
+	ctx.stroke();
 }
 function drawMeeple(dParent, p) {
-  let addLabel = true;
-  let html = isdef(p.owner) && addLabel ? p.owner[0].toUpperCase() : ''; //p.id.substring(1) : ''
-  let d1 = p.div = mDom(dParent, { fz: p.sz * .75, left: p.x + p.sz / 2, top: p.y + p.sz / 2, w: p.sz, h: p.sz, position: 'absolute', bg: p.bg, fg: 'contrast' }, { html, id: p.id });
-  mCenterCenterFlex(d1);
-  d1.style.cursor = 'default';
+	let addLabel = true;
+	let html = isdef(p.owner) && addLabel ? p.owner[0].toUpperCase() : ''; //p.id.substring(1) : ''
+	let d1 = p.div = mDom(dParent, { fz: p.sz * .75, left: p.x + p.sz / 2, top: p.y + p.sz / 2, w: p.sz, h: p.sz, position: 'absolute', bg: p.bg, fg: 'contrast' }, { html, id: p.id });
+	mCenterCenterFlex(d1);
+	d1.style.cursor = 'default';
 }
 function drawPix(ctx, x, y, color = 'red', sz = 5) {
-  ctx.fillStyle = color;
-  ctx.fillRect(x - sz / 2, y - sz / 2, sz, sz)
+	ctx.fillStyle = color;
+	ctx.fillRect(x - sz / 2, y - sz / 2, sz, sz)
 }
 function drawPixFrame(ctx, x, y, color = 'red', sz = 5) {
-  ctx.strokeStyle = color;
-  ctx.strokeRect(x - sz / 2, y - sz / 2, sz, sz)
+	ctx.strokeStyle = color;
+	ctx.strokeRect(x - sz / 2, y - sz / 2, sz, sz)
 }
 function drawPoint(dParent, p, addLabel = true) {
-  let html = isdef(p.owner) && addLabel ? p.owner[0].toUpperCase() : '';
-  addKeys({ sz: 20, bg: rColor(), id: getUID() }, p);
-  let d1 = p.div = mDom(dParent, { round: true, left: p.x, top: p.y, w: p.sz, h: p.sz, position: 'absolute', bg: p.bg, align: 'center', fg: 'contrast' }, { html, id: p.id });
-  d1.style.cursor = 'default';
-  if (isdef(p.border)) mStyle(d1, { outline: `solid ${p.border} 4px` });
-  let rect = getRect(d1);
-  p.cx = p.x + p.sz / 2; p.cy = p.y + p.sz / 2;
-  p.xPage = rect.x; p.yPage = rect.y;
-  p.cxPage = rect.x + p.sz / 2; p.cyPage = rect.y + p.sz / 2;
-  return p;
+	let html = isdef(p.owner) && addLabel ? p.owner[0].toUpperCase() : '';
+	addKeys({ sz: 20, bg: rColor(), id: getUID() }, p);
+	let d1 = p.div = mDom(dParent, { round: true, left: p.x, top: p.y, w: p.sz, h: p.sz, position: 'absolute', bg: p.bg, align: 'center', fg: 'contrast' }, { html, id: p.id });
+	d1.style.cursor = 'default';
+	if (isdef(p.border)) mStyle(d1, { outline: `solid ${p.border} 4px` });
+	let rect = getRect(d1);
+	p.cx = p.x + p.sz / 2; p.cy = p.y + p.sz / 2;
+	p.xPage = rect.x; p.yPage = rect.y;
+	p.cxPage = rect.x + p.sz / 2; p.cyPage = rect.y + p.sz / 2;
+	return p;
 }
 function drawPointStar(p1, d, sz) {
-  let starSizes = [1, .4, 1, 1, 1, .8, 1, .6, 1];
-  let itype = p1.type % starSizes.length;
-  p1.sz = sz = 30 * starSizes[itype];
-  let img = p1.div = cloneImage(M.starImages[itype], d, p1.x, p1.y, sz, sz);
-  img.id = p1.id = `p${p1.x}_${p1.y}`;
+	let starSizes = [1, .4, 1, 1, 1, .8, 1, .6, 1];
+	let itype = p1.type % starSizes.length;
+	p1.sz = sz = 30 * starSizes[itype];
+	let img = p1.div = cloneImage(M.starImages[itype], d, p1.x, p1.y, sz, sz);
+	img.id = p1.id = `p${p1.x}_${p1.y}`;
 }
 function drawPointType(dParent, p, addLabel = true) {
-  let html = isdef(p.owner) && addLabel ? p.owner[0].toUpperCase() : '';
-  addKeys({ sz: 20, bg: rColor(), id: getUID() }, p);
-  let d1 = p.div = mDom(dParent, { round: true, left: p.x, top: p.y, w: p.sz, h: p.sz, position: 'absolute', bg: p.bg, align: 'center', fg: 'contrast' }, { html, id: p.id });
-  d1.style.cursor = 'default';
-  if (isdef(p.border)) mStyle(d1, { outline: `solid ${p.border} 4px` });
-  let rect = getRect(d1);
-  p.cx = p.x + p.sz / 2; p.cy = p.y + p.sz / 2;
-  p.xPage = rect.x; p.yPage = rect.y;
-  p.cxPage = rect.x + p.sz / 2; p.cyPage = rect.y + p.sz / 2;
-  return p;
+	let html = isdef(p.owner) && addLabel ? p.owner[0].toUpperCase() : '';
+	addKeys({ sz: 20, bg: rColor(), id: getUID() }, p);
+	let d1 = p.div = mDom(dParent, { round: true, left: p.x, top: p.y, w: p.sz, h: p.sz, position: 'absolute', bg: p.bg, align: 'center', fg: 'contrast' }, { html, id: p.id });
+	d1.style.cursor = 'default';
+	if (isdef(p.border)) mStyle(d1, { outline: `solid ${p.border} 4px` });
+	let rect = getRect(d1);
+	p.cx = p.x + p.sz / 2; p.cy = p.y + p.sz / 2;
+	p.xPage = rect.x; p.yPage = rect.y;
+	p.cxPage = rect.x + p.sz / 2; p.cyPage = rect.y + p.sz / 2;
+	return p;
 }
 function drawShape(key, dParent, styles, classes, sizing) {
-  if (nundef(styles)) styles = { w: 96, h: 96, bg: 'random' };
-  if (nundef(sizing)) sizing = { hgrow: true, wgrow: true };
-  let d = mDiv(dParent, styles, null, null, classes, sizing);
-  if (key == 'circle' || key == 'ellipse') mStyle(d, { rounding: '50%' });
-  else mStyle(d, { 'clip-path': PolyClips[key] });
-  return d;
+	if (nundef(styles)) styles = { w: 96, h: 96, bg: 'random' };
+	if (nundef(sizing)) sizing = { hgrow: true, wgrow: true };
+	let d = mDiv(dParent, styles, null, null, classes, sizing);
+	if (key == 'circle' || key == 'ellipse') mStyle(d, { rounding: '50%' });
+	else mStyle(d, { 'clip-path': PolyClips[key] });
+	return d;
 }
 //#endregion
 
 //#region drag drop
 function createPanZoomCanvas(parentElement, src, wCanvas, hCanvas) {
-  const canvas = document.createElement('canvas');
-  canvas.width = wCanvas;
-  canvas.height = hCanvas;
-  parentElement.appendChild(canvas);
-  const ctx = canvas.getContext('2d');
-  let image = new Image();
-  image.src = src;
-  let scale = 1;
-  let originX = 0;
-  let originY = 0;
-  let startX = 0;
-  let startY = 0;
-  let isDragging = false;
-  image.onload = () => {
-    if (image.width < canvas.width) canvas.width = image.width;
-    if (image.height < canvas.height) canvas.height = image.height;
-    const scaleX = canvas.width / image.width;
-    const scaleY = canvas.height / image.height;
-    scale = Math.min(scaleX, scaleY, 1);
-    originX = (canvas.width - image.width * scale) / 2;
-    originY = (canvas.height - image.height * scale) / 2;
-    draw();
-  };
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save();
-    ctx.translate(originX, originY);
-    ctx.scale(scale, scale);
-    ctx.drawImage(image, 0, 0);
-    ctx.restore();
-  }
-  canvas.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    startX = e.clientX - originX;
-    startY = e.clientY - originY;
-    canvas.style.cursor = 'grabbing';
-  });
-  canvas.addEventListener('mousemove', (e) => {
-    if (isDragging) {
-      originX = e.clientX - startX;
-      originY = e.clientY - startY;
-      draw();
-    }
-  });
-  canvas.addEventListener('mouseup', () => {
-    isDragging = false;
-    canvas.style.cursor = 'grab';
-  });
-  canvas.addEventListener('mouseout', () => {
-    isDragging = false;
-    canvas.style.cursor = 'grab';
-  });
-  canvas.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const zoom = Math.exp(e.deltaY * -0.0005);
-    scale *= zoom;
-    if (scale >= 1) scale = 1;
-    const mouseX = e.clientX - canvas.offsetLeft;
-    const mouseY = e.clientY - canvas.offsetTop;
-    originX = mouseX - (mouseX - originX) * zoom;
-    originY = mouseY - (mouseY - originY) * zoom;
-    draw();
-  });
-  let touchStartX = 0;
-  let touchStartY = 0;
-  canvas.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 1) {
-      isDragging = true;
-      touchStartX = e.touches[0].clientX - originX;
-      touchStartY = e.touches[0].clientY - originY;
-      canvas.style.cursor = 'grabbing';
-    }
-  });
-  canvas.addEventListener('touchmove', (e) => {
-    if (e.touches.length === 1 && isDragging) {
-      originX = e.touches[0].clientX - touchStartX;
-      originY = e.touches[0].clientY - touchStartY;
-      draw();
-    }
-  });
-  canvas.addEventListener('touchend', () => {
-    isDragging = false;
-    canvas.style.cursor = 'grab';
-  });
-  return canvas;
+	const canvas = document.createElement('canvas');
+	canvas.width = wCanvas;
+	canvas.height = hCanvas;
+	parentElement.appendChild(canvas);
+	const ctx = canvas.getContext('2d');
+	let image = new Image();
+	image.src = src;
+	let scale = 1;
+	let originX = 0;
+	let originY = 0;
+	let startX = 0;
+	let startY = 0;
+	let isDragging = false;
+	image.onload = () => {
+		if (image.width < canvas.width) canvas.width = image.width;
+		if (image.height < canvas.height) canvas.height = image.height;
+		const scaleX = canvas.width / image.width;
+		const scaleY = canvas.height / image.height;
+		scale = Math.min(scaleX, scaleY, 1);
+		originX = (canvas.width - image.width * scale) / 2;
+		originY = (canvas.height - image.height * scale) / 2;
+		draw();
+	};
+	function draw() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.save();
+		ctx.translate(originX, originY);
+		ctx.scale(scale, scale);
+		ctx.drawImage(image, 0, 0);
+		ctx.restore();
+	}
+	canvas.addEventListener('mousedown', (e) => {
+		isDragging = true;
+		startX = e.clientX - originX;
+		startY = e.clientY - originY;
+		canvas.style.cursor = 'grabbing';
+	});
+	canvas.addEventListener('mousemove', (e) => {
+		if (isDragging) {
+			originX = e.clientX - startX;
+			originY = e.clientY - startY;
+			draw();
+		}
+	});
+	canvas.addEventListener('mouseup', () => {
+		isDragging = false;
+		canvas.style.cursor = 'grab';
+	});
+	canvas.addEventListener('mouseout', () => {
+		isDragging = false;
+		canvas.style.cursor = 'grab';
+	});
+	canvas.addEventListener('wheel', (e) => {
+		e.preventDefault();
+		const zoom = Math.exp(e.deltaY * -0.0005);
+		scale *= zoom;
+		if (scale >= 1) scale = 1;
+		const mouseX = e.clientX - canvas.offsetLeft;
+		const mouseY = e.clientY - canvas.offsetTop;
+		originX = mouseX - (mouseX - originX) * zoom;
+		originY = mouseY - (mouseY - originY) * zoom;
+		draw();
+	});
+	let touchStartX = 0;
+	let touchStartY = 0;
+	canvas.addEventListener('touchstart', (e) => {
+		if (e.touches.length === 1) {
+			isDragging = true;
+			touchStartX = e.touches[0].clientX - originX;
+			touchStartY = e.touches[0].clientY - originY;
+			canvas.style.cursor = 'grabbing';
+		}
+	});
+	canvas.addEventListener('touchmove', (e) => {
+		if (e.touches.length === 1 && isDragging) {
+			originX = e.touches[0].clientX - touchStartX;
+			originY = e.touches[0].clientY - touchStartY;
+			draw();
+		}
+	});
+	canvas.addEventListener('touchend', () => {
+		isDragging = false;
+		canvas.style.cursor = 'grab';
+	});
+	return canvas;
 }
 function drag(ev) {
-  let elem = ev.target;
-  dragStartOffset = getRelCoords(ev, elem);
-  draggedElement = elem;
+	let elem = ev.target;
+	dragStartOffset = getRelCoords(ev, elem);
+	draggedElement = elem;
 }
 function drop(ev) {
-  ev.preventDefault();
-  let targetElem = findDragTarget(ev);
-  targetElem.appendChild(draggedElement);
-  setDropPosition(ev, draggedElement, targetElem, isdef(draggedElement.dropPosition) ? draggedElement.dropPosition : dropPosition);
+	ev.preventDefault();
+	let targetElem = findDragTarget(ev);
+	targetElem.appendChild(draggedElement);
+	setDropPosition(ev, draggedElement, targetElem, isdef(draggedElement.dropPosition) ? draggedElement.dropPosition : dropPosition);
 }
 function enableDataDrop(elem, onDropCallback) {
-  const originalBorderStyle = elem.style.border;
-  elem.addEventListener('dragover', ev => { ev.preventDefault(); }); // Prevent default behavior for dragover and drop events to allow drop
-  elem.addEventListener('dragenter', ev => {
-    //console.log(ev);
-    let els = ev.srcElement;
-    if (isAncestorOf(els, elem)) return;
-    elem.style.border = '2px solid red';
-  });
-  elem.addEventListener('drop', ev => {
-    ev.preventDefault();
-    elem.style.border = originalBorderStyle;
-		console.log('dropped onto',elem)
+	const originalBorderStyle = elem.style.border;
+	elem.addEventListener('dragover', ev => { ev.preventDefault(); }); // Prevent default behavior for dragover and drop events to allow drop
+	elem.addEventListener('dragenter', ev => {
+		//console.log(ev);
+		let els = ev.srcElement;
+		if (isAncestorOf(els, elem)) return;
+		elem.style.border = '2px solid red';
+	});
+	elem.addEventListener('drop', ev => {
+		ev.preventDefault();
+		elem.style.border = originalBorderStyle;
+		console.log('dropped onto', elem)
 		console.log(ev.target);
 		console.log(ev.dataTransfer.types);
-    //console.log('border', elem.style.border)
-    //onDropCallback(ev, elem);
-  });
+		//console.log('border', elem.style.border)
+		//onDropCallback(ev, elem);
+	});
 }
 function enableImageDrop(element, onDropCallback) {
-  const originalBorderStyle = element.style.border;
-  element.addEventListener('dragover', function (event) {
-    event.preventDefault();
-  });
-  element.addEventListener('dragenter', function (event) {
-    element.style.border = '2px solid red';
-  });
-  element.addEventListener('drop', function (event) {
-    event.preventDefault();
-    element.style.border = originalBorderStyle;
-    const files = event.dataTransfer.files;
-    if (files.length > 0) {
-      const file = files[0];
-      if (file.type.startsWith('image/')) { // Check if the dropped file is an image
-        onDropCallback(file);
-      }
-    }
-  });
-  element.addEventListener('dragleave', function (event) {
-    element.style.border = originalBorderStyle;
-  });
+	const originalBorderStyle = element.style.border;
+	element.addEventListener('dragover', function (event) {
+		event.preventDefault();
+	});
+	element.addEventListener('dragenter', function (event) {
+		element.style.border = '2px solid red';
+	});
+	element.addEventListener('drop', function (event) {
+		event.preventDefault();
+		element.style.border = originalBorderStyle;
+		const files = event.dataTransfer.files;
+		if (files.length > 0) {
+			const file = files[0];
+			if (file.type.startsWith('image/')) { // Check if the dropped file is an image
+				onDropCallback(file);
+			}
+		}
+	});
+	element.addEventListener('dragleave', function (event) {
+		element.style.border = originalBorderStyle;
+	});
 }
 function findDragTarget(ev) {
-  let targetElem = ev.target;
-  while (!targetElem.ondragover) targetElem = targetElem.parentNode;
-  return targetElem;
+	let targetElem = ev.target;
+	while (!targetElem.ondragover) targetElem = targetElem.parentNode;
+	return targetElem;
 }
 function getRelCoords(ev, elem) {
-  let x = ev.pageX - elem.offset().left;
-  let y = ev.pageY - elem.offset().top;
-  return { x: x, y: y };
+	let x = ev.pageX - elem.offset().left;
+	let y = ev.pageY - elem.offset().top;
+	return { x: x, y: y };
 }
 function isAncestorOf(elem, elemAnc) {
-  while (elem) {
-    if (elem === elemAnc) {
-      return true;
-    }
-    elem = elem.parentNode;
-  }
-  return false;
+	while (elem) {
+		if (elem === elemAnc) {
+			return true;
+		}
+		elem = elem.parentNode;
+	}
+	return false;
 }
 function isAtLeast(n, num = 1) { return n >= num; }
 function isBetween(n, a, b) { return n >= a && n <= b }
@@ -696,165 +697,165 @@ function mDroppable(item, handler, dragoverhandler) {
 	d.ondrop = handler;
 }
 function mDropZone(dropZone, onDrop) {
-  dropZone.setAttribute('allowDrop', true)
-  dropZone.addEventListener('dragover', function (event) {
-    event.preventDefault();
-    dropZone.style.border = '2px dashed #007bff';
-  });
-  dropZone.addEventListener('dragleave', function (event) {
-    event.preventDefault();
-    dropZone.style.border = '2px dashed #ccc';
-  });
-  dropZone.addEventListener('drop', function (event) {
-    event.preventDefault();
-    dropZone.style.border = '2px dashed #ccc';
-    const files = event.dataTransfer.files;
-    if (files.length > 0) {
-      const reader = new FileReader();
-      reader.onload = ev => {
-        onDrop(ev.target.result);
-      };
-      reader.readAsDataURL(files[0]);
-    }
-  });
-  return dropZone;
+	dropZone.setAttribute('allowDrop', true)
+	dropZone.addEventListener('dragover', function (event) {
+		event.preventDefault();
+		dropZone.style.border = '2px dashed #007bff';
+	});
+	dropZone.addEventListener('dragleave', function (event) {
+		event.preventDefault();
+		dropZone.style.border = '2px dashed #ccc';
+	});
+	dropZone.addEventListener('drop', function (event) {
+		event.preventDefault();
+		dropZone.style.border = '2px dashed #ccc';
+		const files = event.dataTransfer.files;
+		if (files.length > 0) {
+			const reader = new FileReader();
+			reader.onload = ev => {
+				onDrop(ev.target.result);
+			};
+			reader.readAsDataURL(files[0]);
+		}
+	});
+	return dropZone;
 }
 function mDropZone1(dropZone, onDrop) {
-  dropZone.addEventListener('dragover', function (event) {
-    event.preventDefault();
-    dropZone.style.border = '2px dashed #007bff';
-  });
-  dropZone.addEventListener('dragleave', function (event) {
-    event.preventDefault();
-    dropZone.style.border = '2px dashed #ccc';
-  });
-  dropZone.addEventListener('drop', function (evDrop) {
-    evDrop.preventDefault();
-    dropZone.style.border = '2px dashed #ccc';
-    const files = evDrop.dataTransfer.files;
-    if (files.length > 0) {
-      const reader = new FileReader();
-      reader.onload = evReader => {
-        onDrop(evReader.target.result, dropZone);
-      };
-      reader.readAsDataURL(files[0]);
-    }
-  });
-  return dropZone;
+	dropZone.addEventListener('dragover', function (event) {
+		event.preventDefault();
+		dropZone.style.border = '2px dashed #007bff';
+	});
+	dropZone.addEventListener('dragleave', function (event) {
+		event.preventDefault();
+		dropZone.style.border = '2px dashed #ccc';
+	});
+	dropZone.addEventListener('drop', function (evDrop) {
+		evDrop.preventDefault();
+		dropZone.style.border = '2px dashed #ccc';
+		const files = evDrop.dataTransfer.files;
+		if (files.length > 0) {
+			const reader = new FileReader();
+			reader.onload = evReader => {
+				onDrop(evReader.target.result, dropZone);
+			};
+			reader.readAsDataURL(files[0]);
+		}
+	});
+	return dropZone;
 }
 async function ondropPreviewImage(dParent, url, key) {
-  if (isdef(key)) {
-    let o = M.superdi[key];
-    UI.imgColl.value = o.cats[0];
-    UI.imgName.value = o.friendly;
-  }
-  assertion(dParent == UI.dDrop, `problem bei ondropPreviewImage parent:${dParent}, dDrop:${UI.dDrop}`)
-  dParent = UI.dDrop;
-  let dButtons = UI.dButtons;
-  let dTool = UI.dTool;
-  dParent.innerHTML = '';
-  dButtons.innerHTML = '';
-  dTool.innerHTML = '';
-  let img = UI.img = mDom(dParent, {}, { tag: 'img', src: url });
-  img.onload = async () => {
-    img.onload = null;
-    UI.img_orig = new Image(img.offsetWidth, img.offsetHeight);
-    UI.url = url;
-    let tool = UI.cropper = mCropResizePan(dParent, img);
-    addToolX(tool, dTool)
-    mDom(dButtons, { w: 120 }, { tag: 'button', html: 'Upload', onclick: onclickUpload, className: 'input' })
-    mButton('Restart', () => ondropPreviewImage(url), dButtons, { w: 120, maleft: 12 }, 'input');
-  }
+	if (isdef(key)) {
+		let o = M.superdi[key];
+		UI.imgColl.value = o.cats[0];
+		UI.imgName.value = o.friendly;
+	}
+	assertion(dParent == UI.dDrop, `problem bei ondropPreviewImage parent:${dParent}, dDrop:${UI.dDrop}`)
+	dParent = UI.dDrop;
+	let dButtons = UI.dButtons;
+	let dTool = UI.dTool;
+	dParent.innerHTML = '';
+	dButtons.innerHTML = '';
+	dTool.innerHTML = '';
+	let img = UI.img = mDom(dParent, {}, { tag: 'img', src: url });
+	img.onload = async () => {
+		img.onload = null;
+		UI.img_orig = new Image(img.offsetWidth, img.offsetHeight);
+		UI.url = url;
+		let tool = UI.cropper = mCropResizePan(dParent, img);
+		addToolX(tool, dTool)
+		mDom(dButtons, { w: 120 }, { tag: 'button', html: 'Upload', onclick: onclickUpload, className: 'input' })
+		mButton('Restart', () => ondropPreviewImage(url), dButtons, { w: 120, maleft: 12 }, 'input');
+	}
 }
 async function ondropShowImage(url, dDrop) {
-  mClear(dDrop);
-  let img = await imgAsync(dDrop, { hmax: 300 }, { src: url });
-  console.log('img dims', img.width, img.height); //works!!!
-  mStyle(dDrop, { w: img.width, h: img.height + 30, align: 'center' });
-  mDom(dDrop, { fg: colorContrastPickFromList(dDrop, ['blue', 'lime', 'yellow']) }, { className: 'blink', html: 'DONE! now click on where you think the image should be centered!' })
-  console.log('DONE! now click on where you think the image should be centered!')
-  img.onclick = storeMouseCoords;
+	mClear(dDrop);
+	let img = await imgAsync(dDrop, { hmax: 300 }, { src: url });
+	console.log('img dims', img.width, img.height); //works!!!
+	mStyle(dDrop, { w: img.width, h: img.height + 30, align: 'center' });
+	mDom(dDrop, { fg: colorContrastPickFromList(dDrop, ['blue', 'lime', 'yellow']) }, { className: 'blink', html: 'DONE! now click on where you think the image should be centered!' })
+	console.log('DONE! now click on where you think the image should be centered!')
+	img.onclick = storeMouseCoords;
 }
 
 function setDropPosition(ev, elem, targetElem, dropPos) {
-  if (dropPos == 'mouse') {
-    var elm = $(targetElem);
-    x = ev.pageX - elm.offset().left - dragStartOffset.x;
-    y = ev.pageY - elm.offset().top - dragStartOffset.y;
-    posXY(elem, targetElem, x, y);
-  } else if (dropPos == 'none') {
-    return;
-  } else if (dropPos == 'center') {
-    elem.style.position = elem.style.left = elem.style.top = '';
-    elem.classList.add('centeredTL');
-  } else if (dropPos == 'centerCentered') {
-    elem.style.position = elem.style.left = elem.style.top = '';
-    elem.classList.add('centerCentered');
-  } else {
-    dropPos(ev, elem, targetElem);
-  }
+	if (dropPos == 'mouse') {
+		var elm = $(targetElem);
+		x = ev.pageX - elm.offset().left - dragStartOffset.x;
+		y = ev.pageY - elm.offset().top - dragStartOffset.y;
+		posXY(elem, targetElem, x, y);
+	} else if (dropPos == 'none') {
+		return;
+	} else if (dropPos == 'center') {
+		elem.style.position = elem.style.left = elem.style.top = '';
+		elem.classList.add('centeredTL');
+	} else if (dropPos == 'centerCentered') {
+		elem.style.position = elem.style.left = elem.style.top = '';
+		elem.classList.add('centerCentered');
+	} else {
+		dropPos(ev, elem, targetElem);
+	}
 }
 async function simpleOnDropImage(ev, elem) {
-  let dt = ev.dataTransfer;
-  if (dt.types.includes('itemkey')) {
-    let data = ev.dataTransfer.getData('itemkey');
-    await simpleOnDroppedItem(data);
-  } else {
-    const files = ev.dataTransfer.files;
-    if (files.length > 0) {
-      const reader = new FileReader();
-      reader.onload = async (evReader) => {
-        let data = evReader.target.result;
-        await simpleOnDroppedUrl(data, UI.simple);
-      };
-      reader.readAsDataURL(files[0]);
-    }
-  }
+	let dt = ev.dataTransfer;
+	if (dt.types.includes('itemkey')) {
+		let data = ev.dataTransfer.getData('itemkey');
+		await simpleOnDroppedItem(data);
+	} else {
+		const files = ev.dataTransfer.files;
+		if (files.length > 0) {
+			const reader = new FileReader();
+			reader.onload = async (evReader) => {
+				let data = evReader.target.result;
+				await simpleOnDroppedUrl(data, UI.simple);
+			};
+			reader.readAsDataURL(files[0]);
+		}
+	}
 }
 async function simpleOnDroppedItem(itemOrKey, key, sisi) {
-  if (nundef(sisi)) sisi = UI.simple;
-  let item;
-  if (isString(itemOrKey)) { key = itemOrKey; item = M.superdi[key]; } else { item = itemOrKey; }
-  assertion(isdef(key), 'NO KEY!!!!!');
-  lookupAddIfToList(item, ['colls'], sisi.name);
-  let o = M.superdi[key];
-  if (isdef(o)) {
-    console.log(`HA! ${key} already there`);
-    let changed = false;
-    for (const k in item) {
-      let val = item[k];
-      if (isLiteral(val) && o[k] != item[k]) { changed = true; break; }
-      else if (isList(val) && !sameList(val, o[k])) { changed = true; break; }
-    }
-    if (!changed) return;
-  }
-  console.log(`........But changed!!!`);
-  let di = {}; di[key] = item;
-  await updateSuperdi(di);
-  simpleInit(sisi.name, sisi)
+	if (nundef(sisi)) sisi = UI.simple;
+	let item;
+	if (isString(itemOrKey)) { key = itemOrKey; item = M.superdi[key]; } else { item = itemOrKey; }
+	assertion(isdef(key), 'NO KEY!!!!!');
+	lookupAddIfToList(item, ['colls'], sisi.name);
+	let o = M.superdi[key];
+	if (isdef(o)) {
+		console.log(`HA! ${key} already there`);
+		let changed = false;
+		for (const k in item) {
+			let val = item[k];
+			if (isLiteral(val) && o[k] != item[k]) { changed = true; break; }
+			else if (isList(val) && !sameList(val, o[k])) { changed = true; break; }
+		}
+		if (!changed) return;
+	}
+	console.log(`........But changed!!!`);
+	let di = {}; di[key] = item;
+	await updateSuperdi(di);
+	simpleInit(sisi.name, sisi)
 }
 async function simpleOnDroppedUrl(src, sisi) {
-  let sz = 400;
-  let dPopup = mDom(document.body, { position: 'fixed', top: 40, left: 0, wmin: sz, hmin: sz, bg: 'pink' });
-  let dParent = mDom(dPopup);
-  let d = mDom(dParent, { w: sz, h: sz, border: 'dimgray', margin: 10 });
-  let canvas = createPanZoomCanvas(d, src, sz, sz);
-  let instr = mDom(dPopup, { align: 'center', mabot: 10 }, { html: `- panzoom image to your liking -` })
-  let dinp = mDom(dPopup, { padding: 10, align: 'right', display: 'inline-block' })
-  mDom(dinp, { display: 'inline-block' }, { html: 'Name: ' });
-  let inpFriendly = mDom(dinp, { outline: 'none', w: 200 }, { className: 'input', name: 'friendly', tag: 'input', type: 'text', placeholder: `<enter name>` });
-  let defaultName = '';
-  let iDefault = 1;
-  let k = sisi.masterKeys.find(x => x == `${sisi.name}${iDefault}`);
-  while (isdef(k)) { iDefault++; k = sisi.masterKeys.find(x => x == `${sisi.name}${iDefault}`); }
-  defaultName = `${sisi.name}${iDefault}`;
-  inpFriendly.value = defaultName;
-  mDom(dinp, { h: 1 });
-  mDom(dinp, { display: 'inline-block' }, { html: 'Categories: ' })
-  let inpCats = mDom(dinp, { outline: 'none', w: 200 }, { className: 'input', name: 'cats', tag: 'input', type: 'text', placeholder: `<enter categories>` });
-  let db2 = mDom(dPopup, { padding: 10, display: 'flex', gap: 10, 'justify-content': 'end' });
-  mButton('Cancel', () => dPopup.remove(), db2, { w: 70 }, 'input');
-  mButton('Save', () => simpleFinishEditing(canvas, dPopup, inpFriendly, inpCats, sisi), db2, { w: 70 }, 'input');
+	let sz = 400;
+	let dPopup = mDom(document.body, { position: 'fixed', top: 40, left: 0, wmin: sz, hmin: sz, bg: 'pink' });
+	let dParent = mDom(dPopup);
+	let d = mDom(dParent, { w: sz, h: sz, border: 'dimgray', margin: 10 });
+	let canvas = createPanZoomCanvas(d, src, sz, sz);
+	let instr = mDom(dPopup, { align: 'center', mabot: 10 }, { html: `- panzoom image to your liking -` })
+	let dinp = mDom(dPopup, { padding: 10, align: 'right', display: 'inline-block' })
+	mDom(dinp, { display: 'inline-block' }, { html: 'Name: ' });
+	let inpFriendly = mDom(dinp, { outline: 'none', w: 200 }, { className: 'input', name: 'friendly', tag: 'input', type: 'text', placeholder: `<enter name>` });
+	let defaultName = '';
+	let iDefault = 1;
+	let k = sisi.masterKeys.find(x => x == `${sisi.name}${iDefault}`);
+	while (isdef(k)) { iDefault++; k = sisi.masterKeys.find(x => x == `${sisi.name}${iDefault}`); }
+	defaultName = `${sisi.name}${iDefault}`;
+	inpFriendly.value = defaultName;
+	mDom(dinp, { h: 1 });
+	mDom(dinp, { display: 'inline-block' }, { html: 'Categories: ' })
+	let inpCats = mDom(dinp, { outline: 'none', w: 200 }, { className: 'input', name: 'cats', tag: 'input', type: 'text', placeholder: `<enter categories>` });
+	let db2 = mDom(dPopup, { padding: 10, display: 'flex', gap: 10, 'justify-content': 'end' });
+	mButton('Cancel', () => dPopup.remove(), db2, { w: 70 }, 'input');
+	mButton('Save', () => simpleFinishEditing(canvas, dPopup, inpFriendly, inpCats, sisi), db2, { w: 70 }, 'input');
 }
 //#endregion
 
@@ -899,9 +900,9 @@ function getFormattedTime() {
 
 //#region mFlex
 function mFlex(d, or = 'h') {
-  d = toElem(d);
-  d.style.display = 'flex';
-  d.style.flexFlow = (or == 'v' ? 'column' : 'row') + ' ' + (or == 'w' ? 'wrap' : 'nowrap');
+	d = toElem(d);
+	d.style.display = 'flex';
+	d.style.flexFlow = (or == 'v' ? 'column' : 'row') + ' ' + (or == 'w' ? 'wrap' : 'nowrap');
 }
 function mFlexBaseline(d) { mStyle(d, { display: 'flex', 'align-items': 'baseline' }); }
 function mFlexLine(d, startEndCenter = 'center') { mStyle(d, { display: 'flex', 'justify-content': startEndCenter, 'align-items': 'center' }); }
@@ -1012,27 +1013,27 @@ function mPlace(elem, pos, offx, offy) {
 	elem.style[kvert] = vert + 'px'; elem.style[khor] = hor + 'px';
 }
 function toNameValueList(any) {
-  if (isEmpty(any)) return [];
-  let list = [];
-  if (isString(any)) {
-    let words = toWords(any);
-    for (const w of words) { list.push({ name: w, value: w }) };
-  } else if (isDict(any)) {
-    for (const k in any) { list.push({ name: k, value: any[k] }) };
-  } else if (isList(any) && !isDict(any[0])) {
-    for (const el of any) list.push({ name: el, value: el });
-  } else if (isList(any) && isdef(any[0].name) && isdef(any[0].value)) {
-    list = any;
-  } else {
-    let el = any[0];
-    let keys = Object.keys(el);
-    let nameKey = keys[0];
-    let valueKey = keys[1];
-    for (const x of any) {
-      list.push({ name: x[nameKey], value: x[valueKey] });
-    }
-  }
-  return list;
+	if (isEmpty(any)) return [];
+	let list = [];
+	if (isString(any)) {
+		let words = toWords(any);
+		for (const w of words) { list.push({ name: w, value: w }) };
+	} else if (isDict(any)) {
+		for (const k in any) { list.push({ name: k, value: any[k] }) };
+	} else if (isList(any) && !isDict(any[0])) {
+		for (const el of any) list.push({ name: el, value: el });
+	} else if (isList(any) && isdef(any[0].name) && isdef(any[0].value)) {
+		list = any;
+	} else {
+		let el = any[0];
+		let keys = Object.keys(el);
+		let nameKey = keys[0];
+		let valueKey = keys[1];
+		for (const x of any) {
+			list.push({ name: x[nameKey], value: x[valueKey] });
+		}
+	}
+	return list;
 }
 function uiGadgetTypeCheckList(dParent, content, resolve, styles = {}, opts = {}) {
 	addKeys({ hmax: 500, wmax: 200, bg: 'white', fg: 'black', padding: 10, rounding: 10, box: true }, styles)
@@ -1376,11 +1377,11 @@ function uiTypeRadios(lst, d, styles = {}, opts = {}) {
 function uiTypeSelect(any, dParent, styles = {}, opts = {}) {
 	let list = toNameValueList(any);
 	addKeys({ tag: 'select' }, opts);
-	let d0=mDom(dParent,styles,opts);
+	let d0 = mDom(dParent, styles, opts);
 	let dselect = mDom(d0, {}, { tag: 'select' });
 	for (const el of list) { mDom(dselect, {}, { tag: 'option', html: el.name, value: el.value }); }
 	dselect.value = '';
-	return [d0,dselect];
+	return [d0, dselect];
 }
 
 

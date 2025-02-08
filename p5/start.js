@@ -7,22 +7,20 @@ async function test4_mLayout() {
 	let blog = await init();
 	let elems = mLayoutTLMS('raspberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); mFlex('dMain');
 	let d = mDom(dMain, { wmax: 500, }); 
-	let di = DA.blogs = await showBlogs(d, blog);
+	let di = DA.blogs = await showBlogs(d, blog); return;
 
 	DA.selectedPart=[];
 	for(const k in di){
 		for(const item of di[k].items){
 			let div=iDiv(item);
-			div.onclick=()=>toggleSelection(item, DA.selectedPart, 1);
+			div.onclick=()=>{toggleSelection(item, DA.selectedPart, 1);aktivateUpDownIffSelected();}
 		}
 	}
 
 	let dButtons = mDom(dMain, { padding:10, gap:10, w: 100, h: 300, bg: 'blue', position: 'sticky', top: 0 }); mCenterFlex(dButtons)
-	let moveUpBtn = mDom(dButtons, {}, { tag:'button',html: 'up', onclick: onclickMoveUp });	
+	let moveUpBtn = mDom(dButtons, {classes:'disabled'}, { tag:'button',html: 'up', onclick: onclickMoveUp, id:'dMoveUp'});	
 	mLinebreak(dButtons);
-	let moveDownBtn = mDom(dButtons, {}, { tag:'button',html: 'down', onclick: onclickMoveDown });	
-	DA.currentBlogKey=null;
-	let selectedDiv = null;
+	let moveDownBtn = mDom(dButtons, {classes:'disabled'}, { tag:'button',html: 'down', onclick: onclickMoveDown ,id:'dMoveDown'});	
 
 
 }
