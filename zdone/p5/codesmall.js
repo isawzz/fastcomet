@@ -211,14 +211,16 @@ function detectSessionType() {
 	return DA.sessionType;
 }
 function dict2list(d, keyName = 'id') {
-	let res = [];
-	for (const key in d) {
-		let val = d[key];
-		let o;
-		if (isDict(val)) { o = jsCopy(val); } else { o = { value: val }; }
-		o[keyName] = key;
-		res.push(o);
-	}
+	let vals = Object.values(d);
+	if (vals.length == 0) return [];
+
+	let res=[];
+	if (!isDict(vals[0])) {
+		for(const v of vals) res.push({ value: v });
+	}else res=vals;
+
+	let keys = Object.keys(d);
+	for(let i = 0; i < res.length; i++) { res[i][keyName]=keys[i]; }
 	return res;
 }
 function endsWith(s, sSub) { let i = s.indexOf(sSub); return i >= 0 && i == s.length - sSub.length; }

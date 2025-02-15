@@ -1,4 +1,76 @@
 
+function mToggle(d,event,f1,f2){
+	
+}
+function mCollapse(dilist) {
+	if (isDict(dilist)) dilist = dict2list(dilist); //console.log(dilist);
+
+	for (const b of dilist) {
+		let d = iDiv(b);
+
+		//in collapsed style, hide all children
+		let dTitle = d.firstChild;
+		for (const c of arrChildren(d)) {
+			if (c == dTitle) continue;
+			c.style.display = 'none';
+		};
+		// mStyle(dTitle, { cursor: 'pointer' }, { collapsed: true });
+		continue;
+
+		dTitle.onclick = ev => {
+			let isCollapsed = ev.target.getAttribute('collapsed');
+			if (isCollapsed) {
+				for (const c of arrChildren(d)) {
+					c.style.display = 'block';
+				};
+				dTitle.setAttribute('collapsed', false);
+			} else {
+				for (const c of arrChildren(d)) {
+					c.style.display = 'none';
+				};
+				dTitle.setAttribute('collapsed', true);
+			}
+		}
+	}
+}
+function toggleStyle(d, style1 = {}, style2 = {}) {
+
+}
+
+
+function addMoveUpDown(elems, dButtons) {
+	let moveUpBtn = mDom(dButtons, {}, { html: 'up', onclick: moveUp });
+	mLinebreak(dButtons);
+	let moveDownBtn = mDom(dButtons, {}, { html: 'down', onclick: moveDown });
+	let selectedDiv = null;
+
+
+	// Add click event listener to each div
+	container.addEventListener("click", function (event) {
+		if (event.target.tagName === "DIV") {
+			if (selectedDiv) {
+				selectedDiv.classList.remove("highlight");
+			}
+			selectedDiv = event.target;
+			selectedDiv.classList.add("highlight");
+		}
+	});
+
+	// Move up function
+	moveUpBtn.addEventListener("click", function () {
+		if (selectedDiv && selectedDiv.previousElementSibling) {
+			container.insertBefore(selectedDiv, selectedDiv.previousElementSibling);
+		}
+	});
+
+	// Move down function
+	moveDownBtn.addEventListener("click", function () {
+		if (selectedDiv && selectedDiv.nextElementSibling) {
+			container.insertBefore(selectedDiv.nextElementSibling, selectedDiv);
+		}
+	});
+}
+
 async function _mPalette(dParent, src, showPal = true, showImg = false) {
 	async function getPaletteFromCanvas(canvas, n = 10) {
 			if (typeof ColorThiefObject === 'undefined') ColorThiefObject = new ColorThief();
@@ -273,14 +345,6 @@ function createTimer(element, mode = 'stopwatch', duration = 0) {
 	elapsed = mode === 'countdown' ? duration : 0;
 	updateDisplay();
 	element.addEventListener('click', toggle);
-}
-function registerAction(key, fromState, toState) {
-	let t1 = getNow();
-	let t = DA.toggle[key];
-	if (nundef(t.timer)) {
-		t.timer = mDom(t.elem.parentNode, { bg: 'white', fg: 'black', wmin: 200, }, { html: '&nbsp;' });
-	}
-
 }
 class Timer {
 	constructor(element, mode = 'stopwatch', duration = 0) {

@@ -5,32 +5,179 @@ async function init() {
 	let blog = Z.blog = await loadStaticYaml('zdata/blog1.yaml');
 	return blog;
 }
-async function showBlogs(d, blog) {
+function showBlog(d,date,o){
+	// let o = blog[date];
+	let dBlog = mDom(d, {  }, { key: date })
+	mDom(dBlog, {}, { html: `${date}: ${o.title}` });
+	let d1=mDom(dBlog);
+	let blogItem = { o, key: date, div: dBlog, dParts:d1, items: [] }
+	let idx = 0;
+	for (let textPart of o.text) {
+		let d2 = mDom(d1, { w100: true, fz: 20, caret: 'white' });
+		let item = { key:date, text: textPart, div: d2, type: textPart.includes('blogimages/') ? 'img' : 'text' };
+		blogItem.items.push(item);
+		if (textPart.includes('blogimages/')) {
+			mDom(d2, { w100: true }, { tag: 'img', src: textPart });
+		} else {
+			mStyle(d2, { w100: true, mabottom: 10 }, { contenteditable: true, html: textPart });
+			d2.onblur = saveBlogList;
+		}
+	}
+	let d3 = mDom(dBlog, {}, { tag: 'hr' });
+	return blogItem;
+}
+function showBlogs(d, blog) {
 	let dates = Object.keys(blog);
 	dates.sort((a, b) => new Date(b) - new Date(a));
 	let di = {};
 	for (const date of dates) {
-		let o = blog[date];
-		let dBlog = mDom(d, { gap: 10, padding: 10 }, { key: date })
-		mDom(dBlog, {}, { tag: 'h1', html: `${date}: ${o.title}` });
-		let d1=mDom(dBlog);
-		let blogItem = di[date] = { o, key: date, div: dBlog, dParts:d1, items: [] }
-		let idx = 0;
-		for (let textPart of o.text) {
-			let d2 = mDom(d1, { w100: true, fz: 20, caret: 'white' });
-			let item = { key:date, text: textPart, div: d2, type: textPart.includes('blogimages/') ? 'img' : 'text' };
-			blogItem.items.push(item);
-			if (textPart.includes('blogimages/')) {
-				mDom(d2, { w100: true }, { tag: 'img', src: textPart });
-			} else {
-				mStyle(d2, { w100: true, mabottom: 10 }, { contenteditable: true, html: textPart });
-				d2.onblur = saveBlogList;
-			}
-		}
-		let d3 = mDom(d, {}, { tag: 'hr' });
+		di[date] = showBlog(d, date, blog[date]);
 	}
 	return di;
 }
+function mSleep(ms = 1000) {
+  return new Promise(
+    (res, rej) => {
+      if (ms > 10000) { ms = 10000; }
+      if (isdef(TO.SLEEPTIMEOUT)) clearTimeout(TO.SLEEPTIMEOUT);
+      TO.SLEEPTIMEOUT = setTimeout(res, ms);
+      setTimeout(() => {
+        try {
+          rej(`PROMISE REJECT ${isdef(TO.SLEEPTIMEOUT)}`);
+        } catch (err) {
+          console.log(`WTF!!!!!!!!!!!!!!!!!!`, err);
+        }
+      }, ms + 1);
+    });
+}
+
+//#region moveUpDowm
+function aktivateUpDownIffSelected() {
+	let b=toElem('dMoveUp'); console.log(b);
+	if (isEmpty(DA.selectedPart)) { mClass('dMoveUp', 'disabled'); mClass('dMoveDown', 'disabled'); return; }
+	mClassRemove('dMoveUp', 'disabled');
+	mClassRemove('dMoveDown', 'disabled');
+}
+function onclickMoveUp() {
+	//console.log('up', 'currently selected', DA.selectedPart);
+	let item = DA.selectedPart[0]; if (!item) return;
+	let idx = DA.blogs[item.key].items.indexOf(item);
+	//console.log('idx', idx);
+	let arr = DA.blogs[item.key].items;
+	let dparent = DA.blogs[item.key].dParts;
+	if (idx == 0) {
+		removeInPlace(arr, item);
+		arr.push(item);
+		dparent.appendChild(item.div);
+	} else {
+		//swap item with item before it in blogItems[key].items
+		let prev = DA.blogs[item.key].items[idx - 1];
+		DA.blogs[item.key].items[idx - 1] = item;
+		DA.blogs[item.key].items[idx] = prev;
+		dparent.insertBefore(item.div, prev.div);
+	}
+}
+function onclickMoveDown() {
+	let item = DA.selectedPart[0]; if (!item) return;
+	let idx = DA.blogs[item.key].items.indexOf(item);
+	let arr = DA.blogs[item.key].items;
+	let dparent = DA.blogs[item.key].dParts;
+	if (idx == arr.length - 1) {
+		removeInPlace(arr, item);
+		arr.unshift(item);
+		dparent.insertBefore(item.div, dparent.firstChild);
+	} else {
+		//swap item with item after it in blogItems[key].items
+		let next = DA.blogs[item.key].items[idx + 1];
+		DA.blogs[item.key].items[idx + 1] = item;
+		DA.blogs[item.key].items[idx] = next;
+		dparent.insertBefore(next.div, item.div);
+	}
+}
+function toggleSelection(item, selectList, atmost, className = 'framedPicture') {
+	//	console.log(pic)
+	let ui = iDiv(item);
+	item.isSelected = !item.isSelected;
+	if (item.isSelected) mClass(ui, className); else mClassRemove(ui, className);
+
+	if (nundef(selectList)) return;
+	//if piclist is given, add or remove pic according to selection state
+	if (item.isSelected) {
+		console.assert(!selectList.includes(item), 'UNSELECTED PIC IN PICLIST!!!!!!!!!!!!')
+		selectList.push(item);
+	} else {
+		console.assert(selectList.includes(item), 'PIC NOT IN PICLIST BUT HAS BEEN SELECTED!!!!!!!!!!!!')
+		removeInPlace(selectList, item);
+	}
+	if (isNumber(atmost)) {
+		while (selectList.length > atmost) {
+			let pic = selectList.shift();
+			pic.isSelected = false;
+			let ui = iDiv(pic);
+			mClassRemove(ui, className);
+		}
+
+	}
+}
+//#endregion
+
+//#region blog
+async function saveBlogList(ev) {
+	let dpart = ev.target;
+	//console.log(dpart);
+	let dparent = findAncestorWith(dpart, { attribute: 'key' });
+	//console.log(dpart,dparent);
+	for (const ch of arrChildren(dparent)) {
+
+	}
+
+}
+//#endregion
+
+//#region interviews
+function arrMaxContiguous(arr) {
+	let cnt = 0, el = arr[0], max = 0;
+	for (let i = 0; i < arr.length; i++) {
+		let a = arr[i];
+		if (a == el) cnt++;
+		else {
+			el = a;
+			if (cnt > max) max = cnt;
+			cnt = 1;
+		}
+	}
+	return max;
+}
+function arrGen(n, min, max) {
+	let arr = [];
+	for (const i of range(1, n)) arr.push(rNumber(min, max));
+	return arr;
+}
+function arrToCount(arr) {
+	let res = []
+	let x = arr[0], cnt = 0;
+	for (i of range(0, arr.length)) {
+		let a = arr[i];
+		if (a == x) cnt++
+		else {
+			res.push({ n: x, cnt });
+			x = a;
+			cnt = 1;
+		}
+	}
+	return res;
+}
+function qsort(arr) {
+	if (arr.length <= 1) return arr
+	let x = arr[0]
+	let lower = [], upper = []
+	for (i = 1; i < arr.length; i++)
+		if (arr[i] < x) lower.push(arr[i])
+		else upper.push(arr[i])
+	return qsort(lower).concat([x]).concat(qsort(upper));
+}
+//#endregion
+
 
 //#region collect functions from bau1-4
 
@@ -204,61 +351,6 @@ function mShape(shape, dParent, styles = {}, opts = {}) {
 }
 
 function iDiv(i) { return isdef(i.live) ? i.live.div : valf(i.div, i.ui, i); } //isdef(i.div) ? i.div : i; }
-function mGather(f, d, styles = {}, opts = {}) {
-	return new Promise((resolve, _) => {
-		let dShield = mShield();
-		let fCancel = _ => { dShield.remove(); hotkeyDeactivate('Escape'); resolve(null) };
-		let fSuccess = val => { dShield.remove(); hotkeyDeactivate('Escape'); resolve(val) };
-		dShield.onclick = fCancel;
-		hotkeyActivate('Escape', fCancel);
-
-		let [box, inp] = mInBox(f, dShield, styles, {}, dictMerge(opts, { fSuccess }));
-
-		mAlign(box, d, { align: 'bl', offx: 20 });
-		inp.focus();
-	});
-}
-function mInBox(f, dParent, boxStyles = {}, inpStyles = {}, opts = {}) {
-	let dbox = mDom(dParent, boxStyles);
-	let dinp = f(dbox, inpStyles, opts);
-	return [dbox, dinp];
-}
-function mInput(dParent, styles = {}, opts = {}) {
-	addKeys({ tag: 'input', id: getUID(), placeholder: '', autocomplete: "off", value: '', selectOnClick: true, type: "text" }, opts);
-	let d = mDom(dParent, styles, opts);
-	d.onclick = opts.selectOnClick ? ev => { evNoBubble(ev); d.select(); } : ev => { evNoBubble(ev); };
-	d.onkeydown = ev => {
-		if (ev.key == 'Enter' && isdef(opts.fSuccess)) { evNoBubble(ev); opts.fSuccess(d.value); }
-		else if (ev.key == 'Escape' && isdef(opts.fCancel)) { evNoBubble(ev); opts.fCancel(); }
-	}
-	return d;
-}
-function mSelect(dParent, styles = {}, opts = {}) {
-	let d0 = mDom(dParent, dictMerge(styles, { gap: 6 }), opts);
-	mCenterCenterFlex(d0);
-
-	function onclick(ev) {
-		evNoBubble(ev);
-		if (isdef(opts.fSuccess)) opts.fSuccess(ev.target.innerHTML);
-	}
-	for (const html of opts.list) {
-		mDom(d0, {}, { tag: 'button', html, onclick });
-	}
-	return d0;
-}
-function mYesNo(dParent, styles = {}, opts = {}) {
-	return mSelect(dParent, styles, dictMerge(opts, { list: ['yes', 'no'] }));
-}
-function mShield(dParent, styles = {}, opts = {}) {
-	addKeys({ bg: '#00000080' }, styles);
-	addKeys({ id: 'shield' }, opts);
-	dParent = valf(toElem(dParent), document.body); //console.log(dParent);
-	let d = mDom(dParent, styles, opts);
-	mIfNotRelative(dParent);
-	mStyle(d, { position: 'absolute', left: 0, top: 0, w: '100%', h: '100%' });
-	mClass(d, 'topmost');
-	return d;
-}
 
 function makeEditable(elem) {
 	elem.setAttribute('contenteditable', 'true');
@@ -387,6 +479,7 @@ function mCreateFrom(htmlString) {
 }
 
 //#endregion
+
 
 //#region draw
 function drawCircleOnCanvas(canvas, cx, cy, sz, color) {
@@ -932,7 +1025,7 @@ function mDummyFocus() {
 	if (nundef(mBy('dummy'))) mDom(document.body, { position: 'absolute', top: 0, left: 0, opacity: 0, h: 0, w: 0, padding: 0, margin: 0, outline: 'none', border: 'none', bg: 'transparent' }, { tag: 'button', id: 'dummy', html: 'dummy' }); //addDummy(document.body); //, 'cc');
 	mBy('dummy').focus();
 }
-function mGather(dAnchor, styles = {}, opts = {}) {
+function _mGather(dAnchor, styles = {}, opts = {}) {
 	return new Promise((resolve, _) => {
 		let [content, type] = [valf(opts.content, 'name'), valf(opts.type, 'text')]; //defaults
 		let dbody = document.body;
@@ -1424,77 +1517,6 @@ function getTriangleDownPoly(x, y, w, h) {
 }
 
 //#endregion
-
-//#region toggle zeug
-function mToggle(label, dParent, styles = {}, handler, is_on, styleyes, styleno, classes = null) {
-	let cursor = styles.cursor; delete styles.cursor;
-	let name = replaceWhite(label);
-	let checked = isdef(is_on) ? is_on : false;
-	let b = mButton(label, null, dParent, styles, classes);
-	mClass(b, 'noactive');
-	b.setAttribute('checked', checked);
-	b.onclick = ev => {
-		ev.cancelBubble = true;
-		let b = ev.target;
-		assertion(b == ev.target, 'NOOOOOOOOOOOOOOOOOOOOOOO')
-		// console.log('clicked button!!!', b);
-		let oldval = b.getAttribute('checked') == 'false' ? false : true;
-
-		let newval = oldval ? false : true;
-		// console.log('old', oldval, typeof (oldval), 'new', newval);
-		if (newval === true) {
-			// console.log('sollte', styleyes)
-			mStyle(b, styleyes);
-		} else {
-			mStyle(b, styleno);
-		}
-		b.setAttribute('checked', newval);
-		handler(name, newval);
-	};
-	return b;
-}
-function mTogglebar(di, handler, styleyes, styleno, dParent, styles, bstyles, id, classes, bclasses) {
-	//styles = { margin: 0, padding: 0 };
-	let d = mDiv(dParent, styles, id, classes);
-	//mStyle(d, { bg: 'blue' })
-	for (const k in di) {
-		mToggle(k, d, bstyles, handler, di[k], styleyes, styleno, bclasses);
-	}
-}
-//*********************************************** */
-function toggleAdd(key, sym, dParent, styles) {
-	//let t2 = toggleAdd('right', 'arrow_down_long', dr, { hpadding: 9, vpadding: 5 }, { w: 0 }, { w: 300 });
-	addKeys({ fz: 20, rounding: '50%', padding: 5, fg: rColor() }, styles);
-	let info = valfHtml(sym);
-	let b;
-	if (info) {
-		let stButton = copyKeys({ overflow: 'hidden', box: true, family: info.family, cursor: 'pointer' }, styles);
-		b = mDom(dParent, stButton, { id: getButtonId(key), html: info.html, className: 'hop1' });
-	} else {
-		b = mButton(sym, 'dToolbar')
-	}
-	b.onclick = toggleClick;
-	let d = mBy(getDivId(key));
-	if (nundef(DA.toggle)) DA.toggle = {};
-	let t = DA.toggle[key] = { key: key, button: b, div: d, state: 0, states: [...arguments].slice(4) };
-	toggleShow(t);
-	return t;
-}
-function toggleClick(ev) {
-	let t = toggleGet(ev);
-	let i = t.state = (t.state + 1) % t.states.length;
-	toggleShow(t);
-}
-function toggleShow(t, state) {
-	if (nundef(state)) state = t.states[t.state];
-	let d = iDiv(t); mStyle(d, state);
-	let percent = 100 * t.state / (t.states.length - 1);
-	//console.log('percent open',percent)
-	mStyle(t.button, { bg: colorMix('lime', 'red', percent) });
-}
-function toggleGet(ev) { let key = getIdKey(evToId(ev)); let toggle = DA.toggle[key]; return toggle; }
-function getIdKey(elem) { let id = mBy(elem).id; return id.substring(1).toLowerCase(); }
-//#endregion toggle
 
 
 

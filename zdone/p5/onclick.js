@@ -1,4 +1,5 @@
 
+function onclickConsole(ev) { console.log(ev.target); }
 async function onclickAction(ev) {
 
 	assertion(isdef(DA.stopwatch),'NO STOPWATCH!!!!!!!!!!!!!!!')

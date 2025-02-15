@@ -1,12 +1,15 @@
 onload = start;
 
-async function start() { return;project_p5(); }
+async function start() { return;mlib_p5();return;project_p5(); }
 
+async function mlib_p5(){
+	codePackMLib('../p5',['codesmall','ajetzt','action','color','done','onclick','bau1','bau2','bau3','bau4','start']);
+}
 async function project_p5(){
-	codePacker('../p5',['codesmall','done','bau1','bau2','bau3','start'],['test1','test8']);
+	codePackClosure('../p5',['codesmall','ajetzt','action','color','done','onclick','bau1','bau2','bau3','bau4','start'],['','','','','test1','test8','test4_multiButton']);
 }
 async function project_coding(){
-	codePacker('../coding',['codesmall','done','bau1','bau2','start'],['codePacker']);
+	codePackClosure('../coding',['codesmall','done','bau1','bau2','start'],['codePacker']);
 }
 async function test2_p5(){
 	let project='../p5';

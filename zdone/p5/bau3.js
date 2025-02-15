@@ -118,3 +118,36 @@ function getImageSize(src) {
 		img.src = src;
 	});
 }
+
+function mToggle(ev) {
+	let key = ev.target.getAttribute('data-toggle');
+	let t = DA.toggle[key];
+	let prev = t.state;
+	t.state = (t.state + 1) % t.seq.length;
+	let html = t.seq[t.state];
+	mStyle(t.elem, { bg: t.states[html] }, { html });
+	if (isdef(t.handler)) t.handler(key, prev, t.state);
+}
+function mToggleElem(elem, key, states, seq, i, handler) {
+	//states is a dictionary attributing a color to each state word
+	//seq is a list of states how they change when toggle is triggered
+	//i is index in seq that should be the initial state
+	if (nundef(DA.toggle)) DA.toggle = {};
+
+	let t = DA.toggle[key] = { handler, key, elem, state: i, states, seq };
+
+	elem.setAttribute('data-toggle', key);
+	mStyle(elem, { cursor: 'pointer' });
+	let html = seq[i];
+	mStyle(elem, { bg: states[html] }, { html });
+	elem.onclick = mToggle;
+	return t;
+}
+function registerAction(key, fromState, toState) {
+	let t1 = getNow();
+	let t = DA.toggle[key];
+	if (nundef(t.timer)) {
+		t.timer = mDom(t.elem.parentNode, { bg: 'white', fg: 'black', wmin: 200, }, { html: '&nbsp;' });
+	}
+
+}

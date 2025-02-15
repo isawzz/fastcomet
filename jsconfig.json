@@ -4,7 +4,7 @@
     "target": "es6"
   },
   "include": [
-    "p5" 
+    "ilms" 
   ],
   "exclude": [
     "**/codebig.js",
@@ -20,6 +20,7 @@
     "_unused",
     "flask",
     "../y/*",
+    "../zdone/*",
     "_hideTEMP",
     "_projects",
     "CODE.js",

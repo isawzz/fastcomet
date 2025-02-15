@@ -1,4 +1,414 @@
 
+//#region NOT in p5 project
+async function _test4_toggleBlogs() {
+	let blog = await init();
+	let elems = mLayoutTLMS('raspberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); mFlex('dMain');
+	let d = mDom(dMain, { wmax: 500, paleft: 10 });
+	let di = DA.blogs = await showBlogs(d, blog);
+	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
+
+	function collapseOne(blog) {
+		let d = iDiv(blog);
+		let dTitle = d.firstChild;
+		mStyle(dTitle, { fz: 12, weight: 'normal', deco: 'underline' });
+		for (const c of arrChildren(d)) {
+			if (c == dTitle) continue;
+			c.style.display = 'none';
+		};
+	}
+	function expandOne(blog) {
+		let d = iDiv(blog);
+		let dTitle = d.firstChild;
+		mStyle(dTitle, { fz: 22, weight: 'bold', deco: 'none' });
+		for (const c of arrChildren(d)) {
+			c.style.display = 'block';
+		};
+	}
+	function isCollapsedOne(blog) {
+		let d = iDiv(blog);
+		let second = arrChildren(d)[1];
+		return second.style.display == 'none';
+	}
+	function toggleOne(blog) {
+		if (isCollapsedOne(blog)) expandOne(blog); else collapseOne(blog);
+	}
+	function prepOne(blog) {
+		let d = iDiv(blog);
+		let dTitle = d.firstChild;
+		dTitle.style.cursor = 'pointer';
+		dTitle.onclick = () => toggleOne(blog);
+	}
+	let dilist = dict2list(di);
+	dilist.map(prepOne);
+	dilist.map(expandOne);
+
+	let d3 = await mKey('collapse', dTop, {}, { tag: 'button' });
+	d3.onclick = ev => {
+		let isCollapsed = d3.innerHTML == 'expand';
+		if (isCollapsed) {
+			d3.innerHTML = 'collapse';
+			dilist.map(expandOne);
+		} else {
+			d3.innerHTML = 'expand';
+			dilist.map(collapseOne);
+		}
+	}
+	//d3.onclick = async () => { let x = await mGather(mYesNo, d3, boxStyles); console.log('you entered', x); }
+	//d3.click();
+}
+async function _test4_collapse() {
+	let blog = await init();
+	let elems = mLayoutTLMS('raspberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); mFlex('dMain');
+	let d = mDom(dMain, { wmax: 500, });
+	let di = DA.blogs = await showBlogs(d, blog);
+
+	//let dTop = mDom('dTop',{padding:10}); mFlexV(dTop); //top menu
+	//let dCollapse = mLinkMenu(dTop, 'collapse', {}, onclickCollapse, 'top');
+	// mMenuH(dTop, 'collapse', {}, onclickCollapse, 'top');
+	// let elem = mKey('collapse', dTop, { sz: 22 }, { onclick: true });
+	// let elem = mDom(dTop, {}, { tag:'button', html: 'collapse', onclick: onclickCollapse });
+	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
+	//let d3 = await mKey('collapse', dTop, {}, { tag: 'button', onclick: toggleBlogs, menu: 'top' });
+	//d3.onclick = async () => { let x = await mGather(mYesNo, d3, boxStyles); console.log('you entered', x); }
+	//d3.click();
+}
+async function _test4_mLayout() {
+	let blog = await init();
+	let elems = mLayoutTLMS('raspberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); mFlex('dMain');
+	let d = mDom(dMain, { wmax: 500, });
+	let di = DA.blogs = await showBlogs(d, blog); return;
+
+	DA.selectedPart = [];
+	for (const k in di) {
+		for (const item of di[k].items) {
+			let div = iDiv(item);
+			div.onclick = () => { toggleSelection(item, DA.selectedPart, 1); aktivateUpDownIffSelected(); }
+		}
+	}
+
+	let dButtons = mDom(dMain, { padding: 10, gap: 10, w: 100, h: 300, bg: 'blue', position: 'sticky', top: 0 }); mCenterFlex(dButtons)
+	let moveUpBtn = mDom(dButtons, { classes: 'disabled' }, { tag: 'button', html: 'up', onclick: onclickMoveUp, id: 'dMoveUp' });
+	mLinebreak(dButtons);
+	let moveDownBtn = mDom(dButtons, { classes: 'disabled' }, { tag: 'button', html: 'down', onclick: onclickMoveDown, id: 'dMoveDown' });
+
+
+}
+async function _test4_blogIn78() {
+	await loadAssetsStatic();
+	globalKeyHandling();
+	let blog = Z.blog = await loadStaticYaml('zdata/blog1.yaml');
+	let elems = mLayoutTLMRS('raspberry', 'dPage'); mStyle(dPage, { overy: 'hidden' })
+	let d = mDom('dMain', {}); mStyle('dMain', { wmax: 300, overy: 'scroll' })
+	let dates = Object.keys(blog);
+	dates.sort((a, b) => new Date(b) - new Date(a));
+	for (const date of dates) {
+		let o = blog[date];
+		let d1 = mDom(d, { gap: 10, padding: 10 }, { id: 'd1', key: date })
+		//console.log(d1.getAttribute('datakey'))
+		//mDom(d1, { fz: 20 }, { html: date });
+		mDom(d1, {}, { tag: 'h1', html: `${date}: ${o.title}` });
+		let cnt = 0;
+		for (let item of o.text) {
+			//console.log(item);
+			let d2 = mDom(d1, { w100: true, fz: 20, caret: 'white' }, { idx: cnt++, id: 'd2' });
+			//console.log(d2.parentNode)
+			if (item.includes('blogimages/')) mDom(d2, { w100: true }, { tag: 'img', src: item });
+			else {
+				mStyle(d2, { w100: true, mabottom: 10 }, { contenteditable: true, html: item });
+				d2.onblur = saveBlogList;
+			}
+
+		}
+		let d3 = mDom(d, {}, { tag: 'hr' });
+	}
+	mDom(d, {}, { tag: 'button', html: 'New' })
+
+}
+function parseListToHtml(text) {
+	let html = '';
+	for (let item of text) {
+		//console.log(item);
+		if (item.includes('blogimages/')) html += `<img src="${item}" width="100%">`;
+		else html += item;
+	}
+	//console.log(html)
+	return html;
+
+}
+async function saveBlog(key, elem) {
+	console.log('saving', key);
+	let html = elem.innerHTML;
+	let list = [];
+	while (!isEmpty(html)) {
+		let text = stringBefore(html, '<img');
+
+		list.push(text);
+		html = stringAfter(html, 'src="');
+		console.log(html);
+		if (!isEmpty(html)) {
+			let src = stringBefore(html, '"');
+			list.push(src);
+			html = stringAfter(html, '>');
+		}
+
+	}
+	console.log(list)
+	lookupSetOverride(Z, ['blog', key, 'text'], list);
+	let text = jsyaml.dump(Z.blog);
+	let res = await mPhpPostFile(text, 'zdata/blog1.yaml');
+	//console.log(res);
+}
+async function test4_blog() {
+	await loadAssetsStatic();
+	globalKeyHandling();
+	let blog = Z.blog = await loadStaticYaml('zdata/blog1.yaml');
+	let elems = mLayoutTLMS('raspberry', 'dPage'); mStyle(dPage, { overy: 'hidden' })
+	let d = mDom('dMain'); mStyle('dMain', { overy: 'scroll' })
+	let dates = Object.keys(blog);
+	dates.sort((a, b) => new Date(b) - new Date(a));
+	for (const date of dates) {
+		let o = blog[date];
+		let d1 = mDom(d, { gap: 10, padding: 10 })
+		//mDom(d1, { fz: 20 }, { html: date });
+		mDom(d1, {}, { tag: 'h1', html: `${date}: ${o.title}` });
+		let html = parseListToHtml(o.text);
+		let d2 = mDom(d1, { wmax: 800, w100: true, fz: 20, caret: 'white' }, { contenteditable: true, html });
+		d2.setAttribute('contenteditable', true);//, onblur:"handleBlur(this)" 
+		d2.onblur = ev => saveBlog(date, ev.target);
+		d2.addEventListener("dragover", (event) => event.preventDefault()); // Allow dropping
+		d2.addEventListener("drop", handleImageDrop);
+		//draw horizontal line after d2
+		let d3 = mDom(d, {}, { tag: 'hr' });
+
+		// Example usage
+		//const dropZone = document.getElementById("drop-zone");
+		// Add drag-and-drop event listeners
+		// dropZone.addEventListener("dragover", (ev) => ev.preventDefault()); // Allow dropping
+		// dropZone.addEventListener("drop", handleImageDrop);
+	}
+	mDom(d, {}, { tag: 'button', html: 'New' })
+
+}
+async function test4_qsort() {
+	let arr = arrGen(20, 0, 1);
+	console.log(arr, arrMaxContiguous(arr));
+	return;
+	let arr1 = qsort(arr);
+	console.log(arr1);
+	let arr2 = arrToCount(arr1);
+	//sort array arr2 by cnt, descending
+	arr2.sort((a, b) => b.cnt - a.cnt);
+	console.log(arr2.map(x => x.cnt));
+
+}
+async function _test4_shape() {
+	await loadAssetsStatic();
+	globalKeyHandling();
+	let color = colorBucket('child'); console.log(color);
+	let elems = mLayoutTM(color, 'dPage');
+	let d = mDom('dMain', { gap: 10, padding: 10 }); //mCenterCenterFlex(d);
+
+	//mStyle(d,{w:200,h:200,background:'linear-gradient(45deg, red, blue)'},{html:'hallo'}); return;
+
+	let p = { x: 100, y: 100 };
+	let sz = 100;
+	let [w, h] = mSizeSuccession({ sz });
+	let shapes = Object.keys(PolyClips); console.log(shapes);
+	let shape = rChoose(shapes);
+	let clip = PolyClips[shape];
+	let d1 = mShape(shape, d, { sz, background: colorGradient('yellow,pink,white') }); console.log(shape); console.log(d1);
+	centerAt(d1, p.x, p.y);
+	drawCircleOnDiv(d, p.x, p.y, 10);
+	let pts = calcClipPoints(p.x, p.y, sz, sz, clip);
+	console.log(pts);
+	for (const pt of pts) drawCircleOnDiv(d, pt.x, pt.y, 6);
+}
+async function _test4_hexPoints() {
+	let dhex = hexFromCenter(d, p, { w, h, bg: rColor() });
+	drawCircleOnDiv(d, p.x, p.y, 10);
+	let clip = 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)';
+	let pts = calcClipPoints(p.x, p.y, sz, sz, clip);
+	console.log(pts);
+	for (const pt of pts) drawCircleOnDiv(d, pt.x, pt.y, 2);
+
+
+}
+async function _test3_mGather() {
+	await loadAssetsStatic();
+	// window.onkeydown = keyDownHandler;
+	// window.onkeyup = keyUpHandler;
+	window.onkeydown = hotkeyHandler;
+	let elems = mLayoutTM('pink', 'dPage');
+	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
+	let styles = { h: 30 };
+	let d = mDom(elems[1], dictMerge({ margin: 10 }, styles), { tag: 'button', html: 'New' });//return;
+	//d.onclick = async () => { let x = await mGather(d); console.log('you entered', x); }
+	let d1 = mKey('watch', dTop, {}, { tag: 'button', onclick: onclickStopwatch, menu: 'top' });
+	let d2 = mDom(dTop, styles, { tag: 'button', menu: 'top', html: 'game' });
+	d2.onclick = async () => { let x = await mGather(d2); console.log('you entered', x); }
+	let d3 = await mKey('table', dTop, styles, { tag: 'button', menu: 'top' });
+	d3.onclick = async () => { let x = await mGather(d3); console.log('you entered', x); }
+	let d4 = await mKey('bee', dTop, styles, { tag: 'button', menu: 'top' });
+	d4.onclick = async () => { let x = await mGather(d4); console.log('you entered', x); }
+	let d5 = await mKey('crow', dTop, styles, { tag: 'button', menu: 'top' });
+	let list = ['violin', 'piano', 'prog', 'math', 'walk', 'violin', 'piano', 'prog', 'math', 'walk', 'violin', 'piano', 'prog', 'math', 'walk']
+	d.onclick = async () => { let x = await mGatherSelect(d, { bg: 'pink', padding: 12 }, { list }); console.log('you entered', x); }
+	d.click();
+}
+async function _test2_mGather() {
+
+	// mStyle('dPage',{bg:'darkgreen'})
+	await loadAssetsStatic(); await actionLoadAll();
+	let elems = mLayoutTM(rColor(), 'dPage');
+	mStyle(dTop, { display: 'flex', aitems: 'center', wbox: true, gap: 4, padding: 4 });
+	let d1 = mKey('watch', dTop, {}, { tag: 'button', onclick: onclickStopwatch, menu: 'top' });
+	let d2 = mKey('game', dTop, {}, { menu: 'top' });
+	let d3 = mKey('crow', dTop, {}, { tag: 'a', onclick: onclickResetActions, menu: 'top' });
+	// mKey('crow', elems[1], {}, { }); //onclick: async (ev) => { let x = await mGather(ev.target); console.log('you entered', x); } }); 
+	// //mDom(elems[0], {  }, { tag: 'button', html: 'New' });
+	// let d = mDom(elems[1], {  }, { tag: 'button', html: 'New' });
+	//d1.onclick = async () => { let x = await mGather(d1); console.log('you entered', x); }
+	d2.onclick = async () => { let x = await mGather(d2); console.log('you entered', x); }
+}
+async function _test1_mGather() {
+	//mStyle('dPage', { w: '100%', h: '100%', bg, 'caret-color': '#ffffff00' });
+	let elems = mLayoutTM(rColor(), 'dPage');
+	let d = mDom(elems[1], { className: 'button' }, { tag: 'button', html: 'New' });//return;
+	// mStyle('dPage',{w:'100%',h:'100%',bg:'green'});
+	d.onclick = async () => {
+		let sh = mShield('dPage');
+		let x = await mGather(sh, d); console.log('you entered', x);
+
+	}
+}
+async function _test1_mAlignable() {
+	let d = mDom('dPage', {}, { html: 'hallo' });//return;
+
+	let [box, inp] = mInputInBox('dPage', { padding: 4, bg: 'silver', rounding: 4 }, { fz: 24 });
+	mAlign(box, d, { align: 'bl', offx: 20 });
+	mOnEnterInput(inp, val => console.log(inp.value, val))
+}
+async function _test1_emo1() {
+	let res = await mPhpPostLine("Type something 😊", 'zdata/test.txt'); return;
+	let elems = mLayoutTM('hotpink', dPage); //console.log(dTop,dStatus,dLeft,dRight,dMain);
+	let html =
+		`	<form method="POST" action="save_emoji_text.php">
+			<label for="emojiText">Enter Text with Emojis:</label>
+			<input type="text" id="emojiText" name="emojiText" placeholder="Type something 😊" required>
+			<button type="submit">Save</button>
+			</form>	
+		`;
+	mDom('dMain', {}, { html });
+}
+async function _test1_postYaml() {
+	await loadAssetsStatic(); //console.log(M.superdi.airplane);
+	let o = M.superdi['bee']; console.log(o);
+	let text = jsyaml.dump(o); console.log(text);
+	//let res = await mPhpPostFile(text,'../../zdata/f2.yaml');console.log(res);
+	let res = await mPhpGetFile('../../zdata/f2.yaml'); console.log(res);
+	let o2 = jsyaml.load(res); console.log(o2);
+}
+async function _test0_mDom_statt_key() {
+	await loadAssetsStatic(); //console.log(M.superdi.airplane);
+
+	mStyle(dPage, { w: '100%', h: '100%', bg: 'navy', 'caret-color': '#ffffff00' });
+	let names = M.divNames = mAreas(dPage, ` 'dTop dTop' 'dLeft dMain' `, '140px 1fr', 'minmax(40px, auto) 1fr');
+	mStyle(dTop, { display: 'flex', padding: 4, wbox: true, gap: 4 });
+	mShade(names);
+	DA.tooltip = mDom('dPage', { className: 'tooltip' }, { tag: 'span', html: 'this is a tooltip' }); //return;
+
+	let keys = { text: 'alien_monster', ga: '3d_meeple', fa: 'address_book', fa6: 'address_book', plain: 'Hallo WIE GEHT ES DIR', img: '1st_place_medal', photo: 'bear' }
+	let counter = 0;
+	for (const type in keys) {
+
+		let key = keys[type];
+		let o = M.superdi[key];
+		let d1, sz = 40;
+		let d = mDom(dTop, { wbox: true, className: ['a', 'tooltip-container'], cursor: 'pointer', rounding: 4, wmin: sz, hmin: sz, w: sz, h: sz, display: 'flex', aitems: 'center', justify: 'center' }); //continue; //return;
+		onHoverTooltip(d, `${key} (${type})`)
+		if (type == 'img') { d1 = mImg(o[type], d, { sz }); }
+		else if (type == 'photo') { d1 = mImg(o[type], d, { rounding: 4, sz: sz - 8 }); }
+		else if (type == 'plain') {
+			mStyle(d, { w: 'auto', hpadding: 10 })
+			d1 = mDom(d, {}, { html: key });
+		}
+		else {
+			let family = type == 'text' ? 'emoNoto' : type == 'fa6' ? 'fa6' : type == 'fa' ? 'pictoFa' : 'pictoGame';
+			let html = type == 'text' ? o.text : String.fromCharCode('0x' + o[type]);
+
+			//let st=jsCopy(styles);st.fz=40;st.family=family;
+
+			// let x=measureActualTextWidth(html, { family, fz: 40 });console.log(x);
+			//let x=measureActualTextWidth(html, {'max-width':'40px',width:'40px',height:'40px',fz:36,family});console.log(x);
+			//x=measureText(html, {'max-width':'40px',width:'40px',height:'40px','font-size':'36px','font-family':family});console.log(x);
+			//x=measureEmojiWidth(html, 36);console.log(x);
+			sz -= 4;
+			d1 = mDom(d, { family, fz: sz, hline: sz }, { html });//console.log(getRect(d1));
+			let r = getRect(d1);
+			let [w, h] = [r.w, r.h];
+			console.log(w, h);
+			//scale it so that it fits the container
+			let scale = Math.min(sz / w, sz / h); //console.log('scale', scale);
+
+			d1.style.transformOrigin = 'center center';
+			d1.style.transform = `scale(${scale})`;
+			d1.style.transform = `scale(${scale})`;
+			//console.log('final size',getRect(d1));
+		}
+
+		//mKey(keys[k], d, { fz:32,margin: 4, className: 'a', cursor: 'pointer', rounding: 4 }, { prefer: k });
+		//console.log(type, getRect(d), getRect(d1))
+		//mKey(keys[k], dTop, { margin: 4, className: 'a', cursor: 'pointer', rounding: 4, border: 'red' }, { prefer: k });
+		if (++counter > 8) return;
+	}
+	return;
+	let list = oneOfEachType(); console.log('list', list);
+	list = arrShuffle(list)
+	for (const [type, keys] of list) {
+		console.log(type)
+		mKey(rChoose(keys), dTop, { margin: 4, className: 'a', cursor: 'pointer', rounding: 4, border: 'red' }, { prefer: type });
+		return;
+	}
+}
+async function _test0_mKey() {
+	await loadAssetsStatic(); //console.log(M.superdi.airplane);
+
+	mStyle(dPage, { w: '100%', h: '100%', bg: 'navy' });
+	let names = M.divNames = mAreas(dPage, ` 'dTop dTop' 'dLeft dMain' `, '140px 1fr', 'minmax(40px, auto) 1fr'); //,'auto 1fr');
+	mStyle(dTop, { display: 'flex', aitems: 'center', hpadding: 10, gap: 10 });
+	mShade(names);
+
+	let list = rChoose(M.names, 5); //['bee','bear','dog','cat', 'hat','house']
+	list = dict2list(M.superdi);
+	let listfa6 = list.filter(x => isdef(x.fa6)).map(x => x.id); //1353 keys!!!
+	list = rChoose(list, 5);
+	for (const k of list) {
+		mKey(k, dTop, { margin: 4, className: 'a', cursor: 'pointer', rounding: 4, border: 'red' });
+	}
+	//mKey('bee', dTop, { sz: 30, className:'a' });
+
+
+	//mS('arrow_down', dTop, { sz: 30 });
+	//mKey('arrow_down',dTop,{sz:30});
+	return;
+
+	//let dHome = mHomeLogo(dLogo, 'airplane', onclickCalc, 'top'); //logo
+
+	// mMenuV(dLeft, 'CALC', {}, onclickCalc, 'left');
+	// mMenuV(dLeft, 'DAY', {}, onclickCalc, 'left');
+	// mMenuV(dLeft, 'EXAMPLE', {}, onclickCalc, 'left');
+
+	mStyle(dTop, { display: 'flex', 'justify': 'center', aitems: 'center' });
+	mMenuH(dTop, 'NEW', {}, onclickCalc, 'right');
+	mMenuH(dTop, 'HALLO', {}, onclickCalc, 'right');
+	let d = mMenuH(dTop, 'EXAMPLE', {}, onclickCalc, 'right');
+
+	console.log(mBy('a', 'class').map(x => [x.innerHTML, x.getAttribute('menu'), x.getAttribute('kennzahl')].join(',')));
+	//d.click();
+}
+
+//#endregion
+
 //#region drag drop
 async function ondropImage(src, sisi) {
 	let sz = 400;
@@ -93,6 +503,78 @@ function _handleImageDrop(ev) {
 //https://media.istockphoto.com/id/2157926151/photo/cute-cat-outdoors-in-summer.jpg?s=1024x1024&w=is&k=20&c=SG0hCGPnE1MnZI3Vwes2eIbX15Rp3a9RzSEWfX3040s=
 
 //#endregion
+
+//#region old toggle zeug
+function _mToggle(label, dParent, styles = {}, handler, is_on, styleyes, styleno, classes = null) {
+	let cursor = styles.cursor; delete styles.cursor;
+	let name = replaceWhite(label);
+	let checked = isdef(is_on) ? is_on : false;
+	let b = mButton(label, null, dParent, styles, classes);
+	mClass(b, 'noactive');
+	b.setAttribute('checked', checked);
+	b.onclick = ev => {
+		ev.cancelBubble = true;
+		let b = ev.target;
+		assertion(b == ev.target, 'NOOOOOOOOOOOOOOOOOOOOOOO')
+		// console.log('clicked button!!!', b);
+		let oldval = b.getAttribute('checked') == 'false' ? false : true;
+
+		let newval = oldval ? false : true;
+		// console.log('old', oldval, typeof (oldval), 'new', newval);
+		if (newval === true) {
+			// console.log('sollte', styleyes)
+			mStyle(b, styleyes);
+		} else {
+			mStyle(b, styleno);
+		}
+		b.setAttribute('checked', newval);
+		handler(name, newval);
+	};
+	return b;
+}
+function mTogglebar(di, handler, styleyes, styleno, dParent, styles, bstyles, id, classes, bclasses) {
+	//styles = { margin: 0, padding: 0 };
+	let d = mDiv(dParent, styles, id, classes);
+	//mStyle(d, { bg: 'blue' })
+	for (const k in di) {
+		mToggle(k, d, bstyles, handler, di[k], styleyes, styleno, bclasses);
+	}
+}
+//*********************************************** */
+function toggleAdd(key, sym, dParent, styles) {
+	//let t2 = toggleAdd('right', 'arrow_down_long', dr, { hpadding: 9, vpadding: 5 }, { w: 0 }, { w: 300 });
+	addKeys({ fz: 20, rounding: '50%', padding: 5, fg: rColor() }, styles);
+	let info = valfHtml(sym);
+	let b;
+	if (info) {
+		let stButton = copyKeys({ overflow: 'hidden', box: true, family: info.family, cursor: 'pointer' }, styles);
+		b = mDom(dParent, stButton, { id: getButtonId(key), html: info.html, className: 'hop1' });
+	} else {
+		b = mButton(sym, 'dToolbar')
+	}
+	b.onclick = toggleClick;
+	let d = mBy(getDivId(key));
+	if (nundef(DA.toggle)) DA.toggle = {};
+	let t = DA.toggle[key] = { key: key, button: b, div: d, state: 0, states: [...arguments].slice(4) };
+	toggleShow(t);
+	return t;
+}
+function toggleClick(ev) {
+	let t = toggleGet(ev);
+	let i = t.state = (t.state + 1) % t.states.length;
+	toggleShow(t);
+}
+function toggleShow(t, state) {
+	if (nundef(state)) state = t.states[t.state];
+	let d = iDiv(t); mStyle(d, state);
+	let percent = 100 * t.state / (t.states.length - 1);
+	//console.log('percent open',percent)
+	mStyle(t.button, { bg: colorMix('lime', 'red', percent) });
+}
+function toggleGet(ev) { let key = getIdKey(evToId(ev)); let toggle = DA.toggle[key]; return toggle; }
+function getIdKey(elem) { let id = mBy(elem).id; return id.substring(1).toLowerCase(); }
+//#endregion toggle
+
 
 function createEmojiInput(dParent) {
 
@@ -497,30 +979,6 @@ function mShield(dParent, resolve,styles = {}, opts = {}) {
 	if (opts.hideOnEscape) hotkeyActivate('Escape', ev => { evNoBubble(ev); close(); });
 	mClass(d, 'topmost');
 	return d;
-}
-function mToggle(ev) {
-	let key = ev.target.getAttribute('data-toggle');
-	let t = DA.toggle[key];
-	let prev = t.state;
-	t.state = (t.state + 1) % t.seq.length;
-	let html = t.seq[t.state];
-	mStyle(t.elem, { bg: t.states[html] }, { html });
-	if (isdef(t.handler)) t.handler(key, prev, t.state);
-}
-function mToggleElem(elem, key, states, seq, i, handler) {
-	//states is a dictionary attributing a color to each state word
-	//seq is a list of states how they change when toggle is triggered
-	//i is index in seq that should be the initial state
-	if (nundef(DA.toggle)) DA.toggle = {};
-
-	let t = DA.toggle[key] = { handler, key, elem, state: i, states, seq };
-
-	elem.setAttribute('data-toggle', key);
-	mStyle(elem, { cursor: 'pointer' });
-	let html = seq[i];
-	mStyle(elem, { bg: states[html] }, { html });
-	elem.onclick = mToggle;
-	return t;
 }
 function _mTooltip(oid) {
 	$('#' + oid).unbind('mouseover mouseout');

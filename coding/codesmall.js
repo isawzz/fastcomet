@@ -19,7 +19,7 @@ function codeDictToText(di, downloadName) {
 	return sortedFunctionNames;
 }
 
-async function codePacker(project, names, filterfuncs) {
+async function codePackClosure(project, names, filterfuncs) {
 	let fullnames = ['../codebig.js'];
 	fullnames = fullnames.concat(names.map(x => `${project}/${x}.js`));
 	let di = await codeDictForFiles(fullnames);
@@ -29,6 +29,19 @@ async function codePacker(project, names, filterfuncs) {
 	for (const k of keys) { di2[k] = di[k]; }
 	codeDictToText(di2, 'codesmall.txt');
 	let sorted = Array.from(keys).sort(); console.log(sorted);
+}
+async function codePackMLib(project, names) {
+	let fullnames = names.map(x => `${project}/${x}.js`);
+	let di = await codeDictForFiles(fullnames);
+	codeDictToText(di, 'codebig.txt');
+	let dimlib = {},difull = {};
+	for (const k in di) { 
+		if (k.startsWith('m') && k[1]==k[1].toUpperCase())	dimlib[k] = di[k]; 
+		else difull[k] = di[k];
+	}
+	codeDictToText(difull, 'codefull.txt');
+	codeDictToText(dimlib, 'codemlib.txt');
+	console.log(Object.keys(dimlib));
 }
 
 function codeParseBlock(lines, i) {

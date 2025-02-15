@@ -1,282 +1,214 @@
-26.2. lib renew
-ho:tee+scho 
+26.2. lib renew >TODO
+alles ist fuer immer ok - I have left this plane. I am now in the plane of dream
 
-der trick ist: no outcome,no decision making! just list - like robot
+___ 4:51 AM 2/15/2025 airport 54000
+4:51 AM 2/15/2025
+- riesen challenge!!!! automatically generate mlib.js
+=> I want an empty day so I have now an empty day
 
-_______ 5:03 AM 2/7/2025 airport 40000 
-6:02 AM 2/7/2025 474 v anz muell nil lg
-- es sind nur 480h bis ich wieder gemuetlich hier im bett sitze ewew!!!
-ok - 10: was brauch ich spaeter noch? list of blogs broken into list of parts
-ok - 9: click on textPart
-immer immer immer make coding to my stimming
-streaks:
-- streaks in coding for continuous rewards.
-- small coding sessions lead to habit formation
-- Coding becomes addictive when made fun
-- Make coding enjoyable by picking exciting projects and gamifying the coding process.
-- Break down big coding goals into smaller steps for a clear view of achievements.
-- Dopamine detox to boost coding productivity
-- Reward yourself to trick brain into coding addiction
-klar schaff ich es ich muss es nur die tuer raus schaffen
-what happened to babysteps?
-_______ 8:00 AM 2/6/2025 airport 39000 
-jetzt sollte eigentlich spazier sein! und nicht fernschauen!
-es ist ja wirklich die strafe oder das gegenteil ist das reward!
-abschalten this too will pass
-es sind nur 20 tage das ist egal was da passiert
-ich mach ja garnichts
-ich koennt aber egal wie wo mit was unter welchen umstaenden was machen
-ich brauch ja garnicht soviel
-im sommer fahren wir nach redmond
-kann ich es schaffen endlich aktiv zu werden?
-eigentlich muesste es IMMER gehen auch wenn die da oben da sind
-sie haben noch nie gesagt ich darf nicht baden
-idealer tag:
-5 auf,F 
-7 geige klavier 
-8 stationen 1,2,3 nach hause kommen,
-12 spazier,
-13 essen
-3-5 maedi 
-6 ret spiel 
-7h30 spiel
-_______ 5:49 AM 2/5/2025 airport 38000 
-im moment weiss ich nichtmal noch genau ob ich ueberhaupt fliegen werde und ob der flug ankommt
-also kann ich davon ausgehen dass ich bis dahin garnicht mehr am leben bin
-also nur bis heute abend bin ich am leben egal was der kopf sagt
-ich weiss ja nicht mal wer oder was ich bin
-ok:
-schwierige sachen:
-- tel umstellen
-- SJA fragen stelle
-- Jeslyn/contractor fragen stellen
-- Prudential fragen stellen
-alles uebrige ist nicht sehr schwierig
-- vielleicht noch einen vielleicht auch nicht fragen stellen
-- bisschen putzen oder auch nicht
-- jeden tag 1 bad solange gu nicht da ist
-- library
-jeslyn needs to be before the 13th of feb! sonst sinnlos
-also kein lg schade
-was brauch ich fuer so ein cooles programm?
-ich muss einfach ein spiel aus meinem leben machen das genauso lustig ist wie ws
-ich muss mich nur selbst programmieren
-hahaha  leichter gesagt als getan
-wie soll das aussehen wenn ich outline mode mache?
-ich mag einfach nicht mehr mir ist das leben zuviel geworden
-ich darf nicht gehen aberr ich kann aus dem koerper aussteigen und den koerper nur noch als zombie weiterleben lassen als eine empty shell die nichts enthaelt
-die nur noch garnichts tut oder sich vom schiksal rumschieben laesst und nie etwas sagt oder tut
-was ist daran so ein problem?
-es ist eh so wie ein koerper von einem menschen auf einem flugplatz. ich brauch auf nichts mehr aufpassen
-ich brauch nicht mehr auf geld oder auf verantwortungen oder irgendwelche todo listen items aaufpassen
-ich kann dem zomobie alles ueberlassen
-der zombie macht egal was er sucht sich eh per default immer safety und warmth und mehr braucht er auch nicht machen
-er lebt da einfach weiter wie so ein microbe unter vielen
-er kann sogar spass empfinden bei zB math oder prog
-per default kann er IMMER back to prog gehen
-er braucht ueberhaupt nichts bestimmtes programmieren
-_______ 7:46 AM 2/4/2025 airport 37000 
-falls der gu nach R kommt:
-a) waehrend ich dort bin: hallo guggi so ist es eben
-mit dem gu spazierengehen und ihm gutes essen machen
-zeug immer bei mir tragen
-b) waehrend irgendwelchen arbeiten: what do I care - let them handle it
-c) 
-ich muss einfach nur aktiv sein irgendwie
-R nur infos einholen sonst nix!
-eigentlich weill ich eine liste von units
-erinnere mich selbst daran dass ich ein freier vogel bin!!!
-_______ 7:26 AM 2/3/2025 airport 36000 krank besser
-nerv niemanden lass alles sein und stirb
-=>nur irgendeinen kleinen task egal ob nuetzlich oder nicht
-zumindest ist es wie ein kleiner beitrag zu meiner library
-so geht es nicht wirklich
-let go of it
-_______ 8:02 AM 2/2/2025 airport 35000 krank besser
-choices:
-- ai zeug: python tutorial w3schools
-- ollama zeug
-ja- blog text machen? text+images
-also: das div soll max 740 sein und sonst 100%
-text wird mit new text gemacht
-image
-_______ 6:21 AM 2/1/2025 airport 34000 krank
-_______ 6:21 AM 1/31/2025 airport 33000
-auf auf richtung tage! mit comp!!!
-TAGE BEDIENERIN!!!
-6:32 AM 1/31/2025 pre-fix sum in python
-6:32 AM 1/31/2025 iq
-- max length of contiguous subarray {0,1}
-A erdbeeren,himbeere, mitbringen!
-next: convert this array into an array
-let res=[]
-let x=arr[0],cnt=0;
-for(i of range(0,arr.length)){
- let a=arr[i];
- if (a==x) cnt++
- else{
-  res.push({n:x,cnt});
-  x=a;
-  cnt=1;
- }
-}
-return res;
-qsort(arr)
-if arr.len <= 1 return arr
-let x=arr[0]
-let lower=[],upper=[]
-for(i=1 to arr.len)
-  if arr[i]<x lower.push(arr[i]) else upper.push(arr[i])
-return qsort(lower) + [x] + qsort(upper)
-sort numbers
-aggregate to count+number
-output
-Die beiden Orte Nußdorf und Weyregg liegen auf einander gegenüberliegenden Ufern des Attersees. Die Schiffsanlegestellen Nußdorf $(N)$ und Weyregg $(W)$ sind im nachstehenden Koordinatensystem dargestellt. Die Entfernung zwischen den Punkten $N$ und $W$ beträgt $3,5 \mathrm{~km}$.Die Gerade durch die Punkte $N$ und $W$ hat den Richtungsvektor $\vec{v}=\binom{4}{3}$.1) Ermitteln Sie den Vektor $\overrightarrow{N W}$.
-_______ 6:20 AM 1/30/2025 airport 32000
-download ollama for windows
-ollama serve
-ollama run deepseek-r1:1.5b
-Bonnie has twice as many cousins as Robert. George has 5 cousins,which is 9 fewer than Bonnie has. How many cousins does Robert have? a. 17 b. 22 c. 4 d. 7
-_______ 5:36 AM 1/29/2025 airport 31000
-mark manson
-kann ich mich auf R freuen? es gibt den Costco mit pizza und ich kann ohne daempfer geige ueben. ausserdem bin ich alleine, alleine, allein!!!! 
-_______ 5:49 AM 1/28/2025 airport 30000
-treppenlift geo,funktion
-kurvenfahrt prozent,funktion
-Münzen wahrscheinlichkeit,binomial
-scheunentor funktion,integral
-aufgabe: Weg mit mehreren Vektoren a,b,c durch 1 Vektor ersetzen:
-1. addiere komponentenweise. ax+bx+cx, ...
-2. neuer Vektor hat gleichen startpunkt und endpunkt wie Weg
-_______ 6:18 AM 1/27/2025 airport 29000
-dd bilder
-_______ 7:06 AM 1/26/2025 airport 28000
-als naechstes will ich dd bilder zu dem div!
-_______ 6:30 AM 1/25/2025 airport 27000
-_______ 6:25 AM 1/24/2025 airport 26000
-zdata ist wo neue sachen: actions, events, blogs reinkommen
-_______ 6:25 AM 1/23/2025 airport 25000
-_______ 6:15 AM 1/22/2025 airport 24000
-.28, .72 keine chance und fuer mich komplett egal
-_______ 5:07 AM 1/21/2025 airport 23000
-ich will wieder dieses mit den matching colors wo war es nochmal?
+___ 5:40 AM 2/14/2025 airport 53000
+12:41 PM 2/14/2025
+- aufstehen und choices aufschreiben wie ich diese 1h verbringen kann
+irgendwie muss ich die zeit totschlagen
+danach hab ich frei!!!!
 
-wir alle aus dieser gen und davor sind split
-split personalities koennen snappen
-wenn sie snappen, passieren dinge die fuer alle letztlich schlecht sind
-das ist wie lose-lose situationen (kriege etc.) zustandekommen
-deshalb ist es besser, bei split personalities (die wir alle in dieser gen mindestens sind!) vorsichtig miteinander umzugehen und win-win kompromisse anzustreben bei denen keiner over the edge getrieben wird.
-das ist meine sichtweise, aber selbst die zu sharen mit gewissen personen ist bereits triggernd und kann snapping hervorrufen
+brote,essen,cola,yogurt. alles vor 3h15 is glaub ich ok
+sollte jetzt einfach ins bad gehen und dann schlafen gehen
+mein leben war eine riesen failure und ist jetzt vorbei
+lass mich doch endlich sterben. ich habe gesagt dass ich es nicht selber mache, aber in fact koennte ich innerhalb der naechsten stunde tot sein. allein der gedanke ist pure relief.
 
-_______ 8:27 AM 1/20/2025 airport 22000
-dicolor
-colorByHex
-colorByName
-colorList
-colorNames
-- eine gute lib fuer colors
-- ueberlege wie ich wirklich die colors handle!
-- welche funcs hat w3Color?
-- ich sollte bei rColor eine von meinem dict zurueckgeben!
-ok - mStyle mit gradient irgendwie!
-_______ 7:19 AM 1/19/2025 airport 21000
-s1: ak 4:58 PM 1/19/2025-5:33 PM 1/19/2025
-math: 5:33 PM 1/19/2025-5:50 PM 1/19/2025
-9*850*0.3ml*1.4g/ml = 1071g = 1.071 kg
-geht wieder los! diesmal muss ich mit sicherheit 2 stations schaffen!
-- open globals
-- mach ein shape mShape
-- search mShape
-_______ 6:53 AM 1/18/2025 airport 20000
-los gehts!
-s1 ak -
-amzprime video doppeltest spiel 
-schatten der vergangenheit
-alice, darling
-unaufhaltsam
-schatten der vergangenheit
-_______ 6:12 AM 1/17/2025 airport 19000
-s2: 5:35 PM 1/17/2025
-s1: 11:48 AM 1/17/2025-12:14 PM 1/17/2025
-es ist alles komplett meaningless aber das ist genau das gute
-i am floating around without aim and purpose
-it feels ok, it feels like 50 actually
-ich koennte auch lesen und dann schlafen
-ich brauch einfach einen plan!
-kann ich noch eine suppe kriegen? ja ok lets go home then
-wieder bei hex board es geht mir gut
-es ist einfach zu komplex!!! geh nachhause suppe essen
-ok - ne zuerst noch: mDoubleGather
-mMulti
-mPickN
-mNofEach
-ok - jetzt brauch ich ein simples spiel wo man irgendwas anclicken oder eingeben soll
-ok - warum geht es bei key wieder nicht???
-_______ 7:13 AM 1/16/2025 airport 18000
-s2:am 3:25 PM 1/16/2025-alles gut
-s1:ak 11:38 AM 1/16/2025-11:49 AM 1/16/2025
-- soll ich sowas machen wie mShieldClose()? das macht das shield zu und deactivated global Escape key
-7:29 AM 1/16/2025- done 460
-7:30 AM 1/16/2025- show styles
-11:43 AM 1/16/2025- why cant see d?
-_______ 7:31 AM 1/15/2025 airport 18000
-s1:li 11:12 AM 1/15/2025-11:59 AM 1/15/2025
-=>chatGpt answer!
-=>mGather mit select liste
-ok - mod evNoBubble
-ok =>explain difference between ev.preventDefault(), ev.cancelBubble = true, and ev.stopPropagation()
-ok - leider fehler in mKey!!! font family bei o.text!!!!
-ok=>ich brauch ein dict das 2 dicts verbindet und ein neues dict ergibt: dictMerge
-_______ 7:22 AM 1/14/2025 airport 17000
-=>how to handle screen size!!! mit der stopwatch. dTop must be at least as height as buttons!!!! button list auf dMain must be flexWrap!!!
-ok ich muss jetzt eincallback ins loadImageAsync reintun
-ok =>mach ein besseren tag button bei mKey! use tag!!!
-ok - check ob es ein round:true gibt!
-_______ 7:39 AM 1/13/2025 airport 16000 +
-4ak: 4:51 PM 1/13/2025-5:57 PM 1/13/2025
-5:35 PM 1/13/2025 M*
-obsthaendler c 
-1)
-mu=16
-P(x<=14)=.2
-2)
-use z-wert
-z=-.84=14-16 / std
-std=-2/-.84=2.38
-std
-=>
-ok =>input button styling ueberlegen! dann coordinieren ohne class
-nap:3:07 PM 1/13/2025-4:00 PM 1/13/2025
-3ho: 2:21 PM 1/13/2025-3:07 PM 1/13/2025
-3:04 PM 1/13/2025 m* zu muede!
-=>input button styling ueberlegen! dann coordinieren ohne class
-sort out funcs
-ok P=>key handling im input: esc,enter?!?
-E bis 2:21 PM 1/13/2025
-2li:11:25 AM 1/13/2025-12:29 PM 1/13/2025
-12:24 PM 1/13/2025 M*
-1ak:10:28 AM 1/13/2025-11:02 AM 1/13/2025
-W=> geodreieck von action,lib returns...
-ok P=> ok ich brauch ein shield popup: search mShield
-10:44 AM 1/13/2025 *M 11:01 AM 1/13/2025 2 beispiele ap
-push
-soll ich trotzdem noch mathe machen? ja
-10:43 AM 1/13/2025:mir ist schlecht
-ok - open original mGather
-ok - kann ich es ohne dialog machen?vielleicht aber der dialog handled das modal zeug sehr gut und also keep it
-ok - doch nicht: ich mach ja das mouse und esc haendisch!
-ok - open irgendein uiGadgetType
-10:28 AM 1/13/2025 *P
-mAlign neue art von placement!
-mInputInBox
-the only thing I want is unlimited unbounded eternal peace and quiet
-the best way to achieve this (accessible to me) is to remove myself from anyone and everyone, except Afela
+6:33 AM 2/14/2025
+ok - ideally: after having title, showBlog
+
+7:02 AM 2/14/2025
+- riesen challenge!!!! automatically generate mlib.js
+
+5:43 AM 2/14/2025
+ok - mGather conflict aufloesen
+___ 5:00 AM 2/13/2025 airport 51000
+E 12 warm+cola zitron!!!
+
+6:15 AM 2/13/2025
+=>absolute genial!!!!!
+- wie waers jetzt mit einem New button!!!
+
+5:55 AM 2/13/2025
+ok - nenn den multiButton(dParent,b1,b2,...)
+1. mach zuerst all die buttons
+2. dann mach die alle im selben space!
+
+5:31 AM 2/13/2025
+ok - brauche einen toggleButton oder einfach 2 buttons
+ok - wie kann ich all die fa6 sehen?
+circle_chevron_down
+circle_chevron_up
+
+5:08 AM 2/13/2025
+ok - wie kann ich den button handlen?
+
+___ 3:18 AM 2/12/2025 airport 48000
+4:23 AM 2/12/2025
+
+bin schon sehr muede! badewanne und dann schlafengehen!
+genug gegessen und genug gemacht - erst morgen weiter!
+
+RH: 
+1. 4h fkv
+2. meinen kasten ausraeumen: make sure postschluessel sind nicht da irgendwo drin!
+2.1a:kleine kiste holen
+2.2b.noten hinein
+2.3c. bewege zeug zur seite damit shelf passt
+2.4: hole under bad kiste
+2.5. alles aus shelf => kiste
+2.6 kleidung sort=>insgesamt 2 kisten kleidung+kueche
+
+
+
+___ 3:18 AM 2/11/2025 airport 47000
+3:41 AM 2/11/2025
+- outline view: nur die titles zeigen in kleiner schrift
+- click on title: open to full view, click again: close
+
+2:05 PM 2/11/2025
+- mein zimmer:
+keep:
+piano,noten,geige,
+- put stuff in a box
+- versuch das mit den stickers: donate GREEN,keep RED,remove Yellow
+
+
+
+
+___ 3:18 AM 2/10/2025 airport 47000
+3:18 AM 2/10/2025
+ok - was kann man collapsen? eine liste oder dict
+
+___ 4:31 AM 2/9/2025 airport 45000
+5:11 AM 2/9/2025
+ok - dict2list problem!!!!!!! fix it!!!
+ok - sort out mKey mess!!!
+
+5:07 AM 2/9/2025
+ok - sort out mFlex mess!!! ajetzt region mFlex
+
+4:47 AM 2/9/2025
+- in der Top line mache menu: collapse,expand
+
+4:31 AM 2/9/2025
+was von denen ist das simpelste?
+
+=>outline view,open,close,edit,save,cancel,next,top of page,new
+
+___ 5:40 AM 2/8/2025 airport 44000
+5:01 PM 2/8/2025 frei! nix mehr essen! bald schlafen gehen!
+
+sehr gutes essen gehabt! 12:02 PM 2/8/2025
+ok =>ev irgendwann ein activia, damit hat es sich!
+ok frei! fuer heute falls J kommt: improvise +1000
+
+tm:6:52 AM 2/8/2025-9:50 AM 2/8/2025
+ok - post durchsehen
+geht nicht - tax docs scannen
+ok - werbung weg
+ok - email jeslyn
+
+-6:38 AM 2/8/2025v
+6:34 AM 2/8/2025
+soll ich sowas wie: edit button haben? der erst alles aktiviert?
+
+6:21 AM 2/8/2025
+wann wird ein blog gesaved?
+das up down soll eigentlich nur aktiv sein wenn ein blogitem grad selected ist
+
+6:06 AM 2/8/2025
+arrCycle
+neue liste:
+wenn idx=0,remove and push(append)
+wenn nicht,swap mit idx-1
+dparent.remove this div
+
+5:56 AM 2/8/2025
+wie kann ich item mit ui linken?
+DA.blogs ist das dict
+es enthaelt blogs by date
+jedes el={o,key,div:d1,items}
+jedes item={text,key,idx,div:d2,type,
+1. der index ? ist eigentlich der items.indexOf(item)
+
+5:46 AM 2/8/2025
+toggleSelection
+item hat info ueber blog, key in DA.blogs
+DA.selectedPart is a list of items
+click on down: find blog and part and list
+item braucht key und index
 
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+heute:
+RH=timer 1,2,2,3,3,3,4,4,4,4,5,5,5,5,5,...
+1 unit:packen,
+2 unit:prog,
+3 discord check
+
+1. make plan (ohne timer)
+2. set timer
+3. execute plan
+
+zeug einscannen sobald hell ist!
+wartezeitRH - fe discord
+wartezeitRH - 2pm SJA
+- A
+- gu
+- bad
+- klo basement!
+
+1. hole behaelter
+2. empty meinen kasten komplett!!! alles raushauen
+3.
+
+- klo kasten unterer teil ausraeumen=>garage oder mist
+- kisten storage reingeben!
+- mach eine kiste aus meinem zimmer
+A,fe,gu,mitnehmen,move,storage?,verkaufbar,muell: brauche 8 farben
+muell: schwarzer sack
+A,fe,gu: kisten die in deren zi kasten kommen
+mitnehmen:in den koffer geben
+move:kiste im eck bei garage
+storage:kiste fuer meinen kasten
 
 
 
