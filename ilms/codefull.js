@@ -3215,12 +3215,6 @@ function roundIfTransparentCorner(img) {
 		} else mStyle(img, { round: true });
 	}
 }
-async function saveBlogList(ev) {
-	let dpart = ev.target;
-	let dparent = findAncestorWith(dpart, { attribute: 'key' });
-	for (const ch of arrChildren(dparent)) {
-	}
-}
 function setDropPosition(ev, elem, targetElem, dropPos) {
 	if (dropPos == 'mouse') {
 		var elm = $(targetElem);
@@ -3238,34 +3232,6 @@ function setDropPosition(ev, elem, targetElem, dropPos) {
 	} else {
 		dropPos(ev, elem, targetElem);
 	}
-}
-function showBlog(d, date, o) {
-	let dBlog = mDom(d, {fz:20, }, { key: date })
-	mDom(dBlog, {weight:'bold'}, { html: `${date}: ${o.title}` });
-	let d1 = mDom(dBlog);
-	let blogItem = { o, key: date, div: dBlog, dParts: d1, items: [] }
-	for (let textPart of o.text) {
-		let d2 = mDom(d1, { caret: 'white' });
-		let item = { key: date, text: textPart, div: d2, type: textPart.includes('blogimages/') ? 'img' : 'text' };
-		blogItem.items.push(item);
-		if (textPart.includes('blogimages/')) {
-			mDom(d2, { w100: true }, { tag: 'img', src: textPart });
-		} else {
-			mStyle(d2, { mabottom: 10 }, { contenteditable: true, html: textPart });
-			d2.onblur = saveBlogList;
-		}
-	}
-	let d3 = mDom(dBlog, {}, { tag: 'hr' });
-	return blogItem;
-}
-function showBlogs(d, blog) {
-	let dates = Object.keys(blog);
-	dates.sort((a, b) => new Date(b) - new Date(a));
-	let di = {};
-	for (const date of dates) {
-		di[date] = showBlog(d, date, blog[date]);
-	}
-	return di;
 }
 function showPalette(dParent, colors) {
 	let d1 = mDom(dParent, { display: 'flex', dir: 'column', wrap: true, gap: 2, hmax: '100vh' });

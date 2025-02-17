@@ -1,27 +1,49 @@
 
 onload = start;
 
-async function start() { await test0_imfree(); }
+async function start() { await test0_altCollapse(); }
 
+async function test0_altCollapse() {
+	await initAssets();
+	let elems = mLayoutTLMS('strawberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); mFlex('dMain');
+	let blog = await loadStaticYaml('zdata/blog1.yaml');
+	let d = mDom(dMain, { wmax: 500, paleft: 10 }, { id: 'dBlogs' });
+	let di = DA.blogs = blogShowAll(d, blog);
+
+	
+	let coll = DA.collapse = blogCollapse(dict2list(di)); console.log(coll);
+
+	let buttonStyles = { bg: 'transparent', fg: 'grey' };
+	let bExpand = await mKey('circle_chevron_down', dTop, buttonStyles, { tag: 'button', onclick: coll.expandAll });
+	let bCollapse = await mKey('circle_chevron_up', dTop, buttonStyles, { tag: 'button', onclick: coll.collapseAll });
+
+	let tb = coll.button = mToggleButton(bExpand, bCollapse);
+}
 async function test0_imfree() {
 	await initAssets();
 	let elems = mLayoutTLMS('strawberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); mFlex('dMain');
 	let blog = await loadStaticYaml('zdata/blog1.yaml');
 	let d = mDom(dMain, { wmax: 500, paleft: 10 }, { id: 'dBlogs' });
-	let di = DA.blogs = showBlogs(d, blog);
+	let di = DA.blogs = blogShowAll(d, blog);
 
-	let coll = DA.collapse = mCollapse(dict2list(di), 'collapsed_title');
-	console.log(coll);
+
+	let coll = DA.collapse = blogCollapse(dict2list(di)); console.log(coll);
+
+	let buttonStyles = { bg: 'transparent', fg: 'grey' };
+	let bExpand = await mKey('circle_chevron_down', dTop, buttonStyles, { tag: 'button', onclick: coll.expandAll });
+	let bCollapse = await mKey('circle_chevron_up', dTop, buttonStyles, { tag: 'button', onclick: coll.collapseAll });
+
+	let tb = coll.button = mToggleButton(bExpand, bCollapse);
 }
 
 async function test0_multiButton() {
 	let blog = await initBlog();
 	let elems = mLayoutTLMS('raspberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); mFlex('dMain');
 	let d = mDom(dMain, { wmax: 500, paleft: 10 }, { id: 'dBlogs' });
-	let di = DA.blogs = showBlogs(d, blog);
+	let di = DA.blogs = blogShowAll(d, blog);
 	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
 
-	let coll = DA.collapse = mCollapse(dict2list(di), { fz: 12, weight: 'normal', deco: 'underline' }, { fz: 22, weight: 'bold', deco: 'none' });
+	let coll = DA.collapse = blogCollapse(dict2list(di), { fz: 12, weight: 'normal', deco: 'underline' }, { fz: 22, weight: 'bold', deco: 'none' });
 	console.log(coll);
 
 	let buttonStyles = { bg: 'transparent', fg: 'grey' };
@@ -37,10 +59,10 @@ async function test0_toggleCollapse() {
 	let blog = await initBlog();
 	let elems = mLayoutTLMS('raspberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); mFlex('dMain');
 	let d = mDom(dMain, { wmax: 500, paleft: 10 });
-	let di = DA.blogs = await showBlogs(d, blog);
+	let di = DA.blogs = await blogShowAll(d, blog);
 	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
 
-	let coll = DA.collapse = mCollapse(dict2list(di), { fz: 12, weight: 'normal', deco: 'underline' }, { fz: 22, weight: 'bold', deco: 'none' });
+	let coll = DA.collapse = blogCollapse(dict2list(di), { fz: 12, weight: 'normal', deco: 'underline' }, { fz: 22, weight: 'bold', deco: 'none' });
 	console.log(coll);
 
 	let buttonStyles = { bg: 'transparent', fg: 'grey' };
