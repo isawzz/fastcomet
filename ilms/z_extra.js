@@ -1,5 +1,5 @@
 
-function _mGather(dAnchor, styles = {}, opts = {}) {
+function mGather(dAnchor, styles = {}, opts = {}) {
 	return new Promise((resolve, _) => {
 		let [content, type] = [valf(opts.content, 'name'), valf(opts.type, 'text')]; //defaults
 		let dbody = document.body;

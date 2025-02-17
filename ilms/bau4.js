@@ -1,5 +1,5 @@
 
-// blog v2
+// blog v3
 function blogShow(d, date, o) {
 	let dBlog = mDom(d, {fz:20, }, { key: date });
 	let dRep = mDom(dBlog, {className:'title_collapsed',display:'none'}, { html: `${date}: ${o.title}` });
@@ -38,6 +38,7 @@ function blogCollapse(items) {
 		if (isCollapsedOne(item)) expandOne(item); else collapseOne(item);
 	}
 	function prepOne(item) {
+
 		// let d = iDiv(item);
 		// let dTitle = d.firstChild;
 		// dTitle.style.cursor = 'pointer';

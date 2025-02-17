@@ -9,6 +9,7 @@
   "exclude": [
     "**/codebig.js",
     "**/_*.js",
+    "**/z_*.js",
     "a*",
     "coding",
     "basejs",
@@ -30,6 +31,7 @@
     "codesafe",
     "codesammler.js",
     "copi2",
+    "z_extra",
     "z_history",
     "allesweg",
     "fe*",
