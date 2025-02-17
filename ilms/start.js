@@ -6,6 +6,12 @@ async function start() { await test0_imfree(); }
 async function test0_imfree() {
 	await initAssets();
 	let elems = mLayoutTLMS('strawberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); mFlex('dMain');
+	let blog = await loadStaticYaml('zdata/blog1.yaml');
+	let d = mDom(dMain, { wmax: 500, paleft: 10 }, { id: 'dBlogs' });
+	let di = DA.blogs = showBlogs(d, blog);
+
+	let coll = DA.collapse = mCollapse(dict2list(di), 'collapsed_title');
+	console.log(coll);
 }
 
 async function test0_multiButton() {

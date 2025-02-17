@@ -3240,19 +3240,18 @@ function setDropPosition(ev, elem, targetElem, dropPos) {
 	}
 }
 function showBlog(d, date, o) {
-	let dBlog = mDom(d, {}, { key: date })
-	mDom(dBlog, {}, { html: `${date}: ${o.title}` });
+	let dBlog = mDom(d, {fz:20, }, { key: date })
+	mDom(dBlog, {weight:'bold'}, { html: `${date}: ${o.title}` });
 	let d1 = mDom(dBlog);
 	let blogItem = { o, key: date, div: dBlog, dParts: d1, items: [] }
-	let idx = 0;
 	for (let textPart of o.text) {
-		let d2 = mDom(d1, { w100: true, fz: 20, caret: 'white' });
+		let d2 = mDom(d1, { caret: 'white' });
 		let item = { key: date, text: textPart, div: d2, type: textPart.includes('blogimages/') ? 'img' : 'text' };
 		blogItem.items.push(item);
 		if (textPart.includes('blogimages/')) {
 			mDom(d2, { w100: true }, { tag: 'img', src: textPart });
 		} else {
-			mStyle(d2, { w100: true, mabottom: 10 }, { contenteditable: true, html: textPart });
+			mStyle(d2, { mabottom: 10 }, { contenteditable: true, html: textPart });
 			d2.onblur = saveBlogList;
 		}
 	}

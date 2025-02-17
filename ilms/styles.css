@@ -54,21 +54,11 @@ button:active {
   transform: translate(-50%, -50%);
 }
 
-/* .a {
-  background: #ffffff80;
-  caret-color: #ffffff00;
+.collapsed_title{
+  text-decoration: underline;
+  font-size:12px;
+  font-weight: 100;
 }
-
-.a:hover,
-.anime:hover {
-  background: #ffffffcc;
-}
-
-.a.active {
-  background: #00000070;
-  color: white;
-} */
-
 .blink_green {
   background: lime;
   animation: blinking 0.5s ease-in-out infinite alternate;

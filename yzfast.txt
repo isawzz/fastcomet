@@ -1,6 +1,91 @@
 26.2. lib renew >TODO
 alles ist fuer immer ok - I have left this plane. I am now in the plane of imagination and dream!
 
+___ 6:07 AM 2/16/2025 airport 55000
+schlecht weil garkeine energie mehr wirklich ueberhaupt keine
+nur soviel hunger aber zugleich garkein hunger
+vielleicht ein heisses bad kann helfen?
+- stehe auf,bring zeug in kueche,aufraeume und maschine einschalten
+asus zumachen
+- morgen werd ich wieder garnichts tun
+- ich hab keine energie mehr
+jetzt bin ich ganz allein 
+das gpwirkt mindestens 3 tage lang!
+what is the way of doing least?
+where do I set boundaries? maybe right away?
+which lib function do I want next?
+showTitledItem(d,key,title,content,styles={},opts={}}
+opts.titleStyles
+opts.textStyles
+opts.imageStyles
+
+The heavy heavens crack and cry.
+Abandoned streets lay wet and weeping.
+A day for staying home and dry.
+A day for sipping tea and sleeping.
+
+Unlike the others, warm inside,
+Alone I wander to the sea,
+Drawn toward the sinking tide,
+The wailing wind as company.
+
+The air electric, dimly glowing,
+Dead leaves flee as gales give chase.
+Frigid fire burning, blowing,
+Exposure numbing hands and face.
+
+Each inhale an icy ache, 
+Freezing, yes, but wide awake.
+
+As I approach the wooden pier,
+Not a single soul nearby.
+The smell of salt soothes my despair,
+Only sea and rain and I.
+
+I stare into the surf below,
+Entranced I watch the wild waves crash.
+Leaning far to see the show,
+Above me bolts of lightning flash.
+
+Swirling darkly, foaming wildly-
+A hostile sight, to put it mildly-
+And as into the depths I stare
+The wretched wind whipping my hair
+A squealing squall catches my coat.
+A scream dislodges from my throat.
+I launch into the air before…
+I land back safely on the floor.
+
+Dropping low, I grip the ground.
+Breathing heavy, eyes gone round,
+Thinking how I could have drowned.
+My thumping heart slowing back down.
+
+Relieved a laugh bursts from my chest.
+I close my eyes and take a breath,
+Slowly standing, slightly stressed
+At narrowly avoiding death.
+
+A booming thunder lumbers by.
+A blaze of lightning draws my eye,
+And with hefty lengthy sigh,
+I watch the purple painted sky.
+
+When once again a sudden gust
+Bestows on me the lift and thrust,
+Whereby- without an honest fight-
+I’m flung into a whirlwind flight.
+
+Away I fly, far past the coast,
+The cloudless grey my humble host.
+
+And then as though in heartless spite,
+Without a hint of land in sight,
+The tempest swiftly fades away
+Releasing me from quite a height
+I plummet down to my dismay,
+And fall into the liquid night. 
+
 ___ 4:51 AM 2/15/2025 airport 54000
 4:51 AM 2/15/2025
 ok - riesen challenge!!!! automatically generate mlib.js
