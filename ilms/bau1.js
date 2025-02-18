@@ -18,4 +18,24 @@ function blogShowAll(d, blog) {
 	}
 	return di;
 }
+function blogShow(d, key, o) {
+	let dBlog = mDom(d, {fz:20, className:'collapsible'}, { key });
+	mDom(dBlog, {className:'title'}, { html: `${key}: ${o.title}` });
+	let dParts = mDom(dBlog, { className: 'sortable' });
+	let blogItem = { o, key, div: dBlog, dParts, items: [] }
+	for (let textPart of o.text) {
+		let d2 = mDom(dParts, { caret: 'white' });
+		let item = { key, text: textPart, div: d2, type: textPart.includes('blogimages/') ? 'img' : 'text' };
+		blogItem.items.push(item);
+		if (textPart.includes('blogimages/')) {
+			mDom(d2, { w100: true }, { tag: 'img', src: textPart });
+		} else {
+			mStyle(d2, { mabottom: 10 }, { html: textPart });
+			// mStyle(d2, { mabottom: 10 }, { contenteditable: true, html: textPart });
+			// d2.onblur = blogSave;
+		}
+	}
+	let d3 = mDom(dBlog, {}, { tag: 'hr' });
+	return blogItem;
+}
 

@@ -1,28 +1,38 @@
 
 onload = start;
 
-async function start() { await test0_aifuncs(); }
+async function start() { await test0_dd(); }
 
-async function test0_aifuncs() {
+async function test0_dd() {
+	await initAssets();
+	let elems = mLayoutTLMS('strawberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); 
+	mFlex('dMain');	mFlex(dTop);
+	let blog = await loadStaticYaml('zdata/blog1.yaml');
+	let d = mDom(dMain, { wmax: 500, paleft: 10 }, { id: 'dBlogs' });
+	let di = DA.blogs = blogShowAll(d, blog);
+	let buttonStyles = { bg: 'transparent', fg: 'grey' };
+	let coll = DA.collapse = await mCollapse(Array.from(document.querySelectorAll('.collapsible')), dTop, buttonStyles);
+
+	// Example usage:
+	enableDragDrop(document.querySelectorAll('.sortable'));
+}
+async function test0_superCollapser() {
 	await initAssets();
 	let elems = mLayoutTLMS('strawberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); mFlex('dMain');
+	mFlex(dTop)
 	let blog = await loadStaticYaml('zdata/blog1.yaml');
 	let d = mDom(dMain, { wmax: 500, paleft: 10 }, { id: 'dBlogs' });
 	let di = DA.blogs = blogShowAll(d, blog);
 
+	let buttonStyles = { bg: 'transparent', fg: 'grey' };
+
+	let coll = DA.collapse = await mCollapse(Array.from(document.querySelectorAll('.collapsible')), dTop, buttonStyles);
+
+	let bAddCollapser = await mKey('add collapse', dTop, buttonStyles, { tag: 'button', onclick: async () => { if (nundef(DA.collapse)) DA.collapse = await mCollapse(Array.from(document.querySelectorAll('.collapsible')), dTop, buttonStyles) } });
+	let bRemoveCollapser = await mKey('remove collapse', dTop, buttonStyles, { tag: 'button', onclick: () => { if (isdef(DA.collapse)) { mCollapseRemove(DA.collapse); DA.collapse = null; } } });
 
 	// Example usage:
 	// enableDragDrop(document.getElementById('.sortable'));
-	addCollapseExpand(document.querySelectorAll('.collapsible'));
-
-
-	// let coll = DA.collapse = blogCollapse(dict2list(di)); console.log(coll);
-
-	// let buttonStyles = { bg: 'transparent', fg: 'grey' };
-	// let bExpand = await mKey('circle_chevron_down', dTop, buttonStyles, { tag: 'button', onclick: coll.expandAll });
-	// let bCollapse = await mKey('circle_chevron_up', dTop, buttonStyles, { tag: 'button', onclick: coll.collapseAll });
-
-	// let tb = coll.button = mToggleButton(bExpand, bCollapse);
 }
 async function test0_altCollapse() {
 	await initAssets();

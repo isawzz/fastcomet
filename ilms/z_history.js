@@ -1,4 +1,75 @@
-//v1
+
+
+
+//blog v4
+function enableDragDrop(container) {
+	let draggedElement = null;
+	let lastHighlighted = null;
+	container.querySelectorAll('div, img').forEach(el => {
+		el.draggable = true;
+		el.addEventListener('dragstart', e => {
+			draggedElement = el;
+			e.dataTransfer.effectAllowed = 'move';
+		});
+		el.addEventListener('dragover', e => {
+			e.preventDefault();
+			if (el !== draggedElement) {
+				if (lastHighlighted) lastHighlighted.style.border = '';
+				el.style.border = '2px solid yellow';
+				lastHighlighted = el;
+			}
+		});
+		el.addEventListener('dragleave', () => {
+			if (el === lastHighlighted) {
+				el.style.border = '';
+				lastHighlighted = null;
+			}
+		});
+		el.addEventListener('drop', e => {
+			e.preventDefault();
+			if (draggedElement && lastHighlighted && draggedElement !== lastHighlighted) {
+				lastHighlighted.style.border = '';
+				lastHighlighted.after(draggedElement);
+			}
+			draggedElement = null;
+			lastHighlighted = null;
+		});
+	});
+}
+function mCollapse(divs) {
+	//assumes that divs have first element a title, next to which a + or - is added
+	function collapseOne(div) {
+		let b = div.firstChild.firstChild;
+		b.textContent = '+ ';
+		let chi = arrChildren(div).slice(1);
+		chi.map(x => mStyle(x, { display: 'none' }));
+	}
+	function expandOne(div) {
+		let b = div.firstChild.firstChild;
+		b.textContent = '- ';
+		let chi = arrChildren(div).slice(1);
+		chi.map(x => mStyle(x, { display: 'block' }));
+	}
+	function isCollapsedOne(div) {
+		let chi = arrChildren(div).slice(1);
+		return chi[0].style.display === 'none';
+	}
+	function toggleOne(div) {
+		if (isCollapsedOne(div)) expandOne(div); else collapseOne(div);
+	}
+
+	divs.forEach(div => {
+		let d1 = div.firstChild;
+		let b = mDom(d1, { margin: 5, cursor: 'pointer' }, { tag: 'span', html: '- ' }); mInsert(d1, b, 0);
+		b.onclick = () => { toggleOne(div); }
+	});
+	return {
+		divs, toggleOne, collapseOne, expandOne, isCollapsedOne,
+		collapseAll: () => { divs.map(collapseOne); }, expandAll: () => { divs.map(expandOne); },
+	};
+}
+
+//blog v3
 function addCollapseExpand(divs) {
 	divs.forEach(div => {
 			const btn = document.createElement('span');
@@ -18,8 +89,6 @@ function addCollapseExpand(divs) {
 			div.style.display = 'none'; // Start collapsed
 	});
 }
-
-
 function blogShowAll(d, blog) {
 	let dates = Object.keys(blog);
 	dates.sort((a, b) => new Date(b) - new Date(a));
@@ -28,6 +97,42 @@ function blogShowAll(d, blog) {
 		di[date] = blogShow(d, date, blog[date]);
 	}
 	return di;
+}
+function blogCollapse(items) { 
+	let isCollapsed = false;
+	function collapseOne(item) {
+		mStyle(item.dRep,{display:'block'});
+		mStyle(item.dContent,{display:'none'});
+	}
+	function expandOne(item) {
+		mStyle(item.dRep,{display:'none'});
+		mStyle(item.dContent,{display:'block'});
+	}
+	function isCollapsedOne(item) {
+		return mGetStyle(item.dContent,'display') == 'none';
+	}
+	function toggleOne(item) {
+		if (isCollapsedOne(item)) expandOne(item); else collapseOne(item);
+	}
+	function prepOne(item) {
+
+		// let d = iDiv(item);
+		// let dTitle = d.firstChild;
+		// dTitle.style.cursor = 'pointer';
+		// dTitle.onclick = () => toggleOne(item);
+	}
+	// items.map(prepOne);
+	return {
+		items,
+		collapseAll: () => { items.map(collapseOne); isCollapsed = true; },
+		expandAll: () => { items.map(expandOne); isCollapsed = false; },
+		toggleAll: () => items.map(toggleOne),
+		collapseOne,
+		expandOne,
+		toggleOne,
+		isCollapsedOne,
+		isCollapsedAll: () => isCollapsed, //items.every(isCollapsedOne),
+	}
 }
 
 // blog v2

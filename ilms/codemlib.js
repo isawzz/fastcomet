@@ -88,6 +88,47 @@ function mClassToggle(d, classes) {
 function mClear(d) {
 	toElem(d).innerHTML = '';
 }
+async function mCollapse(divs, dParent, styles = {}) {
+	//assumes that divs have first element a title, next to which a + or - is added
+	function collapseOne(div) {
+		let b = div.firstChild.firstChild;
+		b.textContent = '+ ';
+		let chi = arrChildren(div).slice(1);
+		chi.map(x => mStyle(x, { display: 'none' }));
+	}
+	function expandOne(div) {
+		let b = div.firstChild.firstChild;
+		b.textContent = '- ';
+		let chi = arrChildren(div).slice(1);
+		chi.map(x => mStyle(x, { display: 'block' }));
+	}
+	function isCollapsedOne(div) { let chi = arrChildren(div).slice(1); return chi[0].style.display === 'none'; }
+	function toggleOne(div) { if (isCollapsedOne(div)) expandOne(div); else collapseOne(div); }
+	function collapseAll() { divs.map(collapseOne); }
+	function expandAll() { divs.map(expandOne); }
+
+	divs.forEach(div => {
+		let d1 = div.firstChild;
+		let b = mDom(d1, { margin: 5, cursor: 'pointer' }, { tag: 'span', html: '- ' }); mInsert(d1, b, 0);
+		b.onclick = () => { toggleOne(div); }
+	});
+
+	let dController = null;
+	if (isdef(dParent)) {
+		let bExpand = await mKey('circle_chevron_down', dParent, styles, { tag: 'button', onclick: expandAll });
+		let bCollapse = await mKey('circle_chevron_up', dParent, styles, { tag: 'button', onclick: collapseAll });
+
+		dController = mToggleButton(bExpand, bCollapse);
+	}
+	return { divs, dController, toggleOne, collapseOne, expandOne, isCollapsedOne, collapseAll, expandAll };
+}
+function mCollapseRemove(coll) {
+	coll.divs.forEach(div => {
+		coll.expandOne(div);
+		div.firstChild.firstChild.remove();
+	});
+	if (isdef(coll.dController)) coll.dController.remove();
+}
 function mCreateFrom(htmlString) {
 	var div = document.createElement('div');
 	div.innerHTML = htmlString.trim();
