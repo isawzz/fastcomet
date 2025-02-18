@@ -1,3 +1,25 @@
+//v1
+function addCollapseExpand(divs) {
+	divs.forEach(div => {
+			const btn = document.createElement('span');
+			btn.textContent = '+ ';
+			btn.style.cursor = 'pointer';
+			btn.style.marginRight = '5px';
+			btn.onclick = () => {
+					if (div.style.display === 'none') {
+							div.style.display = '';
+							btn.textContent = '- ';
+					} else {
+							div.style.display = 'none';
+							btn.textContent = '+ ';
+					}
+			};
+			div.before(btn);
+			div.style.display = 'none'; // Start collapsed
+	});
+}
+
+
 function blogShowAll(d, blog) {
 	let dates = Object.keys(blog);
 	dates.sort((a, b) => new Date(b) - new Date(a));

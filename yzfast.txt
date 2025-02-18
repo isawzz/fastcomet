@@ -1,6 +1,28 @@
 26.2. lib renew >TODO
 alles ist fuer immer ok - I have left this plane. I am now in the plane of imagination and dream!
 
+___  airport 58000
+
+___ 6:05 AM 2/17/2025 airport 57000
+solve: a+b=156, A+B=156, B = b-40, A=a+40, 2A=B
+solve: b-40=2(a+40), a+b=156
+
+6:15 AM 2/17/2025
+- ich will jetzt all die funtionalitaet von blog besser separieren
+dh: edit vs readonly
+bei edit soll man up down, dd, und editable divs haben
+diese 3 funtionen sollen gut modularisiert sein!
+genau wie das collapse!
+
+rein theoretisch koennte man bei mCollapse eine function mitgeben
+die genau sagt, was von dem item als title genommen werden soll
+
+vielleicht waer es noch besser, zu ersetzen?
+
+
+6:06 AM 2/17/2025
+- title, title_collapsed
+
 ___ 6:07 AM 2/16/2025 airport 55000
 schlecht weil garkeine energie mehr wirklich ueberhaupt keine
 nur soviel hunger aber zugleich garkein hunger

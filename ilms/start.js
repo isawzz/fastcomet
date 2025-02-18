@@ -1,23 +1,28 @@
 
 onload = start;
 
-async function start() { await test0_altCollapse(); }
+async function start() { await test0_aifuncs(); }
 
-async function test0_altCollapse() {
+async function test0_aifuncs() {
 	await initAssets();
 	let elems = mLayoutTLMS('strawberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); mFlex('dMain');
 	let blog = await loadStaticYaml('zdata/blog1.yaml');
 	let d = mDom(dMain, { wmax: 500, paleft: 10 }, { id: 'dBlogs' });
 	let di = DA.blogs = blogShowAll(d, blog);
 
-	
-	let coll = DA.collapse = blogCollapse(dict2list(di)); console.log(coll);
 
-	let buttonStyles = { bg: 'transparent', fg: 'grey' };
-	let bExpand = await mKey('circle_chevron_down', dTop, buttonStyles, { tag: 'button', onclick: coll.expandAll });
-	let bCollapse = await mKey('circle_chevron_up', dTop, buttonStyles, { tag: 'button', onclick: coll.collapseAll });
+	// Example usage:
+	// enableDragDrop(document.getElementById('.sortable'));
+	addCollapseExpand(document.querySelectorAll('.collapsible'));
 
-	let tb = coll.button = mToggleButton(bExpand, bCollapse);
+
+	// let coll = DA.collapse = blogCollapse(dict2list(di)); console.log(coll);
+
+	// let buttonStyles = { bg: 'transparent', fg: 'grey' };
+	// let bExpand = await mKey('circle_chevron_down', dTop, buttonStyles, { tag: 'button', onclick: coll.expandAll });
+	// let bCollapse = await mKey('circle_chevron_up', dTop, buttonStyles, { tag: 'button', onclick: coll.collapseAll });
+
+	// let tb = coll.button = mToggleButton(bExpand, bCollapse);
 }
 async function test0_altCollapse() {
 	await initAssets();
@@ -26,7 +31,7 @@ async function test0_altCollapse() {
 	let d = mDom(dMain, { wmax: 500, paleft: 10 }, { id: 'dBlogs' });
 	let di = DA.blogs = blogShowAll(d, blog);
 
-	
+
 	let coll = DA.collapse = blogCollapse(dict2list(di)); console.log(coll);
 
 	let buttonStyles = { bg: 'transparent', fg: 'grey' };

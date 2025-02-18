@@ -58,7 +58,3 @@ function addCollapseExpand(divs) {
 			div.style.display = 'none'; // Start collapsed
 	});
 }
-
-// Example usage:
-// enableDragDrop(document.getElementById('listContainer'));
-// addCollapseExpand(document.querySelectorAll('.collapsible'));
