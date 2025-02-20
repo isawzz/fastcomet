@@ -1,12 +1,23 @@
 
-async function blogSave(ev) {
-	let dpart = ev.target;
-	let dparent = findAncestorWith(dpart, { attribute: 'key' });
+async function blogSaveAll() {
+	// let dpart = ev.target;
+	// let dparent = findAncestorWith(dpart, { attribute: 'key' });
 
 	//check if content has changed
 	//only save if content has changed!
+
+	let blog=DA.blogs;
+	console.log(blog);
+	return;
 	
+	let list=[];
 	for (const ch of arrChildren(dparent)) {
+		let type = ch.getAttribute('type');
+		console.log('type',type);
+		let html = ch.innerHTML;
+		console.log('html',html)
+
+
 	}
 }
 function blogShowAll(d, blog) {
@@ -23,19 +34,23 @@ function blogShow(d, key, o) {
 	mDom(dBlog, {className:'title'}, { html: `${key}: ${o.title}` });
 	let dParts = mDom(dBlog, { className: 'sortable' });
 	let blogItem = { o, key, div: dBlog, dParts, items: [] }
+	//console.log(o.text)
 	for (let textPart of o.text) {
-		let d2 = mDom(dParts, { caret: 'white' });
-		let item = { key, text: textPart, div: d2, type: textPart.includes('blogimages/') ? 'img' : 'text' };
-		blogItem.items.push(item);
+		let d2, type; // = mDom(dParts, { caret: 'white' });
 		if (textPart.includes('blogimages/')) {
-			mDom(d2, { w100: true }, { tag: 'img', src: textPart });
+			type = 'image'
+			d2=mDom(dParts, { w100: true }, { tag: 'img', src: textPart, type });
 		} else {
-			mStyle(d2, { mabottom: 10 }, { html: textPart });
+			type = 'text'
+			d2=mDom(dParts, { caret: 'white', padding:2, outline:'' }, { html: textPart, contenteditable: true, type });
 			// mStyle(d2, { mabottom: 10 }, { contenteditable: true, html: textPart });
 			// d2.onblur = blogSave;
 		}
+		let item = { key, text: textPart, div: d2, type };
+		blogItem.items.push(item);
+		//d2.onclick = onclickPart;
 	}
-	let d3 = mDom(dBlog, {}, { tag: 'hr' });
+	mDom(dParts, {patop:5,pabottom:2}, { html: '<hr>', type:'line' });
 	return blogItem;
 }
 

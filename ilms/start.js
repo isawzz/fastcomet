@@ -1,20 +1,23 @@
 
 onload = start;
 
-async function start() { await test0_dd(); }
+async function start() { await test0_sortable(); }
 
-async function test0_dd() {
+async function test0_sortable() {
 	await initAssets();
 	let elems = mLayoutTLMS('strawberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); 
 	mFlex('dMain');	mFlex(dTop);
 	let blog = await loadStaticYaml('zdata/blog1.yaml');
-	let d = mDom(dMain, { wmax: 500, paleft: 10 }, { id: 'dBlogs' });
+	let d = mDom(dMain, { wmax: 500, wbox:true, paleft: 10 }, { id: 'dBlogs' });
 	let di = DA.blogs = blogShowAll(d, blog);
 	let buttonStyles = { bg: 'transparent', fg: 'grey' };
 	let coll = DA.collapse = await mCollapse(Array.from(document.querySelectorAll('.collapsible')), dTop, buttonStyles);
 
 	// Example usage:
-	enableDragDrop(document.querySelectorAll('.sortable'));
+	mSortable(document.querySelectorAll('.sortable'));
+
+	mKey('save', dTop, buttonStyles, { tag: 'button', onclick: blogSaveAll });
+
 }
 async function test0_superCollapser() {
 	await initAssets();

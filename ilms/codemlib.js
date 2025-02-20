@@ -92,7 +92,7 @@ async function mCollapse(divs, dParent, styles = {}) {
 	//assumes that divs have first element a title, next to which a + or - is added
 	function collapseOne(div) {
 		let b = div.firstChild.firstChild;
-		b.textContent = '+ ';
+		b.textContent = '+';
 		let chi = arrChildren(div).slice(1);
 		chi.map(x => mStyle(x, { display: 'none' }));
 	}

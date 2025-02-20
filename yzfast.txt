@@ -1,8 +1,29 @@
 26.2. lib renew >TODO
 alles ist fuer immer ok - I have left this plane. I am now in the plane of imagination and dream!
 
-___  airport 58000
+___ 5:26 AM 2/19/2025 airport 61000
+6:38 AM 2/19/2025
+=>blogSaveAll ziemlich straightforward
+heute: alle spiele weg!
+alles was mir echt wichtig ist aus wohnzi weg!
+kiste mit geige aufloesen
+=>restl kisten fuer mich mit LC und spiele
+B bild?
+check ob koffer einchecken kann bei ba
 
+6:10 AM 2/19/2025
+what happens when I enter in a contenteditable? dermacht ein div rein!!! das will ich nicht! ich ersetze <div> durch <br> und </div> durch ''
+when saving the blog:
+empty text items deleted, consecutive text items:joined w/ linebreak
+best: text editable, image: draggable
+alternative:
+ich click auf ein element: 
+1. es wird gehighlighted und dann kommt: edit,move,delete,
+ich will nur einen freien tag sonst garnichts
+kann ich mir nicht einfach den tag frei machen?
+erstens: ich bin jetzt nur noch 1 woche hier! dann ist PAUSE und in dieser woche koennte zwar der guggi kommen aber ist nicht sicher
+
+___ 6:05 AM 2/18/2025 airport 60000
 ___ 6:05 AM 2/17/2025 airport 57000
 solve: a+b=156, A+B=156, B = b-40, A=a+40, 2A=B
 solve: b-40=2(a+40), a+b=156

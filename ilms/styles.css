@@ -38,6 +38,10 @@ button:active {
   color: black !important;
 }
 
+[contenteditable]:focus {
+  border: 2px solid white;
+}
+
 
 .centerCentered {
   margin: 0;
