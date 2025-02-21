@@ -1401,14 +1401,15 @@ function detectSessionType() {
 						: loc.includes(':60') ? 'flask' : 'live';
 	return DA.sessionType;
 }
-function dict2list(d, keyName = 'id') {
-	let vals = Object.values(d);
+function dict2list(di, keyName = 'id') {
+	let vals = Object.values(di);
 	if (vals.length == 0) return [];
 	let res = [];
 	if (!isDict(vals[0])) {
 		for (const v of vals) res.push({ value: v });
 	} else res = vals;
-	let keys = Object.keys(d);
+	console.log(res)
+	let keys = Object.keys(di);
 	for (let i = 0; i < res.length; i++) { res[i][keyName] = keys[i]; }
 	return res;
 }

@@ -16,8 +16,9 @@ async function test0_sortable() {
 	// Example usage:
 	mSortable(document.querySelectorAll('.sortable'));
 
-	mKey('save', dTop, buttonStyles, { tag: 'button', onclick: blogSaveAll });
-
+	let btn=await mKey('save', dTop, buttonStyles, { tag: 'button', onclick: blogSaveAll });
+	console.log(btn)
+	btn.click();
 }
 async function test0_superCollapser() {
 	await initAssets();
