@@ -557,7 +557,7 @@ async function mPostPhp(cmd, o, jsonResult = true) {
 	let sessionType = detectSessionType();
 	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
 	if (isdef(o.path) && (o.path.startsWith('zdata') || o.path.startsWith('y'))) o.path = '../../' + o.path;
-	let res = await fetch(server + `p5/php/${cmd}.php`,
+	let res = await fetch(server + `ilms/php/${cmd}.php`,
 		{
 			method: 'POST',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

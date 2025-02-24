@@ -1,91 +1,68 @@
 
-async function blogSaveAll() {
-	// let dpart = ev.target;
-	// let dparent = findAncestorWith(dpart, { attribute: 'key' });
 
-	//check if content has changed
-	//only save if content has changed!
+async function handleDrop(ev) {
+  console.log(arguments, ev.target)
+  let dropZone = ev.target;
+  let dropImage = dropZone.getElementsByTagName('img')[0];
+  let items = ev.dataTransfer.items;
 
-	function replaceDivs(str) {
-		return str.replaceAll('<div>', '<br>').replaceAll('</div>', '');
-	}
-
-	let blog = DA.blogs;
-	//console.log(blog);
-
-	let list = dict2list(blog);
-	for (const bl of list) {
-		console.log(bl);
-		let d = bl.dParts;
-		let chi = arrChildren(d);
-		let parts = [];
-		let prevType = null;
-		let prevText = null;
-		for (const ch of chi) {
-			let type = ch.getAttribute('type');
-			if (type == 'text') {
-				let txt = ch.innerHTML;
-				txt = replaceDivs(txt);
-				if (isdef(prevText)) txt = prevText + '<br>' + txt;
-				prevType = 'text';
-				prevText = txt;
-			} else {
-				if (isdef(prevText)) { parts.push(prevText); prevText = null; }
-				prevType = type;
-				if (type == 'image') {
-					//console.log('src',ch.src);
-					parts.push(ch.src);
-					//=>later! if this image does not exist yet need to also upload the image!
-				}
-			}
-		}
-
-		//return;
-	}
-
-	return;
-
-	// let list=[];
-	// for (const ch of arrChildren(dparent)) {
-	// 	let type = ch.getAttribute('type');
-	// 	console.log('type',type);
-	// 	let html = ch.innerHTML;
-	// 	console.log('html',html)
+  for (const item of items) {
+    if (item.kind === 'file') {
+      // Dropped from computer (local file)
+      const file = item.getAsFile();
+      console.log('Dropped from computer:', file.name);
+    } else if (item.kind === 'string' && item.type === 'text/uri-list') {
+      // Dropped from a website (URL)
+      const url = await new Promise(resolve => item.getAsString(resolve));
+      console.log('Dropped from website:', url);
+      checkIfFromOwnServer(url);
+    }
+  }
 
 
-	// }
+  // if (files.length) {
+  //   var file = files[0];
+  //   if (file.type.startsWith('image/')) {
+  //     console.log(file)
+  //     let {dataUrl,width,height} = await resizeImage(file, 500, 1000);
+  //     let name = `img${getNow()}`; //await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }); console.log('you entered', name);
+  //     uploadImage(dataUrl, `zdata/images/${name}.${stringAfter(file.name, '.')}`);
+  //     mStyle(dropImage,{w:Math.min(500,width),display:'block',margin:'auto'},{src:dataUrl});
+  //   } else {
+  //     console.log('Please drop an image file.');
+  //   }
+  // } else {
+  //   // Handle external image URLs
+  //   var imageUrl = ev.dataTransfer.getData('text/uri-list');
+  //   if (imageUrl) {
+  //     let src = imageUrl;
+  //     dropImage.src = src;
+  //     dropImage.style.display = 'block';
+  //     dropZone.textContent = '';
+  //     dropZone.appendChild(dropImage);
+  //   } else {
+  //     console.log('Please drop an image file or a valid image URL.');
+  //   }
+  // }
 }
-function blogShowAll(d, blog) {
-	let dates = Object.keys(blog);
-	dates.sort((a, b) => new Date(b) - new Date(a));
-	let di = {};
-	for (const date of dates) {
-		di[date] = blogShow(d, date, blog[date]);
-	}
-	return di;
-}
-function blogShow(d, key, o) {
-	let dBlog = mDom(d, { fz: 20, className: 'collapsible' }, { key });
-	mDom(dBlog, { className: 'title' }, { html: `${key}: ${o.title}` });
-	let dParts = mDom(dBlog, { className: 'sortable' });
-	let blogItem = { o, key, div: dBlog, dParts, items: [] }
-	//console.log(o.text)
-	for (let textPart of o.text) {
-		let d2, type; // = mDom(dParts, { caret: 'white' });
-		if (textPart.includes('blogimages/')) {
-			type = 'image'
-			d2 = mDom(dParts, { w100: true }, { tag: 'img', src: textPart, type });
-		} else {
-			type = 'text'
-			d2 = mDom(dParts, { caret: 'white', padding: 2, outline: '' }, { html: textPart, contenteditable: true, type });
-			// mStyle(d2, { mabottom: 10 }, { contenteditable: true, html: textPart });
-			// d2.onblur = blogSave;
-		}
-		let item = { key, text: textPart, div: d2, type };
-		blogItem.items.push(item);
-		//d2.onclick = onclickPart;
-	}
-	mDom(dParts, { patop: 5, pabottom: 2 }, { html: '<hr>', type: 'line' });
-	return blogItem;
+
+function mImageDropper(d) {
+  d = toElem(d);
+
+  function preventDefaults(ev) { ev.preventDefault(); ev.stopPropagation(); }
+  function highlight(ev) { mClass(ev.target, 'framedPicture'); }
+  function unhighlight(ev) { mClassRemove(ev.target, 'framedPicture'); }
+
+  let dropZone = d;
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evname => {
+    dropZone.addEventListener(evname, preventDefaults, false);
+    document.body.addEventListener(evname, preventDefaults, false);
+  });
+  ['dragenter', 'dragover'].forEach(evname => { dropZone.addEventListener(evname, highlight, false); });
+  ['dragleave', 'drop'].forEach(evname => { dropZone.addEventListener(evname, unhighlight, false); });
+
+  let dropImage = mDom(dropZone, { w: 500 }, { tag: 'img' });
+
+  dropZone.addEventListener('drop', handleDrop, false);
 }
 

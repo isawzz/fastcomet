@@ -1,7 +1,22 @@
 
-function mToggle(d,event,f1,f2){
-	
+async function simpleOnDropImage(ev, elem) {
+  let dt = ev.dataTransfer;
+  if (dt.types.includes('itemkey')) {
+    let data = ev.dataTransfer.getData('itemkey');
+    await simpleOnDroppedItem(data);
+  } else {
+    const files = ev.dataTransfer.files;
+    if (files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = async (evReader) => {
+        let data = evReader.target.result;
+        await simpleOnDroppedUrl(data, UI.simple);
+      };
+      reader.readAsDataURL(files[0]);
+    }
+  }
 }
+
 function mCollapse(dilist) {
 	if (isDict(dilist)) dilist = dict2list(dilist); //console.log(dilist);
 

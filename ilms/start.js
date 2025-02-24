@@ -1,14 +1,33 @@
 
 onload = start;
 
-async function start() { await test0_sortable(); }
+async function start() { await test0_vonDd1DragImageFromAnywhere(); }
 
+async function test0_vonDd1DragImageFromAnywhere() {
+	await initAssets();
+	let elems = mLayoutTLMS('strawberry', 'dPage'); mStyle('dMain', { overy: 'auto' });
+	mFlex('dMain'); mFlex(dTop);
+
+	//let x = mImageDropper(mDom('dMain',{w:500,bg:'green',h:'auto'}));
+	let x = mImageDropper(mDom('dMain',{w:500,hmin:300,border:'white 3px solid',margin:10,align:'center'},{html:'Drop image here'}));
+}
+async function test0_clickImageDownloadAtClient() {
+	await initAssets();
+	let elems = mLayoutTLMS('strawberry', 'dPage'); mStyle('dMain', { overy: 'auto' });
+	mFlex('dMain'); mFlex(dTop);
+	let d = DA.dropZone = mBy('dMain');
+
+	//enable drap drop image to dMain
+	d.addEventListener('drop', handleDrop, false);
+
+
+}
 async function test0_sortable() {
 	await initAssets();
-	let elems = mLayoutTLMS('strawberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); 
-	mFlex('dMain');	mFlex(dTop);
+	let elems = mLayoutTLMS('strawberry', 'dPage'); mStyle('dMain', { overy: 'auto' });
+	mFlex('dMain'); mFlex(dTop);
 	let blog = await loadStaticYaml('zdata/blog1.yaml');
-	let d = mDom(dMain, { wmax: 500, wbox:true, paleft: 10 }, { id: 'dBlogs' });
+	let d = mDom(dMain, { wmax: 500, wbox: true, paleft: 10 }, { id: 'dBlogs' });
 	let di = DA.blogs = blogShowAll(d, blog);
 	let buttonStyles = { bg: 'transparent', fg: 'grey' };
 	let coll = DA.collapse = await mCollapse(Array.from(document.querySelectorAll('.collapsible')), dTop, buttonStyles);
@@ -16,8 +35,12 @@ async function test0_sortable() {
 	// Example usage:
 	mSortable(document.querySelectorAll('.sortable'));
 
-	let btn=await mKey('save', dTop, buttonStyles, { tag: 'button', onclick: blogSaveAll });
-	console.log(btn)
+	// // Example usage:
+	// const draggable = document.getElementById('draggableElement');
+	// enableAutoScrollOnDrag(draggable);
+
+
+	let btn = await mKey('save', dTop, buttonStyles, { tag: 'button', onclick: blogSaveAll });
 	btn.click();
 }
 async function test0_superCollapser() {
@@ -138,7 +161,7 @@ async function test0_dropImage() {
 		d2.addEventListener("drop", handleImageDrop);
 
 		// Example usage
-		//const dropZone = document.getElementById("drop-zone");
+		//const dropZone = document.getElementById("dropZone");
 		// Add drag-and-drop event listeners
 		// dropZone.addEventListener("dragover", (ev) => ev.preventDefault()); // Allow dropping
 		// dropZone.addEventListener("drop", handleImageDrop);
@@ -172,7 +195,7 @@ async function test0_getYaml() {
 		//enableDataDrop(d2, ondropSomething)
 
 		// Example usage
-		//const dropZone = document.getElementById("drop-zone");
+		//const dropZone = document.getElementById("dropZone");
 		// Add drag-and-drop event listeners
 		d2.addEventListener("dragover", (event) => event.preventDefault()); // Allow dropping
 		//d2.addEventListener("drop", logDroppedDataTypes);
@@ -181,7 +204,7 @@ async function test0_getYaml() {
 
 
 		// // Example usage
-		// const dropZone = document.getElementById("drop-zone");
+		// const dropZone = document.getElementById("dropZone");
 		// // Add drag-and-drop event listeners
 		// dropZone.addEventListener("dragover", (event) => event.preventDefault()); // Allow dropping
 		// dropZone.addEventListener("drop", handleImageDrop);

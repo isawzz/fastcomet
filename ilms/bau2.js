@@ -1,47 +1,31 @@
 
-function mSortable(divs) {
-	let draggedElement = null;
-	let lastHighlighted = null;
-
-	divs.forEach(container => {
-		container.querySelectorAll('img').forEach(el => {
-			el.draggable = true;
-
-			el.addEventListener('dragstart', e => {
-				draggedElement = el;
-				e.dataTransfer.effectAllowed = 'move';
-			});
-
-		});
-
-		container.querySelectorAll('img,div').forEach(el => {
-			el.addEventListener('dragover', e => {
-				e.preventDefault();
-				if (el !== draggedElement) {
-					if (lastHighlighted) lastHighlighted.style.outline = '';
-					el.style.outline = '2px solid yellow';
-					lastHighlighted = el;
-				}
-			});
-			el.addEventListener('dragleave', () => {
-				if (el === lastHighlighted) {
-					el.style.outline = '';
-					lastHighlighted = null;
-				}
-			});
-
-			el.addEventListener('drop', e => {
-				e.preventDefault();
-				if (draggedElement !== lastHighlighted) {
-					console.log('dropped', draggedElement, 'on', lastHighlighted, draggedElement.parentNode);
-					lastHighlighted.style.outline = '';
-					draggedElement.style.outline = '';
-					lastHighlighted.parentNode.insertBefore(draggedElement, lastHighlighted);
-				}
-				draggedElement = null;
-				lastHighlighted = null;
-			});
-		});
-	})
+function checkIfFromOwnServer(url) {
+	const ownOrigin = window.location.origin; // e.g., http://127.0.0.1:51012
+	if (url.startsWith(ownOrigin)) {
+		console.log('Dropped from inside the project (server):', url);
+	} else {
+		console.log('Dropped from external website:', url);
+	}
 }
+function garnix() {
+	document.addEventListener('drop', async (event) => {
+		event.preventDefault(); // Prevent default behavior
+		const items = event.dataTransfer.items;
 
+		if (items.length > 0) {
+			for (const item of items) {
+				if (item.kind === 'file') {
+					// Dropped from computer (local file)
+					const file = item.getAsFile();
+					console.log('Dropped from computer:', file.name);
+				} else if (item.kind === 'string' && item.type === 'text/uri-list') {
+					// Dropped from a website (URL)
+					const url = await new Promise(resolve => item.getAsString(resolve));
+					console.log('Dropped from website:', url);
+					checkIfFromOwnServer(url);
+				}
+			}
+		}
+	});
+
+}

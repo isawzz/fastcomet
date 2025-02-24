@@ -1408,7 +1408,7 @@ function dict2list(di, keyName = 'id') {
 	if (!isDict(vals[0])) {
 		for (const v of vals) res.push({ value: v });
 	} else res = vals;
-	console.log(res)
+	//console.log(res)
 	let keys = Object.keys(di);
 	for (let i = 0; i < res.length; i++) { res[i][keyName] = keys[i]; }
 	return res;
@@ -2327,31 +2327,7 @@ function hToggleClassMenu(ev) {
 	mClass(elem, 'active');
 	return [prev, elem];
 }
-async function handleImageDrop(ev) {
-	return new Promise((resolve, reject) => {
-		ev.preventDefault();
-		const files = ev.dataTransfer.files;
-		let fileNameDisplay = ev.target;
-		if (files.length > 0) {
-			const file = files[0];
-			const fileName = file.name;
-			const fileType = file.type;
-			console.log(fileName, fileType);
-			if (fileType.startsWith('image/')) {
-				fileNameDisplay.textContent = `Dropped image: ${stringBefore(fileName, '.')}.${stringAfter(fileName, '.')}`;
-				const reader = new FileReader();
-				reader.onload = async (evReader) => {
-					let data = evReader.target.result;
-					let resized = await resizeImage(file, 420, 300);
-					resolve(data);
-				};
-				reader.readAsDataURL(files[0]);
-			} else {
-				fileNameDisplay.textContent = 'Please drop a valid image file.';
-			}
-		}
-	});
-}
+
 function hexBoardCenters(topside, side) {
 	if (nundef(topside)) topside = 4;
 	if (nundef(side)) side = topside;
@@ -3142,7 +3118,7 @@ function resizeImage(file, maxWidth, maxHeight) {
 				canvas.height = height;
 				ctx.drawImage(img, 0, 0, width, height);
 				const resizedDataUrl = canvas.toDataURL("image/jpeg", 0.8); // Quality: 0.8 (optional)
-				resolve(resizedDataUrl);
+				resolve({dataUrl:resizedDataUrl,width,height});
 			};
 			img.onerror = () => {
 				console.error("Error loading image.");
@@ -3156,21 +3132,6 @@ function resizeImage(file, maxWidth, maxHeight) {
 		};
 		reader.readAsDataURL(file);
 	});
-}
-async function rest() {
-	const dataTransfer = ev.dataTransfer;
-	if (dataTransfer.items) {
-		for (const item of dataTransfer.items) {
-			if (item.kind === "file" && item.type.startsWith("image/")) {
-				console.log('item', item);
-				const file = item.getAsFile();
-				let resizedDataUrl = await resizeImage(file, 420, 300);
-				if (resizedDataUrl) {
-					console.log('resizedDataUrl', resizedDataUrl);
-				}
-			}
-		}
-	}
 }
 function roundIfTransparentCorner(img) {
 	let c = getPixTL(img);

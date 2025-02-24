@@ -1,22 +1,7 @@
-12/12/2024:
-  title: In Redmond
-  text:
-    - >-
-      It should be finet should be fine, wieso ist alles so furchtbar
-      kompliziert???
-    - ../zdata/blogimages/garlic.jpg
-    - this is really good
-12/13/2024:
-  title: Redmond
-  text:
-    - >-
-      alles ist fuer immer ok. erinner dich einfach wie es war als kind
-    - ../zdata/blogimages/tofu.jpg
-    - this is really good
 12/14/2024:
   title: Back in Vienna
   text:
-    - >-
-      It should be fine. life itself takes care of everything
-    - ../zdata/blogimages/lentils.jpg
+    - It should be fine. life itself takes care of everything
+    - 'http://127.0.0.1:60338/zdata/blogimages/tofu.jpg'
+    - 'http://127.0.0.1:60338/zdata/blogimages/lentils.jpg'
     - this is really good
