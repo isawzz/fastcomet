@@ -1,4 +1,101 @@
+async function _handleDrop(ev) {
+  console.log(arguments, ev.target)
+  let dropZone = ev.target;
+  let dropImage = dropZone.getElementsByTagName('img')[0];
+  let items = ev.dataTransfer.items;
 
+  for (const item of items) {
+    if (item.kind === 'file') {
+      // Dropped from computer (local file)
+      const file = item.getAsFile();
+      console.log('Dropped from computer:', file.name);
+    } else if (item.kind === 'string' && item.type === 'text/uri-list') {
+      // Dropped from a website (URL)
+      const url = await new Promise(resolve => item.getAsString(resolve));
+      console.log('Dropped from website:', url);
+      checkIfFromOwnServer(url);
+      dropImage.src = url;
+    }
+  }
+
+
+  // if (files.length) {
+  //   var file = files[0];
+  //   if (file.type.startsWith('image/')) {
+  //     console.log(file)
+  //     let {dataUrl,width,height} = await resizeImage(file, 500, 1000);
+  //     let name = `img${getNow()}`; //await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }); console.log('you entered', name);
+  //     uploadImage(dataUrl, `zdata/images/${name}.${stringAfter(file.name, '.')}`);
+  //     mStyle(dropImage,{w:Math.min(500,width),display:'block',margin:'auto'},{src:dataUrl});
+  //   } else {
+  //     console.log('Please drop an image file.');
+  //   }
+  // } else {
+  //   // Handle external image URLs
+  //   var imageUrl = ev.dataTransfer.getData('text/uri-list');
+  //   if (imageUrl) {
+  //     let src = imageUrl;
+  //     dropImage.src = src;
+  //     dropImage.style.display = 'block';
+  //     dropZone.textContent = '';
+  //     dropZone.appendChild(dropImage);
+  //   } else {
+  //     console.log('Please drop an image file or a valid image URL.');
+  //   }
+  // }
+}
+function handleDrop(ev) {
+  console.log('HAAAAAAAAAAAAALO')
+  const files = ev.dataTransfer.files;
+  handleFiles(files);
+}
+
+function handleFiles(files) {
+  [...files].forEach(previewFile);
+}
+function handleFiles(files) {
+	[...files].forEach(file => {
+			if (file.type.startsWith('image/')) {
+					const reader = new FileReader();
+					reader.readAsDataURL(file);
+					reader.onloadend = () => {
+							displayImage(reader.result);
+					};
+			}
+	});
+}
+function previewFile(file) {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onloadend = () => {
+    const img = document.createElement('img');
+    img.src = reader.result;
+    img.style.maxWidth = '500px';
+    DA.dropZone.appendChild(img);
+  };
+}
+function garnix() {
+	document.addEventListener('drop', async (event) => {
+		event.preventDefault(); // Prevent default behavior
+		const items = event.dataTransfer.items;
+
+		if (items.length > 0) {
+			for (const item of items) {
+				if (item.kind === 'file') {
+					// Dropped from computer (local file)
+					const file = item.getAsFile();
+					console.log('Dropped from computer:', file.name);
+				} else if (item.kind === 'string' && item.type === 'text/uri-list') {
+					// Dropped from a website (URL)
+					const url = await new Promise(resolve => item.getAsString(resolve));
+					console.log('Dropped from website:', url);
+					checkIfFromOwnServer(url);
+				}
+			}
+		}
+	});
+
+}
 async function handleImageDrop(ev) {
 	return new Promise((resolve, reject) => {
 		ev.preventDefault();
@@ -90,25 +187,30 @@ async function rest() {
 		}
 	}
 }
-function handleDrop(ev) {
-  console.log('HAAAAAAAAAAAAALO')
-  const files = ev.dataTransfer.files;
-  handleFiles(files);
-}
-
-function handleFiles(files) {
-  [...files].forEach(previewFile);
-}
-
-function previewFile(file) {
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onloadend = () => {
-    const img = document.createElement('img');
-    img.src = reader.result;
-    img.style.maxWidth = '500px';
-    DA.dropZone.appendChild(img);
-  };
+function onchangeFileInput(ev) {
+	console.log('CHANGE',ev.target.files);return;
+	let files = ev.target.files;
+	let file = files[0]; console.log(file)
+	let reader = new FileReader();
+	reader.onload = function (ev) {
+		let data = ev.target.result;
+		let image = new Image();
+		image.src = data;
+		image.onload = function () {
+			let canvas = document.createElement('canvas');
+			canvas.width = image.width;
+			canvas.height = image.height;
+			let ctx = canvas.getContext('2d');
+			ctx.drawImage(image, 0, 0);
+			let dataURL = canvas.toDataURL('image/png');
+			let img = document.createElement('img');
+			img.src = dataURL;
+			img.style.maxWidth = '500px';
+			console.log('HALLO!!!!!!')
+			DA.dropZone.appendChild(img);
+		};
+	};
+	reader.readAsDataURL(file);
 }
 async function mPhpPostImage(image, path) {
 	return await mPostPhp('upload_image', { image, path }, false);

@@ -416,6 +416,21 @@ function mLayoutTMS(bg, dParent, suffix = '', hrow = 30) {
 	let rowt = `minmax(${hrow}px, auto) 1fr minmax(${hrow}px, auto)`;
 	return mLayout(bg, dParent, rowlist, colt, rowt);
 }
+function mLoadImgAsync(d, styles = {}, opts = {}, callback = null) {
+	return new Promise((resolve, reject) => {
+		let img = document.createElement('img');
+		mAppend(d, img);
+		mStyle(img, styles, opts);
+		img.onload = async () => {
+			if (callback) callback(img);
+			resolve(img);
+		};
+		img.onerror = (error) => {
+			reject(error);
+		};
+		img.src = opts.src;
+	});
+}
 function mLinebreak(dParent, gap = 0) {
 	dParent = toElem(dParent);
 	let display = getComputedStyle(dParent).display;

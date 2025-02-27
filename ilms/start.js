@@ -8,8 +8,64 @@ async function test0_vonDd1DragImageFromAnywhere() {
 	let elems = mLayoutTLMS('strawberry', 'dPage'); mStyle('dMain', { overy: 'auto' });
 	mFlex('dMain'); mFlex(dTop);
 
+	let d = mDom('dMain', { padding: 10, bg: 'green' });
+	let d1 = mDom(d, { h: 200 }, { tag: 'img', src: '../assets/img/emo/abacus.png' });
+	mLinebreak(d);
+
+	let dName = mDom(d, {}, { html: 'Name' });
+	let dInp = mDom(d, {}, { tag: 'input', name: 'name' }); mLinebreak(d);
+	let fileInput = mDom(d, {}, { tag: 'input', type: 'file', accept: 'image/*' }); //,{onchange:onchangeFileInput});
+	let dropZone = mDom(d, { w: 500, h: 300, border: 'white 1px dashed', align: 'center' }, { html: 'Drop image here' });
+
+	async function ondropImage(ev) {
+		console.log('ondropImage', ev);
+		let item = ev.dataTransfer.items[0]; console.log(item);
+		let file = item.getAsFile(); console.log(file);
+		let src;
+		if (file)	 src = URL.createObjectURL(file); //console.log(src);
+		else{
+			file = ev.dataTransfer.files[0];
+			const url = await new Promise(resolve => item.getAsString(resolve));
+			console.log('Dropped from website:', url);
+			let isOwnServer = checkIfFromOwnServer(url);
+			if (!isOwnServer) {
+				let { dataUrl, width, height } = await resizeImage(file, 500, 1000);
+				let name = `img${getNow()}`; //await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }); console.log('you entered', name);
+				console.log('dataUrl', dataUrl, width, height, name);
+				uploadImage(dataUrl, `zdata/images/${name}.${stringAfter(file.name, '.')}`);
+				src = dataUrl;
+			}
+		}
+		await displayImagedata(src);
+	}
+	async function onchangeFileinput(ev) {
+		let files = ev.target.files; //console.log(files);
+		let file = files[0]; //console.log(file);
+		let src = URL.createObjectURL(file); //console.log(src);
+		await displayImagedata(src);
+	}
+	async function displayImagedata(src){
+		mClear(dropZone);
+		let img = await mLoadImgAsync(dropZone,{wmax:500},{tag:'img',src:src});
+		console.log('img dims', img.width, img.height);
+	}
+
+	//let x = mImageDropper(d3,ondropImage);
+  function preventDefaults(ev) { ev.preventDefault(); ev.stopPropagation(); }
+  function highlight(ev) { mClass(ev.target, 'framedPicture'); }
+  function unhighlight(ev) { mClassRemove(ev.target, 'framedPicture'); }
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evname => {
+    dropZone.addEventListener(evname, preventDefaults, false);
+    document.body.addEventListener(evname, preventDefaults, false);
+  });
+  ['dragenter', 'dragover'].forEach(evname => { dropZone.addEventListener(evname, highlight, false); });
+  ['dragleave', 'drop'].forEach(evname => { dropZone.addEventListener(evname, unhighlight, false); });
+	dropZone.addEventListener('drop', ondropImage, false);
+	fileInput.addEventListener('change', onchangeFileinput, false);
+	return;
+
 	//let x = mImageDropper(mDom('dMain',{w:500,bg:'green',h:'auto'}));
-	let x = mImageDropper(mDom('dMain',{w:500,hmin:300,border:'white 3px solid',margin:10,align:'center'},{html:'Drop image here'}));
+	//let x1 = mImageDropper(d3, { w: 500, h: 300, border: 'white 1px dashed', margin: 10, align: 'center' }, { html: 'Drop image here' });
 }
 async function test0_clickImageDownloadAtClient() {
 	await initAssets();
@@ -18,7 +74,7 @@ async function test0_clickImageDownloadAtClient() {
 	let d = DA.dropZone = mBy('dMain');
 
 	//enable drap drop image to dMain
-	d.addEventListener('drop', handleDrop, false);
+	d.addEventListener('drop', handleDropOneZone, false);
 
 
 }
