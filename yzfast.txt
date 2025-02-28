@@ -2,14 +2,20 @@
 alles ist fuer immer ok - I have left this plane. I am now in the plane of imagination and dream!
 
 ___ 5:56 AM 2/27/2025 airport 72000
+5:57 AM 2/27/2025
+es kostet schon energie dinge zu ignorieren. aber das ist energy well spent weil es damage control ist
+dd:
+- bei dd ist es ev.dataTransfer.items
 
+file input:
+bei fileinput ist es ev.target.files
+ich bekomm keinen path nur einen filename!
+lastModified,name,size,type
 
 ___ 4:37 AM 2/26/2025 airport 71000
 was will ich heute machen?
 
 das waere nicht ratsam, nachdem Du selbst der beneficiary bist. Mit solchen androhungen erreichst Du auch nicht unbedingt dass ich Dir mehr infos gebe. Der trust wurde established um DEINE (unsre) assets abzusichern und auf eine langfristig sichere basis zu stellen. Es hat viele Vorteile. Wenn Du ein bisschen mehr cooperative bist dann bekommst Du das dokument vielleicht zu lesen.
-
-
 
 ___ 5:57 AM 2/25/2025 airport 70000
 1 ws mit yt
