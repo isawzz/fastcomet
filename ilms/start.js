@@ -3,6 +3,10 @@ onload = start;
 
 async function start() { await test0_vonDd1DragImageFromAnywhere(); }
 
+async function app0_behappy(){
+	
+}
+
 async function test0_vonDd1DragImageFromAnywhere() {
 	await initAssets();
 	let elems = mLayoutTLMS('strawberry', 'dPage'); mStyle('dMain', { overy: 'auto' });
@@ -12,9 +16,10 @@ async function test0_vonDd1DragImageFromAnywhere() {
 	let d1 = mDom(d, { h: 200 }, { tag: 'img', src: '../assets/img/emo/abacus.png' });
 	mLinebreak(d);
 
-	let fileInput = mDom(d, {}, { tag: 'input', type: 'file', accept: 'image/*' }); //,{onchange:onchangeFileInput});
-	let dropZone = mDom(d, { w: 500, h: 300, border: 'white 1px dashed', align: 'center' }, { html: 'Drop image here' });
-
+	let m=mImageDropper(d); return;
+	// let fileInput = mDom(d, {}, { tag: 'input', type: 'file', accept: 'image/*' }); //,{onchange:onchangeFileInput});
+	// let dropZone = mDom(d, { w: 500, h: 300, border: 'white 1px dashed', align: 'center' }, { html: 'Drop image here' });
+	return;
 	async function ondropImage(ev) {
 		console.log('ondropImage', ev);
 		let item = ev.dataTransfer.items[0]; console.log(item);
