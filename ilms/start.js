@@ -1,10 +1,22 @@
 
 onload = start;
 
-async function start() { await test0_vonDd1DragImageFromAnywhere(); }
+async function start() { await app0_behappy(); }
 
 async function app0_behappy(){
-	
+	await initAssets();
+	let src=`../assets/img/beach/beach${rChoose(range(4))}.jpg`;
+	let elems = mLayoutTLMRS(src, 'dPage'); mStyle('dMain', { overy: 'auto' });
+	mFlex('dMain'); mFlex(dTop);
+	return;
+	mStyle('dPage',{bgSrc:src,bgSize:'cover'});
+
+	//find color matching the loaded image using colorThief from color palette of loaded image!
+
+	let colorPalette = await mPalette('dMain',src,false);
+	console.log(colorPalette);
+	mStyle('dPage',{bg:rChoose(colorPalette)});
+	elems.forEach(d=>mStyle(d,{bg:'transparent'}));
 }
 
 async function test0_vonDd1DragImageFromAnywhere() {
