@@ -342,80 +342,6 @@ async function mKey(imgKey, d, styles = {}, opts = {}) {
 	}
 	console.log('type', type)
 }
-function mLayout(bg, dParent, rowlist, colt, rowt) {
-	dParent = toElem(dParent);
-	mStyle(dParent, { bg });
-	let areas = `'${rowlist.join("' '")}'`;
-	if (dParent.id == 'dPage') M.divNames = [];
-	let newNames = mAreas(dParent, areas, colt, rowt);
-	let names = M.divNames = Array.from(new Set(M.divNames.concat(newNames)));
-	mShade(newNames);
-	return names.map(x => mBy(x));
-}
-function mLayoutLMR(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
-	let rowlist = [`dLeft${suffix} dMain${suffix} dRight${suffix}`];
-	let colt = `minmax(${wcol}px, auto) 1fr minmax(${wcol}px, auto)`;
-	let rowt = `1fr`;
-	return mLayout(bg, dParent, rowlist, colt, rowt);
-}
-function mLayoutLR(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
-	let rowlist = [`dLeft${suffix} dRight${suffix}`];
-	let colt = `auto 1fr`;
-	let rowt = `1fr`;
-	return mLayout(bg, dParent, rowlist, colt, rowt);
-}
-function mLayoutM(bg, dParent, suffix = '') {
-	dParent = toElem(dParent);
-	mStyle(dParent, { bg });
-	let styles = { margin: 0, padding: 0, width: '100%', height: '100%' };
-	let opts = { id: `dMain${suffix}` };
-	if (dParent.id == 'dPage') M.divNames = [];
-	lookupAddIfToList(M, ['divNames'], opts.id);
-	let d = mDom(dParent, styles, opts);
-	return [d];
-}
-function mLayoutMR(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
-	let rowlist = [`dMain${suffix} dRight${suffix}`];
-	let colt = `minmax(auto, ${wcol}px) 1fr`;
-	let rowt = `1fr`;
-	return mLayout(bg, dParent, rowlist, colt, rowt);
-}
-function mLayoutTLM(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
-	let rowlist = [`dTop${suffix} dTop${suffix}`, `dLeft${suffix} dMain${suffix}`];
-	let colt = `minmax(${wcol}px, auto) 1fr`;
-	let rowt = `minmax(${hrow}px, auto) 1fr`;
-	return mLayout(bg, dParent, rowlist, colt, rowt);
-}
-function mLayoutTLMR(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
-	let rowlist = [`dTop${suffix} dTop${suffix} dTop${suffix}`, `dLeft${suffix} dMain${suffix} dRight${suffix}`];
-	let colt = `minmax(${wcol}px, auto) 1fr minmax(${wcol}px, auto)`;
-	let rowt = `minmax(${hrow}px, auto) 1fr`;
-	return mLayout(bg, dParent, rowlist, colt, rowt);
-}
-function mLayoutTLMRS(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
-	let rowlist = [`dTop${suffix} dTop${suffix} dTop${suffix}`, `dLeft${suffix} dMain${suffix} dRight${suffix}`, `dStatus${suffix} dStatus${suffix} dStatus${suffix}`];
-	let colt = `minmax(${wcol}px, auto) 1fr minmax(${wcol}px, auto)`;
-	let rowt = `minmax(${hrow}px, auto) 1fr minmax(${hrow}px, auto)`;
-	return mLayout(bg, dParent, rowlist, colt, rowt);
-}
-function mLayoutTLMS(bg, dParent, suffix = '', wcol = 30, hrow = 30) {
-	let rowlist = [`dTop${suffix} dTop${suffix}`, `dLeft${suffix} dMain${suffix}`, `dStatus${suffix} dStatus${suffix}`];
-	let colt = `minmax(${wcol}px, auto) 1fr`;
-	let rowt = `minmax(${hrow}px, auto) 1fr minmax(${hrow}px, auto)`;
-	return mLayout(bg, dParent, rowlist, colt, rowt);
-}
-function mLayoutTM(bg, dParent, suffix = '', hrow = 30) {
-	let rowlist = [`dTop${suffix}`, `dMain${suffix}`];
-	let colt = `1fr`;
-	let rowt = `minmax(${hrow}px, auto) 1fr`;
-	return mLayout(bg, dParent, rowlist, colt, rowt);
-}
-function mLayoutTMS(bg, dParent, suffix = '', hrow = 30) {
-	let rowlist = [`dTop${suffix}`, `dMain${suffix}`, `dStatus${suffix}`];
-	let colt = `1fr`;
-	let rowt = `minmax(${hrow}px, auto) 1fr minmax(${hrow}px, auto)`;
-	return mLayout(bg, dParent, rowlist, colt, rowt);
-}
 function mLoadImgAsync(d, styles = {}, opts = {}, callback = null) {
 	return new Promise((resolve, reject) => {
 		let img = document.createElement('img');
@@ -664,6 +590,7 @@ function mStyle(elem, styles = {}, opts = {}) {
 			elem.style.setProperty('color', colorIdealText(bg));
 		} else if (k == 'bg') {
 			if (v.includes('grad')) elem.style.setProperty('background', v);
+			else if (v.includes('/')) elem.style.setProperty('background-image', `url(${v})`);
 			else elem.style.setProperty('background-color', colorFrom(v, styles.alpha));
 			continue;
 		} else if (k == 'fg') {
