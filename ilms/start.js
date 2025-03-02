@@ -3,20 +3,21 @@ onload = start;
 
 async function start() { await app0_behappy(); }
 
-async function app0_behappy(){
+async function app0_behappy() {
 	await initAssets();
-	let src=`../assets/img/beach/beach${rChoose(range(4))}.jpg`;
-	let elems = mLayoutTLMRS(src, 'dPage'); mStyle('dMain', { overy: 'auto' });
+	let src = `../assets/img/beach/beach${rChoose(range(4))}.jpg`;
+	//mStyle('dPage', {bgSrc:src, bgSize:'cover'}); return;
+	let elems = mLayoutTLMRS('dPage',{bgSrc:src}); mStyle('dMain', { overy: 'auto' });
 	mFlex('dMain'); mFlex(dTop);
 	return;
-	mStyle('dPage',{bgSrc:src,bgSize:'cover'});
+	mStyle('dPage', { bgSrc: src, bgSize: 'cover' });
 
 	//find color matching the loaded image using colorThief from color palette of loaded image!
 
-	let colorPalette = await mPalette('dMain',src,false);
+	let colorPalette = await mPalette('dMain', src, false);
 	console.log(colorPalette);
-	mStyle('dPage',{bg:rChoose(colorPalette)});
-	elems.forEach(d=>mStyle(d,{bg:'transparent'}));
+	mStyle('dPage', { bg: rChoose(colorPalette) });
+	elems.forEach(d => mStyle(d, { bg: 'transparent' }));
 }
 
 async function test0_vonDd1DragImageFromAnywhere() {
@@ -28,7 +29,7 @@ async function test0_vonDd1DragImageFromAnywhere() {
 	let d1 = mDom(d, { h: 200 }, { tag: 'img', src: '../assets/img/emo/abacus.png' });
 	mLinebreak(d);
 
-	let m=mImageDropper(d); return;
+	let m = mImageDropper(d); return;
 	// let fileInput = mDom(d, {}, { tag: 'input', type: 'file', accept: 'image/*' }); //,{onchange:onchangeFileInput});
 	// let dropZone = mDom(d, { w: 500, h: 300, border: 'white 1px dashed', align: 'center' }, { html: 'Drop image here' });
 	return;
@@ -36,7 +37,7 @@ async function test0_vonDd1DragImageFromAnywhere() {
 		console.log('ondropImage', ev);
 		let item = ev.dataTransfer.items[0]; console.log(item);
 		let file = item.getAsFile(); console.log(file);
-		if (file) await displayImagedata(URL.createObjectURL(file)); 
+		if (file) await displayImagedata(URL.createObjectURL(file));
 		else {
 			file = ev.dataTransfer.files[0];
 			const url = await new Promise(resolve => item.getAsString(resolve));
@@ -46,14 +47,14 @@ async function test0_vonDd1DragImageFromAnywhere() {
 				await displayImagedata(url);
 			} else {
 				let { dataUrl, width, height } = await resizeImage(file, 500, 1000);
-				await displayImagedata(dataUrl);				
-				let name = `img${getNow()}`; 
-				name = await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 },{value:name}); console.log('you entered', name);
+				await displayImagedata(dataUrl);
+				let name = `img${getNow()}`;
+				name = await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }, { value: name }); console.log('you entered', name);
 				console.log(width, height, name);
 				uploadImage(dataUrl, `zdata/images/${name}.${stringAfter(file.name, '.')}`);
 			}
 		}
-		
+
 	}
 	async function onchangeFileinput(ev) {
 		let files = ev.target.files; //console.log(files);
