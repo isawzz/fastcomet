@@ -1,5 +1,109 @@
-4.3. lib renew >TODO
 alles ist fuer immer ok - I have left this plane. I am now in the plane of imagination and dream!
+
+___ 3:15 AM 3/3/2025 airport 78000
+was schaff ich grad noch als activity?
+ich sollte trinken
+ich sollte ein beispiel machen
+
+wie kann ich jetzt wirklich einen activity plan machen?
+wenn ich nicht denken kann
+was soll ich ueberhaupt machen? ich bin einfach so schrecklich muede!!!
+
+E f=Osk m=freeCz a=MS +bonusoV +R
+*0(>>4) >=10(>>11) <=18(>>17)
+
+Tmin(plan) activate-deactivate
+
+odf=pmr
+0*: Fk>v ... done!
+6: +pi
+7: +w
+8: +v
+9: +ko +gu
+10: +ba +E
+11: +bue
+12: +sp
+13: +A
+15: +T
+18: -E
+19: -T
+20: >ho
+21: +sl
+3hsl minimum nicht *vor 0h!
+
+wait: 1+wpl/1+(each allowed in turn)/1+fibu
+was ist die leichteste art aufzustehen?
+activate: bstp-choices
+
+
+was ist der perfekte RH?
+*6 kfp v anz vcy 
+
+RH kann sein:
+
+aus R hole ich mir mathe buch mit loesungen!
+
+aber jetzt such ich mir einfach ein buch aus
+
+kann ich nicht einfach pro schueler gehen? oder soll ich mich unabhaengig machen?
+
+spielen ist auch lustig!
+
+was ich mag:
+geige ueben
+klavier ueben
+mathe ueben
+gehen
+herumgehen
+kochen und backen
+bunte farben
+spiele
+
+ich glaub ich bin ungefaehr 8 oder 9, hoechstens 11
+
+alles ueberall zugleich
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ___ 7:05 AM 3/2/2025 airport 76000
 10 sarah

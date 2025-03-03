@@ -1,0 +1,27 @@
+
+(area of a square with side a) - (area of a quarter of a circle with radius a)
+
+how much must the radius be so that the quarter circle covers half of the square area?
+
+beschreibung:
+A is a square of side 20. B is a quarter circle of radius 20, covering A. how much of the area of A is covered by B? 
+
+___ d4.765. 
+Ein Quadrat und ein Kreis haben denselben Umfang u.
+Welche der beiden Figuren hat dann den größeren Flächeninhalt?
+1) Was meinst du? Schreibe deine Vermutung auf!
+2) Überprüfe deine Vermutung an einem Kreis und einem Quadrat mit Umfang u = 12 cm!
+3) Überprüfe den Sachverhalt allgemein! Gib das Verhältnis der beiden Flächeninhalte an! Wähle dafür u = x cm!
+
+
+
+
+
+
+
+
+
+
+
+
+
