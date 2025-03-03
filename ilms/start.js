@@ -5,19 +5,15 @@ async function start() { await app0_behappy(); }
 
 async function app0_behappy() {
 	await initAssets();
-	let src = `../assets/img/beach/beach${rChoose(range(4))}.jpg`;
+	let src = `../assets/img/beach/beach${rChoose(range(5))}.jpg`;
 	//mStyle('dPage', {bgSrc:src, bgSize:'cover'}); return;
-	let elems = mLayoutTLMRS('dPage',{bgSrc:src}); mStyle('dMain', { overy: 'auto' });
+	let elems = mLayoutTM('dPage', { bgSrc: src, bgSize: 'cover' });
+	mStyle('dMain', { overy: 'auto' });
 	mFlex('dMain'); mFlex(dTop);
-	return;
-	mStyle('dPage', { bgSrc: src, bgSize: 'cover' });
-
-	//find color matching the loaded image using colorThief from color palette of loaded image!
-
 	let colorPalette = await mPalette('dMain', src, false);
-	console.log(colorPalette);
-	mStyle('dPage', { bg: rChoose(colorPalette) });
-	elems.forEach(d => mStyle(d, { bg: 'transparent' }));
+	let bg = rChoose(colorPalette);// '#00000060'
+	arrMinus(elems, dMain).forEach(x => mStyle(x, { bg, fg: 'contrast', alpha:.6 }));
+	mStyle(dTop,{justify:'center',aitems:'center',fz:20},{html:'Hello, happy world!'})
 }
 
 async function test0_vonDd1DragImageFromAnywhere() {
