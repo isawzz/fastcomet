@@ -41,19 +41,6 @@ function alphaToHex(a01) {
 	var hex = (alpha + 0x10000).toString(16).slice(-2).toUpperCase();
 	return hex;
 }
-async function app0_stopwatch() {
-	await loadAssetsStatic();
-	let di = await actionLoadAll();
-	di.list.map(x => console.log(x.key, x.date, x.time, x.secs));
-	let elems = mLayoutTM(rColor(), dPage);
-	mStyle(dTop, { padding: 4, display: 'flex', aitems: 'center', wbox: true, gap: 4 });
-	let d1 = mKey('watch', dTop, {}, { onclick: onclickStopwatch, menu: 'top' });
-	let d2 = mKey('reset', dTop, {}, { onclick: onclickResetActions, menu: 'top' });
-	let d3 = mKey('archive', dTop, {}, { onclick: onclickArchiveActions, menu: 'top' });
-	let d4 = mKey('thinking_face', dTop, {}, { onclick: onclickAction, menu: 'main' });
-	let d5 = mKey('sleeping_face', dTop, {}, { onclick: onclickAction, menu: 'main' });
-	d1.click();
-}
 function applyOpts(d, opts = {}) {
 	const aliases = {
 		classes: 'className',

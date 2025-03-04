@@ -1,5 +1,46 @@
-//imageDD v4
 
+//mKey v1: oppinionated
+async function mKeyO(imgKey, d, styles = {}, opts = {}) {
+	styles = jsCopy(styles);
+	let type = opts.prefer;
+	let o = type != 'plain' ? lookup(M.superdi, [imgKey]) : null;
+	let src;
+	if (nundef(o) && imgKey.includes('.')) src = imgKey;
+	else if (isdef(o) && (type == 'img' || type == 'photo') && isdef(o[type])) src = o[type];
+	else if (isdef(o) && isdef(o.img)) src = o.img;
+	if (isdef(src)) {
+		let [w, h] = mSizeSuccession(styles, 40);
+		addKeys({ w, h }, styles);
+		addKeys({ tag: 'img', src }, opts);
+		let d0 = mDom(d, styles, opts);
+		mCenterCenterFlex(d0);
+		let img = await mImgAsync(d0, styles, opts, roundIfTransparentCorner);
+		return d0;
+	} else if (isdef(o)) {
+		let [w, h] = mSizeSuccession(styles, 40);
+		let sz = h;
+		addKeys({ h }, styles);
+		if (nundef(type)) type = isdef(o.text) ? 'text' : isdef(o.fa6) ? 'fa6' : isdef(o.fa) ? 'fa' : isdef(o.ga) ? 'ga' : null;
+		let family = type == 'text' ? 'emoNoto' : type == 'fa6' ? 'fa6' : type == 'fa' ? 'pictoFa' : 'pictoGame';
+		let html = type == 'text' ? o.text : String.fromCharCode('0x' + o[type]);
+		addKeys({ family }, styles);
+		let d0 = mDom(d, styles, opts);
+		mCenterCenterFlex(d0);
+		let d1 = mDom(d0, {}, { html });
+		let r = getRect(d1);
+		[w, h] = [r.w, r.h];
+		let scale = Math.min(sz / w, sz / h);
+		d1.style.transformOrigin = 'center center';
+		d1.style.transform = `scale(${scale})`;
+		d1.style.transform = `scale(${scale})`;
+		return d0;
+	} else {
+		addKeys({ html: imgKey }, opts)
+		let img = mDom(d, styles, opts);
+		return img;
+	}
+	console.log('type', type)
+}
 
 //imageDD v3
 function checkIfFromOwnServer(url) {
