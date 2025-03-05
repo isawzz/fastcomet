@@ -1,4 +1,80 @@
 
+//mediaDropper v0:
+async function mMediaDropper(d) {
+  let fileInput = mDom(d, {}, { tag: 'input', type: 'file', accept: 'image/*,video/*,audio/*,.txt' });
+  let dropZone = mDom(d, { w: 500, hmin: 300, border: 'white 1px dashed', align: 'center' }, { html: 'Drop media here' });
+
+  function checkIfFromOwnServer(url) {
+    const ownOrigin = window.location.origin;
+    if (url.startsWith(ownOrigin)) {
+      console.log('Dropped from inside the project (server):', url);
+      return true;
+    } else {
+      console.log('Dropped from external website:', url);
+      return false;
+    }
+  }
+
+  async function ondropMedia(ev) {
+    ev.preventDefault();
+    let item = ev.dataTransfer.items[0];
+    let file = item.getAsFile();
+
+    if (file) {
+      await displayMediaData(URL.createObjectURL(file), file.type);
+    } else {
+      file = ev.dataTransfer.files[0];
+      const url = await new Promise(resolve => item.getAsString(resolve));
+      let isOwnServer = checkIfFromOwnServer(url);
+      if (isOwnServer) {
+        await displayMediaData(url, 'unknown');
+      } else {
+        await displayMediaData(url, 'unknown');
+      }
+    }
+  }
+
+  async function onchangeFileinput(ev) {
+    let file = ev.target.files[0];
+    if (file) {
+      await displayMediaData(URL.createObjectURL(file), file.type);
+    }
+  }
+
+  async function displayMediaData(src, type) {
+    mClear(dropZone);
+
+    if (type.startsWith('image')) {
+      mLoadImgAsync(dropZone, { wmax: 500 }, { tag: 'img', src: src });
+    } else if (type.startsWith('video')) {
+      mDom(dropZone, { w: 500 }, { tag: 'video', src: src, controls: true });
+    } else if (type.startsWith('audio')) {
+      mDom(dropZone, {}, { tag: 'audio', src: src, controls: true });
+    } else if (type === 'text/plain') {
+      let response = await fetch(src);
+      let text = await response.text();
+      mDom(dropZone, {}, { tag: 'pre', html: text });
+    } else {
+      mDom(dropZone, {}, { html: 'Unsupported file type' });
+    }
+  }
+
+  function preventDefaults(ev) { ev.preventDefault(); ev.stopPropagation(); }
+  function highlight(ev) { mClass(ev.target, 'framedPicture'); }
+  function unhighlight(ev) { mClassRemove(ev.target, 'framedPicture'); }
+
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evname => {
+    dropZone.addEventListener(evname, preventDefaults, false);
+    document.body.addEventListener(evname, preventDefaults, false);
+  });
+  ['dragenter', 'dragover'].forEach(evname => { dropZone.addEventListener(evname, highlight, false); });
+  ['dragleave', 'drop'].forEach(evname => { dropZone.addEventListener(evname, unhighlight, false); });
+
+  dropZone.addEventListener('drop', ondropMedia, false);
+  fileInput.addEventListener('change', onchangeFileinput, false);
+}
+
+
 //mKey v1: oppinionated
 async function mKeyO(imgKey, d, styles = {}, opts = {}) {
 	styles = jsCopy(styles);

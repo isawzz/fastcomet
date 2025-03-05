@@ -1,14 +1,19 @@
 
-mo 3.3.
-12h A
-17h sarah
-
-di 4.3. 
-lib renew >TODO
-15h otto
-17h sarah
-
 mi 5.3
 15h theo
 18h30 sarah
 
+do 6.3
+18h sarah
+
+fr 7.3
+12h sarah
+
+sa 8.3
+12h sarah+A
+
+so 9.3
+10h sarah
+
+mo 10.3
+15h30 sarah

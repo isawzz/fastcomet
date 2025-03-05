@@ -1,76 +1,52 @@
-alles ist fuer immer ok - I have left this plane. I am now in the plane of imagination and dream!
+alles ist fuer immer ok - I have left this plane.
 
-___ 6:37 AM 3/4/2025 airport 79000 t 
+___ 6:10 AM 3/5/2025 airport 81000 14=
+7:19 AM 3/5/2025
+slow down!
+mach ein input
 
+<iframe 
+  src="https://www.youtube.com/embed/VIDEO_ID" 
+  width="500" height="300" 
+  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen>
+</iframe>
 
-___ 3:15 AM 3/3/2025 airport 78000
-bstp= vorb t ich schlafe gerade im sitzen
-ich hab ja garkeinen hunger
-ich hab nichtmal durst
-es interessiert mich auch nichts besonders
-was schaff ich grad noch als activity?
-ich sollte trinken
-ich sollte ein beispiel machen oder was programmieren
-wie spaet ist es eigentlich? 0hwuerd ich tief schlafen geht garnichtwarum bin ich aber um 2h immer noch so  muede?
-und um 4h auch
+das ding ist ein besseres oneNote wo man auch spiiele drin machen kann
+beispiel ich will ein recipe machen
 
-wie kann ich jetzt wirklich einen activity plan machen?
-wenn ich nicht denken kann
-was soll ich ueberhaupt machen? ich bin einfach so schrecklich muede!!!
+man soll background,palette, und music selecten koennen
+muss man halt einen link eingeben fuer music
 
-E f=Osk m=freeCz a=MS +bonusoV +R
-*0(>>4) >=10(>>11) <=18(>>17)
+gadgets die es geben soll:
+board
+meeple
+editabletext
+label
+image
+clock
+dice
+card
+deck
+rule (fuer game)
+canvas
+shape
+button
+list
+gatherding
 
-Tmin(plan) activate-deactivate
 
-odf=pmr
-0*: Fk>v ... done!
-6: +pi
-7: +w
-8: +v
-9: +ko +gu
-10: +ba +E
-11: +bue
-12: +sp
-13: +A
-15: +T
-18: -E
-19: -T
-20: >ho
-21: +sl
-3hsl minimum nicht *vor 0h!
 
-wait: 1+wpl/1+(each allowed in turn)/1+fibu
-was ist die leichteste art aufzustehen?
-activate: bstp-choices
 
 
-was ist der perfekte RH?
-*6 kfp v anz vcy 
 
-RH kann sein:
 
-aus R hole ich mir mathe buch mit loesungen!
 
-aber jetzt such ich mir einfach ein buch aus
 
-kann ich nicht einfach pro schueler gehen? oder soll ich mich unabhaengig machen?
 
-spielen ist auch lustig!
 
-was ich mag:
-geige ueben
-klavier ueben
-mathe ueben
-gehen
-herumgehen
-kochen und backen
-bunte farben
-spiele
 
-ich glaub ich bin ungefaehr 8 oder 9, hoechstens 11
 
-alles ueberall zugleich
 
 
 
@@ -101,6 +77,7 @@ alles ueberall zugleich
 
 
 
+___ 6:37 AM 3/4/2025 airport 79000 10t 
 
 
 
@@ -114,11 +91,6 @@ alles ueberall zugleich
 
 
 
-___ 7:05 AM 3/2/2025 airport 76000
-10 sarah
-12 otto
-2 maedi
-3 guggi
 
 
 
@@ -128,504 +100,6 @@ ___ 7:05 AM 3/2/2025 airport 76000
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-___ 4:27 AM 3/1/2025 airport 75000
-5:23 AM 3/1/2025
-- it should actually be working!!!
-ich muss wieder einen rhytmus annehmen!
-essen: 4h,11h-15h main meal,17h soup|oatmeal
-ja ich will dahin mit dem guggi und es versuchen!
-heute atd
-___ 9:34 PM 2/28/2025 airport 73000 flug
-___ 5:56 AM 2/27/2025 airport 72000
-5:57 AM 2/27/2025
-es kostet schon energie dinge zu ignorieren. aber das ist energy well spent weil es damage control ist
-dd:
-- bei dd ist es ev.dataTransfer.items
-
-file input:
-bei fileinput ist es ev.target.files
-ich bekomm keinen path nur einen filename!
-lastModified,name,size,type
-
-___ 4:37 AM 2/26/2025 airport 71000
-was will ich heute machen?
-
-das waere nicht ratsam, nachdem Du selbst der beneficiary bist. Mit solchen androhungen erreichst Du auch nicht unbedingt dass ich Dir mehr infos gebe. Der trust wurde established um DEINE (unsre) assets abzusichern und auf eine langfristig sichere basis zu stellen. Es hat viele Vorteile. Wenn Du ein bisschen mehr cooperative bist dann bekommst Du das dokument vielleicht zu lesen.
-
-___ 5:57 AM 2/25/2025 airport 70000
-1 ws mit yt
-- such ein yt aus
-ich schaff es kaum aufzustehen
-aber ich hab heut nicht zuviel gegessen!
-soll ich noch ein schau buch mitnehmen? geometry waer cool
-nein ich glaub eher nicht. lieber hol ich mir wieder die loesungen
-oder mach geo in sarahs buechern! muss ich mal checken!
-
-___ 6:00 AM 2/23/2025 airport 69000
-ich sitze hier un catastrophize das ist kein guter zustand.
-
-___ 6:00 AM 2/23/2025 airport 68000
-wie kann ich es schaffen aufzustehen?
-wie nur wie? wenn es doch voellig egal ist was ich mache
-6:00 AM 2/23/2025
-- nations
-
-___ 5:29 AM 2/21/2025 airport 66000
-6:16 AM 2/22/2025
-- ich glaub der trick ist IMMER im geheimen prog math violin piano gehen zu machen - einfach IMMER das ist es was ich lernen muss
-so kann ich durch den tag gehen
-at least: gehen!
-- erstmal cleanup!!! alles in tbd
-- wie save ich data zu file? 
-- wo soll ich es saven?
-- welchen namen soll ich ihm geben?
-
-2.536 * 10^
-
-N(0)=100
-N(1)=100 * (1+0.019) =
-N(2) = 
-
-5:36 AM 2/22/2025
-das mit den images geht immer noch nicht!
-ich brauch einfach eine bessere art mit images zu dealen!!!
-ich muss es einfach nur schaffen alles real-worldly als NEBENSAECHLICH anzusehen! weil das wichtige was ich mache was eigenes ist
-new waer gut
-zuerst will ich ein beliebiges bild da reindraggen
-- mach einen new button
-
-___ 5:29 AM 2/21/2025 airport 64000
-mit heute koennt ich fertig werden:
-ok - regal ausraeumen
-ok - kasten ausraeumen
-ok - LC einraeumen
-ok - andres zeug einraeumen
-ok - books ins regal
-ok - oder endlich weiter putzen?
-
-5:29 AM 2/21/2025
-was passiert wenn ich html = hallo\ndasist gut mache?
-activitaet hilft gegen denken!
-
-___ 7:19 AM 2/20/2025 airport 63000
-I just have to learn letting go
-
-___ 5:26 AM 2/19/2025 airport 61000
-
-GE gas range JGSP28SENiSS
-
-950+3400/2=2650, diana muss kriegen:880K vom geld
-
-KitchenAid 19.9 cu. ft. Counter-Depth Side-by-Side Refrigerator with Preserva Food Care System
-KitchenAid 19.9 cu. ft. Counter-Depth Side-by-Side Refrigerator with Preserva Food Care System
-Item 1425964
-Color: Stainless Steel
-$2,099.99
-Price includes $1100 savings.
-Price valid through 2/26/25
-Spend & Save up to $500 and Qualifies for Costco Direct Savings. See Product Details.
-
-Samsung 23 cu. ft. Counter Depth 4-Door French Door Refrigerator with Beverage Center in Stainless Steel
-Samsung 23 cu. ft. Counter Depth 4-Door French Door Refrigerator with Beverage Center in Stainless Steel
-Item 1644559
-$1,699.99
-Price includes $1,300 Savings.
-Price valid through 2/23/25.
-Spend & Save up to $500 and qualifies for Costco Direct Savings. See Product Details.
-
-Samsung 51 dBA Fingerprint Resistant Top Control Dishwasher with AutoRelease and 3rd Rack
-Item 1751684
-$599.99
-Stainless Steel price includes $200 Savings.
-Price valid through 2/26/25.
-Spend & Save up to $500 and qualifies for Costco Direct Savings. See Product Details.
-
-Samsung 6.0 cu. ft. Smart Freestanding GAS Range with No-Preheat Air Fry and Convection
-Item 1542916
-Color: Stainless Steel
-$779.99
-Stainless Steel price includes $320 Savings and Black Stainless Steel price includes $420 Savings.
-Price valid through 2/23/25.
-Spend & Save up to $500 and qualifies for Costco Direct Savings. See Product Details.
-
-felix: 
-6:38 AM 2/19/2025
-heute gabapentin day!!!
-=>blogSaveAll ziemlich straightforward
-heute: alle spiele weg!
-alles was mir echt wichtig ist aus wohnzi weg!
-kiste mit geige aufloesen
-=>restl kisten fuer mich mit LC und spiele
-B bild?
-check ob koffer einchecken kann bei ba
-
-6:10 AM 2/19/2025
-what happens when I enter in a contenteditable? dermacht ein div rein!!! das will ich nicht! ich ersetze <div> durch <br> und </div> durch ''
-when saving the blog:
-empty text items deleted, consecutive text items:joined w/ linebreak
-best: text editable, image: draggable
-alternative:
-ich click auf ein element: 
-1. es wird gehighlighted und dann kommt: edit,move,delete,
-ich will nur einen freien tag sonst garnichts
-kann ich mir nicht einfach den tag frei machen?
-erstens: ich bin jetzt nur noch 1 woche hier! dann ist PAUSE und in dieser woche koennte zwar der guggi kommen aber ist nicht sicher
-
-___ 6:05 AM 2/18/2025 airport 60000
-___ 6:05 AM 2/17/2025 airport 57000
-solve: a+b=156, A+B=156, B = b-40, A=a+40, 2A=B
-solve: b-40=2(a+40), a+b=156
-
-6:15 AM 2/17/2025
-- ich will jetzt all die funtionalitaet von blog besser separieren
-dh: edit vs readonly
-bei edit soll man up down, dd, und editable divs haben
-diese 3 funtionen sollen gut modularisiert sein!
-genau wie das collapse!
-
-rein theoretisch koennte man bei mCollapse eine function mitgeben
-die genau sagt, was von dem item als title genommen werden soll
-
-vielleicht waer es noch besser, zu ersetzen?
-
-
-6:06 AM 2/17/2025
-- title, title_collapsed
-
-___ 6:07 AM 2/16/2025 airport 55000
-schlecht weil garkeine energie mehr wirklich ueberhaupt keine
-nur soviel hunger aber zugleich garkein hunger
-vielleicht ein heisses bad kann helfen?
-- stehe auf,bring zeug in kueche,aufraeume und maschine einschalten
-asus zumachen
-- morgen werd ich wieder garnichts tun
-- ich hab keine energie mehr
-jetzt bin ich ganz allein 
-das gpwirkt mindestens 3 tage lang!
-what is the way of doing least?
-where do I set boundaries? maybe right away?
-which lib function do I want next?
-showTitledItem(d,key,title,content,styles={},opts={}}
-opts.titleStyles
-opts.textStyles
-opts.imageStyles
-
-The heavy heavens crack and cry.
-Abandoned streets lay wet and weeping.
-A day for staying home and dry.
-A day for sipping tea and sleeping.
-
-Unlike the others, warm inside,
-Alone I wander to the sea,
-Drawn toward the sinking tide,
-The wailing wind as company.
-
-The air electric, dimly glowing,
-Dead leaves flee as gales give chase.
-Frigid fire burning, blowing,
-Exposure numbing hands and face.
-
-Each inhale an icy ache, 
-Freezing, yes, but wide awake.
-
-As I approach the wooden pier,
-Not a single soul nearby.
-The smell of salt soothes my despair,
-Only sea and rain and I.
-
-I stare into the surf below,
-Entranced I watch the wild waves crash.
-Leaning far to see the show,
-Above me bolts of lightning flash.
-
-Swirling darkly, foaming wildly-
-A hostile sight, to put it mildly-
-And as into the depths I stare
-The wretched wind whipping my hair
-A squealing squall catches my coat.
-A scream dislodges from my throat.
-I launch into the air before…
-I land back safely on the floor.
-
-Dropping low, I grip the ground.
-Breathing heavy, eyes gone round,
-Thinking how I could have drowned.
-My thumping heart slowing back down.
-
-Relieved a laugh bursts from my chest.
-I close my eyes and take a breath,
-Slowly standing, slightly stressed
-At narrowly avoiding death.
-
-A booming thunder lumbers by.
-A blaze of lightning draws my eye,
-And with hefty lengthy sigh,
-I watch the purple painted sky.
-
-When once again a sudden gust
-Bestows on me the lift and thrust,
-Whereby- without an honest fight-
-I’m flung into a whirlwind flight.
-
-Away I fly, far past the coast,
-The cloudless grey my humble host.
-
-And then as though in heartless spite,
-Without a hint of land in sight,
-The tempest swiftly fades away
-Releasing me from quite a height
-I plummet down to my dismay,
-And fall into the liquid night. 
-
-___ 4:51 AM 2/15/2025 airport 54000
-4:51 AM 2/15/2025
-ok - riesen challenge!!!! automatically generate mlib.js
-=> I want an empty day so I have now an empty day
-
-___ 5:40 AM 2/14/2025 airport 53000
-12:41 PM 2/14/2025
-- aufstehen und choices aufschreiben wie ich diese 1h verbringen kann
-irgendwie muss ich die zeit totschlagen
-danach hab ich frei!!!!
-
-brote,essen,cola,yogurt. alles vor 3h15 is glaub ich ok
-sollte jetzt einfach ins bad gehen und dann schlafen gehen
-mein leben war eine riesen failure und ist jetzt vorbei
-lass mich doch endlich sterben. ich habe gesagt dass ich es nicht selber mache, aber in fact koennte ich innerhalb der naechsten stunde tot sein. allein der gedanke ist pure relief.
-
-6:33 AM 2/14/2025
-ok - ideally: after having title, showBlog
-
-7:02 AM 2/14/2025
-- riesen challenge!!!! automatically generate mlib.js
-
-5:43 AM 2/14/2025
-ok - mGather conflict aufloesen
-___ 5:00 AM 2/13/2025 airport 51000
-E 12 warm+cola zitron!!!
-
-6:15 AM 2/13/2025
-=>absolute genial!!!!!
-- wie waers jetzt mit einem New button!!!
-
-5:55 AM 2/13/2025
-ok - nenn den multiButton(dParent,b1,b2,...)
-1. mach zuerst all die buttons
-2. dann mach die alle im selben space!
-
-5:31 AM 2/13/2025
-ok - brauche einen toggleButton oder einfach 2 buttons
-ok - wie kann ich all die fa6 sehen?
-circle_chevron_down
-circle_chevron_up
-
-5:08 AM 2/13/2025
-ok - wie kann ich den button handlen?
-
-___ 3:18 AM 2/12/2025 airport 48000
-4:23 AM 2/12/2025
-
-bin schon sehr muede! badewanne und dann schlafengehen!
-genug gegessen und genug gemacht - erst morgen weiter!
-
-RH: 
-1. 4h fkv
-2. meinen kasten ausraeumen: make sure postschluessel sind nicht da irgendwo drin!
-2.1a:kleine kiste holen
-2.2b.noten hinein
-2.3c. bewege zeug zur seite damit shelf passt
-2.4: hole under bad kiste
-2.5. alles aus shelf => kiste
-2.6 kleidung sort=>insgesamt 2 kisten kleidung+kueche
-
-
-
-___ 3:18 AM 2/11/2025 airport 47000
-3:41 AM 2/11/2025
-- outline view: nur die titles zeigen in kleiner schrift
-- click on title: open to full view, click again: close
-
-2:05 PM 2/11/2025
-- mein zimmer:
-keep:
-piano,noten,geige,
-- put stuff in a box
-- versuch das mit den stickers: donate GREEN,keep RED,remove Yellow
-
-
-
-
-___ 3:18 AM 2/10/2025 airport 47000
-3:18 AM 2/10/2025
-ok - was kann man collapsen? eine liste oder dict
-
-___ 4:31 AM 2/9/2025 airport 45000
-5:11 AM 2/9/2025
-ok - dict2list problem!!!!!!! fix it!!!
-ok - sort out mKey mess!!!
-
-5:07 AM 2/9/2025
-ok - sort out mFlex mess!!! ajetzt region mFlex
-
-4:47 AM 2/9/2025
-- in der Top line mache menu: collapse,expand
-
-4:31 AM 2/9/2025
-was von denen ist das simpelste?
-
-=>outline view,open,close,edit,save,cancel,next,top of page,new
-
-___ 5:40 AM 2/8/2025 airport 44000
-5:01 PM 2/8/2025 frei! nix mehr essen! bald schlafen gehen!
-
-sehr gutes essen gehabt! 12:02 PM 2/8/2025
-ok =>ev irgendwann ein activia, damit hat es sich!
-ok frei! fuer heute falls J kommt: improvise +1000
-
-tm:6:52 AM 2/8/2025-9:50 AM 2/8/2025
-ok - post durchsehen
-geht nicht - tax docs scannen
-ok - werbung weg
-ok - email jeslyn
-
--6:38 AM 2/8/2025v
-6:34 AM 2/8/2025
-soll ich sowas wie: edit button haben? der erst alles aktiviert?
-
-6:21 AM 2/8/2025
-wann wird ein blog gesaved?
-das up down soll eigentlich nur aktiv sein wenn ein blogitem grad selected ist
-
-6:06 AM 2/8/2025
-arrCycle
-neue liste:
-wenn idx=0,remove and push(append)
-wenn nicht,swap mit idx-1
-dparent.remove this div
-
-5:56 AM 2/8/2025
-wie kann ich item mit ui linken?
-DA.blogs ist das dict
-es enthaelt blogs by date
-jedes el={o,key,div:d1,items}
-jedes item={text,key,idx,div:d2,type,
-1. der index ? ist eigentlich der items.indexOf(item)
-
-5:46 AM 2/8/2025
-toggleSelection
-item hat info ueber blog, key in DA.blogs
-DA.selectedPart is a list of items
-click on down: find blog and part and list
-item braucht key und index
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-heute:
-RH=timer 1,2,2,3,3,3,4,4,4,4,5,5,5,5,5,...
-1 unit:packen,
-2 unit:prog,
-3 discord check
-
-1. make plan (ohne timer)
-2. set timer
-3. execute plan
-
-zeug einscannen sobald hell ist!
-wartezeitRH - fe discord
-wartezeitRH - 2pm SJA
-- A
-- gu
-- bad
-- klo basement!
-
-1. hole behaelter
-2. empty meinen kasten komplett!!! alles raushauen
-3.
-
-- klo kasten unterer teil ausraeumen=>garage oder mist
-- kisten storage reingeben!
-- mach eine kiste aus meinem zimmer
-A,fe,gu,mitnehmen,move,storage?,verkaufbar,muell: brauche 8 farben
-muell: schwarzer sack
-A,fe,gu: kisten die in deren zi kasten kommen
-mitnehmen:in den koffer geben
-move:kiste im eck bei garage
-storage:kiste fuer meinen kasten
 
 
 

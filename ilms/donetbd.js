@@ -1,4 +1,42 @@
 
+async function ilNewPage(){
+  mClear('dMain');
+  let bg = rChoose(DA.palette);
+  let fg = colorIdealText(bg);
+  let d = DA.currentPage = mDom('dMain', { padding: 10, w: 500, align: 'center' });
+}
+async function ilAddGadget(ev) {
+  let dParent = DA.currentPage;
+  let list = ['image', 'page', 'text'];
+  let item = await mGather(mSelect, ev.target, {}, { list }); console.log('you entered', item);
+  if (item == 'image') {
+    return mImageDropper(dParent);
+  } else if (item == 'text') {
+    let bg = rChoose(DA.palette);
+    let fg = colorIdealText(bg);
+    let d2 = mDom(dParent, { align: 'left', padding: 10, rounding: 10, matop: 10, fz: 20, caret: fg, fg, bg }, { html: '', contenteditable: true });
+    d2.focus();
+    d2.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape') {
+        ev.preventDefault();
+        d2.blur();
+      }
+    });
+    return d2;
+  }else if (item == 'page') {
+
+    let d2 = mDom(dParent, { align: 'left', padding: 10, rounding: 10, matop: 10, fz: 20, caret: fg, fg, bg }, { html: '', contenteditable: true });
+    d2.focus();
+    d2.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape') {
+        ev.preventDefault();
+        d2.blur();
+      }
+    });
+    return d2; //mTextbox(dParent);
+  }
+}
+
 function mSortable(divs) {
 	let draggedElement = null;
 	let lastHighlighted = null;

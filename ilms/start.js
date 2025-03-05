@@ -1,29 +1,36 @@
 
 onload = start;
 
-async function start() { await app0_behappy(); }
+async function start() { await app0_blog(); }
 
 async function app0_blog() {
 	await initAssets();
 	let src = `../assets/img/beach/beach${rChoose(range(5))}.jpg`;
-	//mStyle('dPage', {bgSrc:src, bgSize:'cover'}); return;
 	let elems = mLayoutTLM('dPage', { bgSrc: src, bgSize: 'cover' });
 	mStyle('dMain', { overy: 'auto' });
-	mFlex('dMain'); mFlexV('dTop');
-	let colorPalette = DA.palette = await mPalette('dMain', src, false);
-	let bg = rChoose(colorPalette);// '#00000060'
+	mFlex('dMain');
+	mDom(dTop, {}, { id: 'dTop1' })
+	mDom(dTop, {}, { id: 'dTop2' })
+	mFlexV('dTop1'); mFlexV('dTop2');
+	let palette = await mPalette('dMain', src, false);
+	let bg = rChoose(palette);// '#00000060'
+	DA.theme = { src, palette, bg };
 	arrMinus(elems, dMain).forEach(x => mStyle(x, { bg, fg: 'contrast', alpha: .6 }));
-	//mStyle(dTop,{justify:'center',aitems:'center',fz:20},{html:'Hello, happy world!'})
 
-	let d = mDom(dMain, { padding: 10, w: 500, align: 'center' });
-	//let m = mImageDropper(d); 
+	mMediaDropper('dMain')
+	//topmenu: New: wenn er da drauf clickt wird der alte gesaved!, Theme
+	//submenu: + bg 
+	return;
+	let d = DA.currentPage = mDom(dMain, { bg, fg: 'contrast', padding: 10, w: 500, align: 'center' });
 
 	//moecht einen clear button der mClear(d) macht
 	// let dClear=mDom(dTop,{family:'fa',bg:'#ffffffAA',fg:'grey'},{tag:'button',html:'clear',onclick:()=>mClear(d)})
 	let bstyles = { h: 30, w: 30, bg: '#ffffffAA', fg: 'grey', margin: 10 };
-	mKey('plus', dTop, bstyles, { tag: 'button', onclick: ev => addGadget(ev, d) });
-	mKey('times', dTop, dictMerge(bstyles, { fz: 24, fg: 'dimgray' }), { tag: 'button', onclick: () => mClear(d) });
-	showPaletteMini(dTop, colorPalette)
+	mKey('New', dTop, bstyles, { tag: 'button', onclick: ilNewPage });
+	mKey('plus', dTop, bstyles, { tag: 'button', onclick: ilAddGadget });
+	mKey('times', dTop, dictMerge(bstyles, { fz: 24, fg: 'dimgray' }), { tag: 'button', onclick: () => mClear(DA.currentPage) });
+	mDom(dTop, { maleft: 10 }, { html: '&nbsp;' })
+	showPaletteMini(dTop, palette);
 
 }
 async function app0_behappy() {
@@ -44,7 +51,7 @@ async function app0_behappy() {
 	//moecht einen clear button der mClear(d) macht
 	// let dClear=mDom(dTop,{family:'fa',bg:'#ffffffAA',fg:'grey'},{tag:'button',html:'clear',onclick:()=>mClear(d)})
 	let bstyles = { h: 30, w: 30, bg: '#ffffffAA', fg: 'grey', margin: 10 };
-	mKey('plus', dTop, bstyles, { tag: 'button', onclick: ev => addGadget(ev, d) });
+	mKey('plus', dTop, bstyles, { tag: 'button', onclick: ev => ilAddGadget(ev, d) });
 	mKey('times', dTop, dictMerge(bstyles, { fz: 24, fg: 'dimgray' }), { tag: 'button', onclick: () => mClear(d) });
 	showPaletteMini(dTop, colorPalette)
 
