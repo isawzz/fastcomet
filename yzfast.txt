@@ -1,5 +1,10 @@
 alles ist fuer immer ok - I have left this plane.
 
+___ 6:46 AM 3/6/2025 airport 83000 13
+live forward! pmv time to learn letting go for real!
+defer to 12
+7:17 AM 3/6/2025 idee:
+- erweitere image dropper dass er auch audio files spielt
 ___ 6:10 AM 3/5/2025 airport 81000 14=
 7:19 AM 3/5/2025
 slow down!
@@ -12,28 +17,6 @@ mach ein input
   allowfullscreen>
 </iframe>
 
-das ding ist ein besseres oneNote wo man auch spiiele drin machen kann
-beispiel ich will ein recipe machen
-
-man soll background,palette, und music selecten koennen
-muss man halt einen link eingeben fuer music
-
-gadgets die es geben soll:
-board
-meeple
-editabletext
-label
-image
-clock
-dice
-card
-deck
-rule (fuer game)
-canvas
-shape
-button
-list
-gatherding
 
 
 

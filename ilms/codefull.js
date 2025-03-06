@@ -2416,12 +2416,7 @@ function list2dict(arr, keyprop = 'id', uniqueKeys = true) {
 }
 async function loadAssetsStatic() {
 	if (nundef(M)) M = {};
-	//M = await loadStaticYaml('y/m.yaml');
-
-	let ditext = await fetch('http://localhost:8080/fastcomet/y/m.yaml').then(res => res.text());
-	M = jsyaml.load(ditext);
-	return;
-
+	M = await loadStaticYaml('y/m.yaml');
 	M.superdi = await loadStaticYaml('y/superdi.yaml');
 	M.details = await loadStaticYaml('y/details.yaml');
 	M.config = await loadStaticYaml('y/config.yaml');
