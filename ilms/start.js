@@ -1,7 +1,35 @@
 
 onload = start;
 
-async function start() { await app0_blog(); }
+async function start() { await test0_loadingLocalhost(); } //test0_vonDd1DragImageFromAnywhere(); }
+
+async function test0_loadingLocalhost() {
+	await initAssets();
+	let src = `../assets/img/beach/beach${rChoose(range(5))}.jpg`;
+	let elems = mLayoutTLM('dPage', { bgSrc: src, bgSize: 'cover' });
+	mStyle('dMain', { overy: 'auto' });mFlex('dMain'); mFlex(dTop);
+	let palette = await mPalette('dMain', src, false);
+	let bg = rChoose(palette);// '#00000060'
+	DA.theme = { src, palette, bg };
+	arrMinus(elems, dMain).forEach(x => mStyle(x, { bg, fg: 'contrast', alpha: .6 }));
+
+	let d = mDom('dMain', { padding: 10, bg: 'green' });
+	//let d1 = mDom(d, { h: 200 }, { tag: 'img', src: '../assets/img/emo/abacus.png' });
+	//mLinebreak(d);
+
+	let m = mImageAudioDropper(d); return;
+	// let m = mImageDropper(d); return;
+	
+	mFlex('dMain');
+	mDom(dTop, {}, { id: 'dTop1' })
+	mDom(dTop, {}, { id: 'dTop2' })
+	mFlexV('dTop1'); mFlexV('dTop2');
+
+	mImageMusicDropper('dMain');
+	//mImageDropper('dMain');
+	//mMediaDropper('dMain')
+
+}
 
 async function app0_blog() {
 	await initAssets();
@@ -72,7 +100,7 @@ async function app0_stopwatch() {
 
 async function test0_vonDd1DragImageFromAnywhere() {
 	await initAssets();
-	let elems = mLayoutTLMS('strawberry', 'dPage'); mStyle('dMain', { overy: 'auto' });
+	let elems = mLayoutTLMS('dPage'); mStyle('dMain', { overy: 'auto' });
 	mFlex('dMain'); mFlex(dTop);
 
 	let d = mDom('dMain', { padding: 10, bg: 'green' });
@@ -217,7 +245,6 @@ async function test0_imfree() {
 
 	let tb = coll.button = mToggleButton(bExpand, bCollapse);
 }
-
 async function test0_multiButton() {
 	let blog = await initBlog();
 	let elems = mLayoutTLMS('raspberry', 'dPage'); mStyle('dMain', { overy: 'auto' }); mFlex('dMain');
@@ -677,7 +704,16 @@ async function initBlog() {
 	return blog;
 }
 async function initAssets() {
-	await loadAssetsStatic();
+	//console.log(window.location.origin);
+	let loc = window.location.origin;
+	if (loc.includes('localhost:8080')) {
+		let ditext = await fetch('http://localhost:8080/fastcomet/y/m.yaml').then(res => res.text());
+		M = jsyaml.load(ditext);
+	}else {
+		await loadAssetsStatic();
+	}
+	//console.log(M)
+
 	globalKeyHandling();
 }
 
