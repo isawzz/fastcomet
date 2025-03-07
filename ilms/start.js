@@ -13,7 +13,7 @@ async function test0_loadingLocalhost() {
 	DA.theme = { src, palette, bg };
 	arrMinus(elems, dMain).forEach(x => mStyle(x, { bg, fg: 'contrast', alpha: .6 }));
 
-	let d = mDom('dMain', { padding: 10, bg: 'green' });
+	let d = mDom('dMain', { w:500,padding: 10, bg: 'green' });
 	//let d1 = mDom(d, { h: 200 }, { tag: 'img', src: '../assets/img/emo/abacus.png' });
 	//mLinebreak(d);
 
