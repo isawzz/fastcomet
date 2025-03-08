@@ -4,22 +4,23 @@ onload = start;
 async function start() { await test0_loadingLocalhost(); } //test0_vonDd1DragImageFromAnywhere(); }
 
 async function test0_loadingLocalhost() {
+	downloadVideo('https://www.youtube.com/watch?v=tcV-jhCTeys&list=PLMeAFXbn1kOGNtHxiOKaRwqY-b_7GLIZB','schradiek.mp4');
 	await initAssets();
 	let src = `../assets/img/beach/beach${rChoose(range(5))}.jpg`;
 	let elems = mLayoutTLM('dPage', { bgSrc: src, bgSize: 'cover' });
-	mStyle('dMain', { overy: 'auto' });mFlex('dMain'); mFlex(dTop);
+	mStyle('dMain', { overy: 'auto' }); mFlex('dMain'); mFlex(dTop);
 	let palette = await mPalette('dMain', src, false);
 	let bg = rChoose(palette);// '#00000060'
 	DA.theme = { src, palette, bg };
 	arrMinus(elems, dMain).forEach(x => mStyle(x, { bg, fg: 'contrast', alpha: .6 }));
 
-	let d = mDom('dMain', { padding: 10, bg: 'green' });
+	let d = mDom('dMain', { w: 500, padding: 10, bg: 'green' });
 	//let d1 = mDom(d, { h: 200 }, { tag: 'img', src: '../assets/img/emo/abacus.png' });
 	//mLinebreak(d);
 
 	let m = mImageAudioDropper(d); return;
 	// let m = mImageDropper(d); return;
-	
+
 	mFlex('dMain');
 	mDom(dTop, {}, { id: 'dTop1' })
 	mDom(dTop, {}, { id: 'dTop2' })
@@ -709,7 +710,7 @@ async function initAssets() {
 	if (loc.includes('localhost:8080')) {
 		let ditext = await fetch('http://localhost:8080/fastcomet/y/m.yaml').then(res => res.text());
 		M = jsyaml.load(ditext);
-	}else {
+	} else {
 		await loadAssetsStatic();
 	}
 	//console.log(M)

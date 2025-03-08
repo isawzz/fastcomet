@@ -1,7 +1,9 @@
 
 async function mImageAudioDropper(d) {
   let fileInput = mDom(d, {}, { tag: 'input', type: 'file', accept: 'image/*,audio/*' }); //,{onchange:onchangeFileInput});
-  let dropZone = mDom(d, { w: 500, hmin: 300, border: 'white 1px dashed', align: 'center' }, { html: 'Drop image here' });
+  let dropZone = mDom(d, { w: 500, hmin: 300, border: 'white 1px dashed', align: 'center' }); //, { html: 'Drop image here' });
+  let bAccept = mDom(d, { margin: 10, display: 'none' }, { tag: 'button', html: 'Accept', onclick: onAccept });
+  let bCancel = mDom(d, { margin: 10, display: 'none' }, { tag: 'button', html: 'Cancel', onclick: onCancel });
   //return;
   function checkIfFromOwnServer(url) {
     const ownOrigin = window.location.origin; // e.g., http://127.0.0.1:51012
@@ -11,19 +13,69 @@ async function mImageAudioDropper(d) {
       console.log('Dropped from external website:', url); return false;
     }
   }
-  async function ondropImage(ev) {
-    console.log('ondropImage', ev);
-    let item = ev.dataTransfer.items[0]; console.log(item);
-    let file = item.getAsFile(); console.log(file);
+  async function onAccept(ev) {
+    let item = DA.droppedElement;
+    if (item && item.elem) {
+      replaceElement(fileInput, item.elem);
+      fileInput.remove();
+      dropZone.remove();
+      bAccept.remove();
+      bCancel.remove();
+    }
+  }
+  async function onCancel(ev) {
+    delete DA.droppedElement;
+    fileInput.remove();
+    dropZone.remove();
+    bAccept.remove();
+    bCancel.remove();
+  }
+  async function ondropSomething(ev) {
+    console.log('ondropSomething', ev);
+    let item = ev.dataTransfer.items[0]; console.log('item', item);
+    let file = item.getAsFile(); console.log('file', file);
     if (file) {
-			await displayImagedata(URL.createObjectURL(file));
-		} else {
+      let type = file.type;
+      let src = URL.createObjectURL(file); console.log('src', src);
+      let o = DA.droppedElement = { type, file, src };
+      if (type.startsWith('image')) {
+        o.elem = await displayImagedata(src);
+      } else if (type.startsWith('video')) {
+        let player = o.elem = mDom(dropZone, { w: 500, h: 300 }, { tag: 'video', src, controls: true });
+        player.play();
+      } else if (type.startsWith('audio')) {
+        let player = o.elem = mDom(dropZone, {}, { tag: 'audio', src, controls: true });
+        player.play();
+    } else if (type === 'text/plain') {
+        let response = await fetch(URL.createObjectURL(file));
+        let text = await response.text();
+        o.elem = mDom(dropZone, { margin: 10, rounding: 10, align: 'left', bg: 'white', fg: 'black', padding: 10 }, { tag: 'pre', html: text });
+        o.text = text;
+      } else {
+        mDom(dropZone, {}, { html: 'Unsupported file type or URL' });
+      }
+    } else {
       file = ev.dataTransfer.files[0];
       const url = await new Promise(resolve => item.getAsString(resolve));
       console.log('Dropped from website:', url);
       let isOwnServer = checkIfFromOwnServer(url);
       if (isOwnServer) {
-        await displayImagedata(url);
+        if (type.startsWith('image')) {
+          o.elem = await displayImagedata(src);
+        } else if (type.startsWith('video')) {
+          let player = o.elem = mDom(dropZone, { w: 500, h: 300 }, { tag: 'video', src, controls: true });
+          player.play();
+        } else if (type.startsWith('audio')) {
+          let player = o.elem = mDom(dropZone, {}, { tag: 'audio', src, controls: true });
+          player.play();
+        } else if (type === 'text/plain') {
+          let response = await fetch(URL.createObjectURL(file));
+          let text = await response.text();
+          o.elem = mDom(dropZone, { margin: 10, rounding: 10, align: 'left', bg: 'white', fg: 'black', padding: 10 }, { tag: 'pre', html: text });
+          o.text = text;
+        } else {
+          mDom(dropZone, {}, { html: 'Unsupported file type or URL' });
+        }
       } else {
         let { dataUrl, width, height } = await resizeImage(file, 500, 1000);
         await displayImagedata(dataUrl);
@@ -33,18 +85,21 @@ async function mImageAudioDropper(d) {
         uploadImage(dataUrl, `zdata/images/${name}.${stringAfter(file.name, '.')}`);
       }
     }
-
+    mStyle(bAccept, { display: 'inline-block' });
+    mStyle(bCancel, { display: 'inline-block' });
   }
   async function onchangeFileinput(ev) {
     let files = ev.target.files; //console.log(files);
-    let file = files[0]; //console.log(file);
-    let src = URL.createObjectURL(file); //console.log(src);
+    let file = files[0]; console.log(file);
+    let src = URL.createObjectURL(file); console.log(src);
+    //return;
     await displayImagedata(src);
   }
   async function displayImagedata(src) {
     mClear(dropZone);
     let img = await mLoadImgAsync(dropZone, { wmax: 500 }, { tag: 'img', src: src });
     console.log('img dims', img.width, img.height);
+    return img;
   }
 
   //let x = mImageDropper(d3,ondropImage);
@@ -57,17 +112,17 @@ async function mImageAudioDropper(d) {
   });
   ['dragenter', 'dragover'].forEach(evname => { dropZone.addEventListener(evname, highlight, false); });
   ['dragleave', 'drop'].forEach(evname => { dropZone.addEventListener(evname, unhighlight, false); });
-  dropZone.addEventListener('drop', ondropImage, false);
+  dropZone.addEventListener('drop', ondropSomething, false);
   fileInput.addEventListener('change', onchangeFileinput, false);
 
 }
 
 async function mImageMusicDropper(d) {
-	d=toElem(d);
-	mFlexWrap(d); //let d1=mDom(d);
-  let fileInput = mDom(d, {bg:'blue',h:50}, { tag: 'input', type: 'file', accept: 'image/*,audio/*' }); 
-	//return;
-	mLinebreak(d);
+  d = toElem(d);
+  mFlexWrap(d); //let d1=mDom(d);
+  let fileInput = mDom(d, { bg: 'blue', h: 50 }, { tag: 'input', type: 'file', accept: 'image/*,audio/*' });
+  //return;
+  mLinebreak(d);
   let dropZone = mDom(d, { w: 500, hmin: 300, border: 'white 1px dashed', align: 'center' }, { html: 'Drop image here' });
   //return;
   function checkIfFromOwnServer(url) {
@@ -126,48 +181,5 @@ async function mImageMusicDropper(d) {
   dropZone.addEventListener('drop', ondropImage, false);
   fileInput.addEventListener('change', onchangeFileinput, false);
 
-}
-
-function playMusicFile() {
-	
-	document.getElementById('fileInput').addEventListener('change', function (event) {
-		const file = event.target.files[0];
-		if (file) {
-			const audioURL = URL.createObjectURL(file);
-			const audioPlayer = document.getElementById('audioPlayer');
-			audioPlayer.src = audioURL;
-			audioPlayer.play();
-		}
-	});
-}
-function playYouTubeVideo(url, containerId) {
-	// <div id="videoContainer"></div>
-	// <button onclick="playYouTubeVideo('https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'videoContainer')">Play Video</button>
-
-	// Extract video ID from URL
-	const videoIdMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]+)/);
-	if (!videoIdMatch) {
-		console.error("Invalid YouTube URL");
-		return;
-	}
-	const videoId = videoIdMatch[1];
-
-	// Create iframe
-	const iframe = document.createElement("iframe");
-	iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-	iframe.width = "560";
-	iframe.height = "315";
-	iframe.frameBorder = "0";
-	iframe.allow = "autoplay; encrypted-media";
-	iframe.allowFullscreen = true;
-
-	// Append to container
-	const container = document.getElementById(containerId);
-	if (!container) {
-		console.error("Container not found");
-		return;
-	}
-	container.innerHTML = ""; // Clear previous video
-	container.appendChild(iframe);
 }
 
