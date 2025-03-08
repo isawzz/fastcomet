@@ -1,6 +1,29 @@
 
+async function downloadVideo(url, filename) {
+	// // Example usage:
+	// downloadVideo('https://example.com/video.mp4', 'my_video.mp4');
+	try {
+		const response = await fetch(url,{mode:'no-cors'});
+		if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+		const blob = await response.blob(); // Convert response to a binary blob
+		const blobUrl = URL.createObjectURL(blob); // Create a temporary URL
+
+		const a = document.createElement('a');
+		a.href = blobUrl;
+		a.download = filename || 'video.mp4'; // Set the filename
+		document.body.appendChild(a);
+		a.click(); // Trigger download
+		document.body.removeChild(a);
+
+		URL.revokeObjectURL(blobUrl); // Clean up URL
+	} catch (error) {
+		console.error('Download failed:', error);
+	}
+}
+
 function playMusicFile() {
-	
+
 	document.getElementById('fileInput').addEventListener('change', function (event) {
 		const file = event.target.files[0];
 		if (file) {

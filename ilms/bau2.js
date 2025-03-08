@@ -41,11 +41,12 @@ async function mImageAudioDropper(d) {
       if (type.startsWith('image')) {
         o.elem = await displayImagedata(src);
       } else if (type.startsWith('video')) {
-        o.elem = mDom(dropZone, { w: 500, h: 300 }, { tag: 'video', src, controls: true });
+        let player = o.elem = mDom(dropZone, { w: 500, h: 300 }, { tag: 'video', src, controls: true });
+        player.play();
       } else if (type.startsWith('audio')) {
-        let audioPlayer = o.elem = mDom(dropZone, {}, { tag: 'audio', src, controls: true });
-        audioPlayer.play();
-      } else if (type === 'text/plain') {
+        let player = o.elem = mDom(dropZone, {}, { tag: 'audio', src, controls: true });
+        player.play();
+    } else if (type === 'text/plain') {
         let response = await fetch(URL.createObjectURL(file));
         let text = await response.text();
         o.elem = mDom(dropZone, { margin: 10, rounding: 10, align: 'left', bg: 'white', fg: 'black', padding: 10 }, { tag: 'pre', html: text });
@@ -59,7 +60,22 @@ async function mImageAudioDropper(d) {
       console.log('Dropped from website:', url);
       let isOwnServer = checkIfFromOwnServer(url);
       if (isOwnServer) {
-        await displayImagedata(url);
+        if (type.startsWith('image')) {
+          o.elem = await displayImagedata(src);
+        } else if (type.startsWith('video')) {
+          let player = o.elem = mDom(dropZone, { w: 500, h: 300 }, { tag: 'video', src, controls: true });
+          player.play();
+        } else if (type.startsWith('audio')) {
+          let player = o.elem = mDom(dropZone, {}, { tag: 'audio', src, controls: true });
+          player.play();
+        } else if (type === 'text/plain') {
+          let response = await fetch(URL.createObjectURL(file));
+          let text = await response.text();
+          o.elem = mDom(dropZone, { margin: 10, rounding: 10, align: 'left', bg: 'white', fg: 'black', padding: 10 }, { tag: 'pre', html: text });
+          o.text = text;
+        } else {
+          mDom(dropZone, {}, { html: 'Unsupported file type or URL' });
+        }
       } else {
         let { dataUrl, width, height } = await resizeImage(file, 500, 1000);
         await displayImagedata(dataUrl);
