@@ -17,7 +17,8 @@ if (!empty(trim($path)) ) {
 }
 
 if (file_exists($path)) {
-    echo file_get_contents($path);
+    echo json_encode(["success" => true, "file" => $path]);
+    //echo file_get_contents($path);
 } else {
     echo ''; // Empty path case
 }

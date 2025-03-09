@@ -3,8 +3,12 @@ onload = start;
 
 async function start() { await test0_loadingLocalhost(); } //test0_vonDd1DragImageFromAnywhere(); }
 
+async function test0_dlmp3(){
+	//downloadVideo('https://www.youtube.com/watch?v=tcV-jhCTeys&list=PLMeAFXbn1kOGNtHxiOKaRwqY-b_7GLIZB','schradiek.mp4'); 
+	let res = await mPhpPostAudio('https://www.youtube.com/watch?v=tcV-jhCTeys&list=PLMeAFXbn1kOGNtHxiOKaRwqY-b_7GLIZB','../../zdata/hallo');
+	console.log(res);
+}
 async function test0_loadingLocalhost() {
-	downloadVideo('https://www.youtube.com/watch?v=tcV-jhCTeys&list=PLMeAFXbn1kOGNtHxiOKaRwqY-b_7GLIZB','schradiek.mp4');
 	await initAssets();
 	let src = `../assets/img/beach/beach${rChoose(range(5))}.jpg`;
 	let elems = mLayoutTLM('dPage', { bgSrc: src, bgSize: 'cover' });
@@ -130,7 +134,7 @@ async function test0_vonDd1DragImageFromAnywhere() {
 				let name = `img${getNow()}`;
 				name = await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }, { value: name }); console.log('you entered', name);
 				console.log(width, height, name);
-				uploadImage(dataUrl, `zdata/images/${name}.${stringAfter(file.name, '.')}`);
+				uploadImage(dataUrl, `zdata/downloads/${name}.${stringAfter(file.name, '.')}`);
 			}
 		}
 

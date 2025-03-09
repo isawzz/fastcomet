@@ -67,7 +67,7 @@ async function _handleDrop(ev) {
   //     console.log(file)
   //     let {dataUrl,width,height} = await resizeImage(file, 500, 1000);
   //     let name = `img${getNow()}`; //await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }); console.log('you entered', name);
-  //     uploadImage(dataUrl, `zdata/images/${name}.${stringAfter(file.name, '.')}`);
+  //     uploadImage(dataUrl, `zdata/downloads/${name}.${stringAfter(file.name, '.')}`);
   //     mStyle(dropImage,{w:Math.min(500,width),display:'block',margin:'auto'},{src:dataUrl});
   //   } else {
   //     console.log('Please drop an image file.');

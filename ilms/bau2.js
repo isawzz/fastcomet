@@ -1,5 +1,6 @@
 
 async function mImageAudioDropper(d) {
+  //videos are saved as mp3 audio!
   let fileInput = mDom(d, {}, { tag: 'input', type: 'file', accept: 'image/*,audio/*' }); //,{onchange:onchangeFileInput});
   let dropZone = mDom(d, { w: 500, hmin: 300, border: 'white 1px dashed', align: 'center' }); //, { html: 'Drop image here' });
   let bAccept = mDom(d, { margin: 10, display: 'none' }, { tag: 'button', html: 'Accept', onclick: onAccept });
@@ -33,9 +34,9 @@ async function mImageAudioDropper(d) {
   async function ondropSomething(ev) {
     console.log('ondropSomething', ev);
     let item = ev.dataTransfer.items[0]; console.log('item', item);
-    let file = item.getAsFile(); console.log('file', file);
+    let file = item.getAsFile(); 
     if (file) {
-      let type = file.type;
+      let type = file.type; console.log('file', file, 'type', type);
       let src = URL.createObjectURL(file); console.log('src', src);
       let o = DA.droppedElement = { type, file, src };
       if (type.startsWith('image')) {
@@ -46,7 +47,7 @@ async function mImageAudioDropper(d) {
       } else if (type.startsWith('audio')) {
         let player = o.elem = mDom(dropZone, {}, { tag: 'audio', src, controls: true });
         player.play();
-    } else if (type === 'text/plain') {
+      } else if (type === 'text/plain') {
         let response = await fetch(URL.createObjectURL(file));
         let text = await response.text();
         o.elem = mDom(dropZone, { margin: 10, rounding: 10, align: 'left', bg: 'white', fg: 'black', padding: 10 }, { tag: 'pre', html: text });
@@ -55,9 +56,11 @@ async function mImageAudioDropper(d) {
         mDom(dropZone, {}, { html: 'Unsupported file type or URL' });
       }
     } else {
-      file = ev.dataTransfer.files[0];
+      file = ev.dataTransfer.files[0]; 
       const url = await new Promise(resolve => item.getAsString(resolve));
-      console.log('Dropped from website:', url);
+      let type = isdef(file)? file.type:url.includes('youtube')?'video':'string'; 
+      console.log('Dropped from website:', url,'file', file, 'type', type);
+      return;
       let isOwnServer = checkIfFromOwnServer(url);
       if (isOwnServer) {
         if (type.startsWith('image')) {
@@ -77,12 +80,33 @@ async function mImageAudioDropper(d) {
           mDom(dropZone, {}, { html: 'Unsupported file type or URL' });
         }
       } else {
-        let { dataUrl, width, height } = await resizeImage(file, 500, 1000);
-        await displayImagedata(dataUrl);
-        let name = `img${getNow()}`;
+      if (url.includes('youtube')) {
+        let name = `aud${getNow()}`;
         name = await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }, { value: name }); console.log('you entered', name);
-        console.log(width, height, name);
-        uploadImage(dataUrl, `zdata/images/${name}.${stringAfter(file.name, '.')}`);
+        mPhpPostAudio(src, `zdata/downloads/${name}`)
+        let player = o.elem = mDom(dropZone, { w: 500, h: 300 }, { tag: 'video', src, controls: true });
+        player.play();
+      } else if (type.startsWith('data:image')) {
+          let { dataUrl, width, height } = await resizeImage(file, 500, 1000);
+          o.elem = await displayImagedata(dataUrl);
+          let name = `img${getNow()}`;
+          name = await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }, { value: name }); console.log('you entered', name);
+          console.log(width, height, name);
+          uploadImage(dataUrl, `zdata/downloads/${name}.${stringAfter(file.name, '.')}`);
+        } else if (type.startsWith('audio')) {
+          let name = `aud${getNow()}`;
+          name = await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }, { value: name }); console.log('you entered', name);
+          mPhpPostAudio(src, `zdata/downloads/${name}`)
+          let player = o.elem = mDom(dropZone, {}, { tag: 'audio', src, controls: true });
+          player.play();
+        } else if (type === 'text/plain') {
+          let response = await fetch(URL.createObjectURL(file));
+          let text = await response.text();
+          o.elem = mDom(dropZone, { margin: 10, rounding: 10, align: 'left', bg: 'white', fg: 'black', padding: 10 }, { tag: 'pre', html: text });
+          o.text = text;
+        } else {
+          mDom(dropZone, {}, { html: 'Unsupported file type or URL' });
+        }
       }
     }
     mStyle(bAccept, { display: 'inline-block' });
@@ -151,7 +175,7 @@ async function mImageMusicDropper(d) {
         let name = `img${getNow()}`;
         name = await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }, { value: name }); console.log('you entered', name);
         console.log(width, height, name);
-        uploadImage(dataUrl, `zdata/images/${name}.${stringAfter(file.name, '.')}`);
+        uploadImage(dataUrl, `zdata/downloads/${name}.${stringAfter(file.name, '.')}`);
       }
     }
 

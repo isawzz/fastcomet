@@ -147,7 +147,7 @@ async function handleDropOneZone(ev) {
 			if (!isOwnServer) {
 				let { dataUrl, width, height } = await resizeImage(url, 500, 1000);
 				let name = `img${getNow()}`; //await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }); console.log('you entered', name);
-				uploadImage(dataUrl, `zdata/images/${name}.${stringAfter(file.name, '.')}`);
+				uploadImage(dataUrl, `zdata/downloads/${name}.${stringAfter(file.name, '.')}`);
 				mStyle(dropImage, { w: Math.min(500, width), display: 'block', margin: 'auto' }, { src: dataUrl });
 
 				dropImage.src = url; return;
@@ -190,7 +190,7 @@ async function handleDrop(ev) {
       console.log(file)
       let {dataUrl,width,height} = await resizeImage(file, 500, 1000);
       let name = `img${getNow()}`; //await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }); console.log('you entered', name);
-      uploadImage(dataUrl, `zdata/images/${name}.${stringAfter(file.name, '.')}`);
+      uploadImage(dataUrl, `zdata/downloads/${name}.${stringAfter(file.name, '.')}`);
       mStyle(dropImage,{w:Math.min(500,width),display:'block',margin:'auto'},{src:dataUrl});
     } else {
       console.log('Please drop an image file.');
@@ -257,7 +257,7 @@ function mImageDropper(d) {
         console.log(file)
         let resized = await resizeImage(file, 500, 1000);
         let name = `img${getNow()}`; //await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }); console.log('you entered', name);
-        uploadImage(resized, `zdata/images/${name}.${stringAfter(file.name, '.')}`);
+        uploadImage(resized, `zdata/downloads/${name}.${stringAfter(file.name, '.')}`);
         //console.log('res',res)
         dropImage.src = resized;
         dropImage.style.display = 'block';
@@ -317,7 +317,7 @@ function mImageDropper(d) {
           let src = reader.result;
           let resized = await resizeImage(file, 500, 1000);
           let name = `img${getNow()}`; //await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }); console.log('you entered', name);
-          uploadImage(resized, `zdata/images/${name}.${stringAfter(file.name, '.')}`);
+          uploadImage(resized, `zdata/downloads/${name}.${stringAfter(file.name, '.')}`);
           //console.log('res',res)
           dropImage.src = resized;
           dropImage.style.display = 'block';

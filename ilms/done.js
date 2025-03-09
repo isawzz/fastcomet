@@ -209,7 +209,7 @@ async function mImageDropper(d) {
         let name = `img${getNow()}`;
         name = await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }, { value: name }); console.log('you entered', name);
         console.log(width, height, name);
-        uploadImage(dataUrl, `zdata/images/${name}.${stringAfter(file.name, '.')}`);
+        uploadImage(dataUrl, `zdata/downloads/${name}.${stringAfter(file.name, '.')}`);
       }
     }
 
@@ -301,6 +301,15 @@ function enableAutoScrollOnDrag(draggableElement) {
 	draggableElement.addEventListener('dragend', () => {
 		clearInterval(scrollInterval);
 	});
+}
+function removeAllEvents(elem) {
+	const newElement = elem.cloneNode(true); // Clone the element while keeping child elements
+	elem.parentNode.replaceChild(newElement, elem);
+	return newElement; // Return the new element reference
+}
+function replaceElement(elem,newElem) {
+	elem.parentNode.replaceChild(newElem, elem);
+	return newElem;
 }
 
 
