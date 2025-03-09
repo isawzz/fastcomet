@@ -1,9 +1,14 @@
 alles ist fuer immer ok - I have left this plane.
 
-___ 7:38 AM 3/8/2025 airport 85000 14~
+___ 5:25 AM 3/9/2025 airport 86000 10-v+
 
-___ 6:10 AM 3/7/2025 airport 84000 16G=
-___ 6:46 AM 3/6/2025 airport 83000 13+
+- LG zeug in windows syste32
+- npm tasse (sollte gehen)
+wow jetzt kann ich yt downloaden!
+npx yt-dlp -f best -o "video.mp4" "https://www.youtube.com/watch?v=hILdD5N9Eos" geht nicht
+___ 7:38 AM 3/8/2025 airport 85000 14~v=
+___ 6:10 AM 3/7/2025 airport 84000 16G=v=
+___ 6:46 AM 3/6/2025 airport 83000 13+v0at
 gut was jetzt? eigentlich sollte mathe angesagt sein aber es ist geige angesagt
 live forward! pmv time to learn letting go for real!
 defer to 12
