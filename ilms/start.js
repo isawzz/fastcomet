@@ -1,11 +1,65 @@
 
 onload = start;
 
-async function start() { await test0_loadingLocalhost(); } //test0_vonDd1DragImageFromAnywhere(); }
+async function start() { await test1_hexboardTerritories(); } //test0_vonDd1DragImageFromAnywhere(); }
 
-async function test0_dlmp3(){
+async function test1_hexboardTerritories() {
+	await initAssets();
+	let elems = mLayoutTLM('dPage', { bg: 'lightblue' });
+	mStyle('dMain', { overy: 'auto', bg:'black' }); mFlex('dMain'); mFlex(dTop);
+	let d = mDom('dMain', { gap: 10, margin: 10, position: 'relative' });
+	
+	let clip = 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)';
+	let [cols, rows, sz] = [9, 9, 80];
+
+	let dihab={mountain:'gray', desert:'yellow', forest:'green', water:'blue', swamp:'brown'};
+
+	for (let r = 0; r < rows; r++) {
+		let x = r % 2;
+		let thiscols = x>0?cols:cols+1;
+		for (let c = 0; c < thiscols; c++) {
+			let d1 = mDom(d, { left: x * sz *.5, top: r * sz*.75, clip, position: 'absolute', w: sz-1, h: sz-1, bg: rChoose(Object.values(dihab)) });
+			x+=2;
+			mCenterCenterFlex(d1);
+		}
+	}
+	
+}
+async function test1_hexboard() {
+	await initAssets();
+	let elems = mLayoutTLM('dPage', { bg: 'lightblue' });
+	mStyle('dMain', { overy: 'auto' }); mFlex('dMain'); mFlex(dTop);
+	let d = mDom('dMain', { gap: 10, padding: 10 });
+	let pts = hexBoardCenters(8, 3).centers; console.log(pts)
+	//pts.map(pt => drawCircleOnDiv(d, pt.x*50, pt.y*50, 10)); 
+	let clip = 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)';
+	for (const pt of pts) {
+		let d1 = mDom(d, { clip, position: 'absolute', left: pt.x * 50, top: pt.y * 50, w: 50, h: 50, bg: rColor() });
+		mCenterCenterFlex(d1);
+		mDom(d1, { fz: 20 }, { html: pt.x + ',' + pt.y });
+
+	}
+	//pts.map(pt => hexFromCenter(d, pt.x*50, pt.y*50, {w:50,h:50,bg:rColor()})); 
+}
+async function test1_hex() {
+	await initAssets();
+	let elems = mLayoutTLM('dPage', { bg: 'lightblue' });
+	mStyle('dMain', { overy: 'auto' }); mFlex('dMain'); mFlex(dTop);
+	let d = mDom('dMain', { gap: 10, padding: 10 });
+	let p = { x: 100, y: 100 };
+	let sz = 100;
+	let [w, h] = mSizeSuccession({ sz });
+	let dhex = hexFromCenter(d, p, { w, h, bg: rColor() });
+	drawCircleOnDiv(d, p.x, p.y, 10);
+	let clip = 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)';
+	let pts = calcClipPoints(p.x, p.y, sz, sz, clip);
+	console.log(pts);
+	for (const pt of pts) drawCircleOnDiv(d, pt.x, pt.y, 2)
+
+}
+async function test0_dlmp3() {
 	//downloadVideo('https://www.youtube.com/watch?v=tcV-jhCTeys&list=PLMeAFXbn1kOGNtHxiOKaRwqY-b_7GLIZB','schradiek.mp4'); 
-	let res = await mPhpPostAudio('https://www.youtube.com/watch?v=tcV-jhCTeys&list=PLMeAFXbn1kOGNtHxiOKaRwqY-b_7GLIZB','../../zdata/hallo');
+	let res = await mPhpPostAudio('https://www.youtube.com/watch?v=tcV-jhCTeys&list=PLMeAFXbn1kOGNtHxiOKaRwqY-b_7GLIZB', '../../zdata/hallo');
 	console.log(res);
 }
 async function test0_loadingLocalhost() {

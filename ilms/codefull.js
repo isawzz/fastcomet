@@ -2333,7 +2333,7 @@ function hexBoardCenters(topside, side) {
 		if (i < (rows - 1) / 2) cols += 1; else cols -= 1;
 	}
 	assertion(cols == topside - 1, `END OF COLS WRONG ${cols}`)
-	return [centers, rows, maxcols];
+	return {centers, rows, maxcols};
 }
 function hexFromCenter(dParent, center, styles = {}, opts = {}) {
 	let [w, h] = mSizeSuccession(styles);
