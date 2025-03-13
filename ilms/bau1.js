@@ -1,88 +1,43 @@
 
-async function mMediaDropper(d) {
-  let fileInput = mDom(d, {}, { tag: 'input', type: 'file', accept: 'image/*,video/*,audio/*,.txt' });
-  let dropZone = mDom(d, { w: 500, hmin: 300, border: 'white 1px dashed', align: 'center' }, { html: 'Drop media or YouTube link here' });
+function cryBoard(dParent, cols, rows, sz) {
+	dParent = toElem(dParent);
+	let [w, h] = [sz * cols + sz + 20, (sz * .75) * cols + 40];
+	//let [cols, rows, sz] = [9, 10, 80];
+	// let w=sz*cols+sz+20;
+	// let h=(sz*.75)*cols+40;
+	let dBoard = mDom(dParent, { w,h});//(sz/.7)*rows+sz+20});//,acontent:'center',jcontent:'center' });
 
-  function checkIfFromOwnServer(url) {
-    const ownOrigin = window.location.origin;
-    if (url.startsWith(ownOrigin)) {
-      console.log('Dropped from inside the project (server):', url);
-      return true;
-    } else {
-      console.log('Dropped from external website:', url);
-      return false;
-    }
-  }
+	let d = mDom(dBoard, { gap: 10, margin: 10, position: 'relative' });
+	
+	let clip = 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)';
 
-  function extractYouTubeID(url) {
-    let match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
-    return match ? match[1] : null;
-  }
+	let dihab={mountain:'gray', desert:'yellow', forest:'green', water:'blue', swamp:'brown'};
+	let diterr={all:null,bear:'black',puma:'red'};
 
-  async function ondropMedia(ev) {
-    ev.preventDefault();
-    let item = ev.dataTransfer.items[0];
-    let file = item?.getAsFile();
-    let url = await new Promise(resolve => item.getAsString(resolve));
+	let items=[];
+	for (let r = 0; r < rows; r++) {
+		let x = r % 2;
+		let thiscols = x>0?cols:cols+1;
+		for (let c = 0; c < cols; c++) {
+			//let db=mDom(d,{bg:'white',clip,w:sz-1, h:sz-1, position:'absolute', left:x*sz*.5, top:r*sz*.75}); //, bg:rChoose(Object.keys(dihab))})
+			//let db=mDom(d,{className:'hex1',clip,w:sz-1, h:sz-1, position:'absolute', left:x*sz*.5, top:r*sz*.75}); //, bg:rChoose(Object.keys(dihab))})
+			let gap=1;
+			let db=mDom(d,{clip,w:sz-gap, h:sz-gap, position:'absolute', left:x*sz*.5, top:r*sz*.75}); //, bg:rChoose(Object.keys(dihab))})
+			
+			let shrink=0;
+			let habitat=rChoose(Object.keys(dihab));
+			let territory = rChoose(Object.keys(diterr));
 
-    if (url) {
-      let ytID = extractYouTubeID(url);
-      if (ytID) {
-        await displayYouTubeVideo(ytID);
-      } else {
-        let isOwnServer = checkIfFromOwnServer(url);
-        await displayMediaData(url, 'unknown');
-      }
-    } else if (file) {
-      await displayMediaData(URL.createObjectURL(file), file.type);
-    }
-  }
-
-  async function onchangeFileinput(ev) {
-    let file = ev.target.files[0];
-    if (file) {
-      await displayMediaData(URL.createObjectURL(file), file.type);
-    }
-  }
-
-  async function displayMediaData(src, type) {
-    mClear(dropZone);
-    if (type.startsWith('image')) {
-      mLoadImgAsync(dropZone, { wmax: 500 }, { tag: 'img', src: src });
-    } else if (type.startsWith('video')) {
-      mDom(dropZone, { w: 500 }, { tag: 'video', src: src, controls: true });
-    } else if (type.startsWith('audio')) {
-      mDom(dropZone, {}, { tag: 'audio', src: src, controls: true });
-    } else if (type === 'text/plain') {
-      let response = await fetch(src);
-      let text = await response.text();
-      mDom(dropZone, {}, { tag: 'pre', html: text });
-    } else {
-      mDom(dropZone, {}, { html: 'Unsupported file type or URL' });
-    }
-  }
-
-  async function displayYouTubeVideo(videoID) {
-    mClear(dropZone);
-    let iframe = mDom(dropZone, { w: 500, h: 300 }, {
-      tag: 'iframe',
-      src: `https://www.youtube.com/embed/${videoID}`,
-      allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture',
-      allowfullscreen: true
-    });
-  }
-
-  function preventDefaults(ev) { ev.preventDefault(); ev.stopPropagation(); }
-  function highlight(ev) { mClass(ev.target, 'framedPicture'); }
-  function unhighlight(ev) { mClassRemove(ev.target, 'framedPicture'); }
-
-  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evname => {
-    dropZone.addEventListener(evname, preventDefaults, false);
-    document.body.addEventListener(evname, preventDefaults, false);
-  });
-  ['dragenter', 'dragover'].forEach(evname => { dropZone.addEventListener(evname, highlight, false); });
-  ['dragleave', 'drop'].forEach(evname => { dropZone.addEventListener(evname, unhighlight, false); });
-
-  dropZone.addEventListener('drop', ondropMedia, false);
-  fileInput.addEventListener('change', onchangeFileinput, false);
+			if (territory=='puma') {shrink=4;mStyle(db,getDashedHexBorder('red')); }
+			else if (territory=='bear') {shrink=4;mStyle(db,getDashedHexBorder('silver')); }
+			let d1 = mDom(db, { left:2, top: 2, clip, position: 'absolute', w: sz-(gap+shrink), h: sz-(gap+shrink), bg: dihab[habitat] });
+			//return;
+			//let d1 = mDom(d, { left: x * sz *.5, top: r * sz*.75, clip, position: 'absolute', w: sz-4, h: sz-4, bg: rChoose(Object.values(dihab)) });
+			//mStyle(d1,{className:'hex'})
+			x+=2;
+			mCenterCenterFlex(d1);
+			items.push({r,c,div:d1,habitat,territory})
+		}
+	}
+	return items;	
 }
