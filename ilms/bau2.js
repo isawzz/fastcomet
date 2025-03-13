@@ -1,4 +1,24 @@
 
+function getDashedHexBorder(color) {
+  //return {border:'20 solid white'}
+  return {
+    background: `repeating-linear-gradient(-60deg, ${color}, ${color} 4px, transparent 4px, transparent 10px),
+    repeating-linear-gradient(60deg, ${color}, ${color} 4px, transparent 4px, transparent 10px),
+    repeating-linear-gradient(0deg, ${color}, ${color} 4px, transparent 4px, transparent 10px)`,
+    bgSize: '100% 100%'
+
+  }
+  return {
+    background: `repeating-linear-gradient(-60deg, ${color}, ${color} 4px, transparent 4px, transparent 10px)`,
+    // repeating - linear - gradient(
+    //   60deg, red, red 4px, transparent 4px, transparent 10px
+    // ),
+    // repeating - linear - gradient(
+    //   0deg, red, red 4px, transparent 4px, transparent 10px
+    // );
+    bgSize: '100% 100%'
+  };
+}
 async function mImageAudioDropper(d) {
   //videos are saved as mp3 audio!
   let fileInput = mDom(d, {}, { tag: 'input', type: 'file', accept: 'image/*,audio/*' }); //,{onchange:onchangeFileInput});
@@ -34,7 +54,7 @@ async function mImageAudioDropper(d) {
   async function ondropSomething(ev) {
     console.log('ondropSomething', ev);
     let item = ev.dataTransfer.items[0]; console.log('item', item);
-    let file = item.getAsFile(); 
+    let file = item.getAsFile();
     if (file) {
       let type = file.type; console.log('file', file, 'type', type);
       let src = URL.createObjectURL(file); console.log('src', src);
@@ -56,10 +76,10 @@ async function mImageAudioDropper(d) {
         mDom(dropZone, {}, { html: 'Unsupported file type or URL' });
       }
     } else {
-      file = ev.dataTransfer.files[0]; 
+      file = ev.dataTransfer.files[0];
       const url = await new Promise(resolve => item.getAsString(resolve));
-      let type = isdef(file)? file.type:url.includes('youtube')?'video':'string'; 
-      console.log('Dropped from website:', url,'file', file, 'type', type);
+      let type = isdef(file) ? file.type : url.includes('youtube') ? 'video' : 'string';
+      console.log('Dropped from website:', url, 'file', file, 'type', type);
       return;
       let isOwnServer = checkIfFromOwnServer(url);
       if (isOwnServer) {
@@ -80,13 +100,13 @@ async function mImageAudioDropper(d) {
           mDom(dropZone, {}, { html: 'Unsupported file type or URL' });
         }
       } else {
-      if (url.includes('youtube')) {
-        let name = `aud${getNow()}`;
-        name = await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }, { value: name }); console.log('you entered', name);
-        mPhpPostAudio(src, `zdata/downloads/${name}`)
-        let player = o.elem = mDom(dropZone, { w: 500, h: 300 }, { tag: 'video', src, controls: true });
-        player.play();
-      } else if (type.startsWith('data:image')) {
+        if (url.includes('youtube')) {
+          let name = `aud${getNow()}`;
+          name = await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }, { value: name }); console.log('you entered', name);
+          mPhpPostAudio(src, `zdata/downloads/${name}`)
+          let player = o.elem = mDom(dropZone, { w: 500, h: 300 }, { tag: 'video', src, controls: true });
+          player.play();
+        } else if (type.startsWith('data:image')) {
           let { dataUrl, width, height } = await resizeImage(file, 500, 1000);
           o.elem = await displayImagedata(dataUrl);
           let name = `img${getNow()}`;

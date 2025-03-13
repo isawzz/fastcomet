@@ -158,3 +158,53 @@ button:active {
 .topmost {
   z-index: 100000;
 }
+
+.hex_NO::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 4px dashed red;
+  clip-path: inherit;
+  top: 0;
+  left: 0;
+}
+
+.hex-container {
+  position: relative;
+  width: 150px;
+  height: 130px;
+  /* Adjusted for proper aspect ratio */
+}
+
+.hex {
+  width: 100%;
+  height: 100%;
+  background-color: lightblue;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  position: absolute;
+}
+
+.hex::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  clip-path: inherit;
+  background: repeating-linear-gradient(-60deg, red, red 4px, transparent 4px, transparent 10px),
+    repeating-linear-gradient(60deg, red, red 4px, transparent 4px, transparent 10px),
+    repeating-linear-gradient(0deg, red, red 4px, transparent 4px, transparent 10px);
+  background-size: 100% 100%;
+  background-origin: border-box;
+  mask: inherit;
+}
+
+.hex1 {
+  background: repeating-linear-gradient(-60deg, red, red 4px, transparent 4px, transparent 10px),
+    repeating-linear-gradient(60deg, red, red 4px, transparent 4px, transparent 10px),
+    repeating-linear-gradient(0deg, red, red 4px, transparent 4px, transparent 10px);
+  background-size: 100% 100%;
+
+}
