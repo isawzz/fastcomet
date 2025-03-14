@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Simple Board Game</title>
+	<link rel="stylesheet" href="../assets/fonts/fonts.css" />
+	<link rel="stylesheet" href="../ilms/styles.css" />
+	<link rel="stylesheet" href="../iai_yaml/styles.css" />
+	<script src="../alibs/color-thief.min.js"></script>
+	<script src="../alibs/html2canvas.js"></script>
+	<script src="../alibs/jq3.js"></script>
+	<script src="../alibs/jsyaml.js"></script>
+	<script src="../alibs/jstat.min.js"></script>
+	<script src="../alibs/w3color.js"></script>
+	<script src="../alibs/p5.min.js"></script>
+</head>
+
+<body>
+
+	<h1>Board Game</h1>
+
+	<!-- Login Form -->
+	<div id="loginDiv">
+		<input type="text" id="username" placeholder="Enter username" value="max">
+		<button onclick="login()">Login</button>
+	</div>
+
+	<p id="playerInfo"></p>
+
+	<!-- Game Controls -->
+	<div id="gameControls" style="display:none;">
+		<button onclick="createGame()">Create Game</button>
+		<input type="text" id="gameIdInput" placeholder="Game ID">
+		<button onclick="loadGame()">Load Game</button>
+	</div>
+
+	<!-- Game Board -->
+	<div id="board"></div>
+	<button onclick="makeMove()" style="display:none;" id="moveBtn">Make Move</button>
+
+	<script src="../globals.js"></script>
+	<!-- <script src="../codebig.js"></script> -->
+
+	<script src="../iai_yaml/codefull.js"></script>
+	<script src="../iai_yaml/codemlib.js"></script>
+
+	<script src="../ilms/done.js"></script> 
+	<script src="../ilms/donetbd.js"></script> 
+
+	<script src="../iai_yaml/bau1.js"></script>
+	<script src="../iai_yaml/bau2.js"></script>
+	<script src="../iai_yaml/bau3.js"></script>
+	<script src="../ilms/bau4.js"></script>
+	<script src="../iai_yaml/start.js"></script>
+
+</body>
+
+</html>
