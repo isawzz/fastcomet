@@ -432,10 +432,11 @@ function mPos(d, x, y, offx = 0, offy = 0, unit = 'px') {
 	let dParent = d.parentNode; mIfNotRelative(dParent);
 	mStyle(d, { left: `${x + offx}${unit}`, top: `${y + offy}${unit}`, position: 'absolute' });
 }
-async function mPostPhp(cmd, o, jsonResult = true, projectName = 'iai_yaml') {
+async function mPostPhp(cmd, o, projectName = 'iai_yaml', verbose = true, jsonResult = true) {
 	let sessionType = detectSessionType();
 	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
 	if (isdef(o.path) && (o.path.startsWith('zdata') || o.path.startsWith('y'))) o.path = '../../' + o.path;
+	if (verbose) console.log('to php:', server + `${projectName}/php/${cmd}.php`, o);
 	let res = await fetch(server + `${projectName}/php/${cmd}.php`,
 		{
 			method: 'POST',
@@ -450,6 +451,7 @@ async function mPostPhp(cmd, o, jsonResult = true, projectName = 'iai_yaml') {
 			return text;
 		}
 		let obj = JSON.parse(text);
+		if (verbose) console.log('from php:', obj);
 		return obj;
 	} catch (e) {
 		return isString(text) ? text : e;

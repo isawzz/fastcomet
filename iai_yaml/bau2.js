@@ -1,22 +1,16 @@
 
 // 📌 1. Login
 async function login() {
+	console.log("login");
 	let username = document.getElementById("username").value;
-	let res = await mPostPhp('game_user', {username });
-	// let res = await fetch("game_user.php?action=login", {
-	// 	method: "POST",
-	// 	cors: 'no-cors',
-	// 	headers: { "Content-Type": "application/json" },
-	// 	body: JSON.stringify({ username })
-	// });
-	let data = res; //await res.json();
-	if (data.token) {
-		playerToken = data.token;
-		document.getElementById("playerInfo").innerText = `Logged in as: ${data.username}`;
+	let res = await mPostPhp('game_user', {username,action:'login' }); 
+	if (res.token) {
+		playerToken = res.token;
+		document.getElementById("playerInfo").innerText = `Logged in as: ${res.username}`;
 		document.getElementById("loginDiv").style.display = "none";
 		document.getElementById("gameControls").style.display = "block";
 	} else {
-		alert("Login failed");
+		console.log("Login failed");
 	}
 }
 
