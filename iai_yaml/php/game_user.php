@@ -52,7 +52,7 @@ function from_yaml($yaml) {
 
 // 📌 1. Register/Login (No password)
 if ($_POST['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input = json_decode(file_get_contents("php://input"), true);
+    //$input = json_decode(file_get_contents("php://input"), true);
     $username = $_POST['username'];// trim($input['username'] ?? '');
     //echo json_encode(["input" => $input, "username" => $username]);die;
 
@@ -74,8 +74,8 @@ if ($_POST['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // 📌 2. Create a new game (Requires authentication)
 if ($_POST['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input = json_decode(file_get_contents("php://input"), true);
-    $token = $input['token'] ?? '';
+    $token = $_POST['token'];
+    $gamestate = $_POST['gamestate'];
 
     $players = file_exists(PLAYER_FILE) ? from_yaml(file_get_contents(PLAYER_FILE)) : [];
 
@@ -85,9 +85,10 @@ if ($_POST['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $gameId = uniqid();
-    $initialState = ["turn" => 1, "board" => [], "players" => []];
+    echo json_encode(["game_id" => '123',"players" => $players]);exit;
+    // $initialState = ["turn" => 1, "board" => [], "players" => []];
 
-    file_put_contents(GAME_DIR . "$gameId.yaml", to_yaml($initialState));
+    file_put_contents(GAME_DIR . "$gameId.yaml", to_yaml($gamestate));
 
     echo json_encode(["game_id" => $gameId]);
     exit;
