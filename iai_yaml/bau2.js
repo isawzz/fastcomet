@@ -1,39 +1,28 @@
 
-// 📌 1. Login
 async function login() {
+	console.log("login");
 	let username = document.getElementById("username").value;
-	let res = await mPostPhp('game_user', {username });
-	// let res = await fetch("game_user.php?action=login", {
-	// 	method: "POST",
-	// 	cors: 'no-cors',
-	// 	headers: { "Content-Type": "application/json" },
-	// 	body: JSON.stringify({ username })
-	// });
-	let data = res; //await res.json();
-	if (data.token) {
-		playerToken = data.token;
-		document.getElementById("playerInfo").innerText = `Logged in as: ${data.username}`;
+	let res = await mPostPhp('game_user', {username,action:'login' }); 
+	if (res.token) {
+		playerToken = DA.playerToken = res.token;
+		document.getElementById("playerInfo").innerText = `Logged in as: ${res.username}`;
 		document.getElementById("loginDiv").style.display = "none";
 		document.getElementById("gameControls").style.display = "block";
 	} else {
-		alert("Login failed");
+		console.log("Login failed");
 	}
 }
 
-// 📌 2. Create a game
-async function createGame() {
-	let res = await fetch("game.php?action=create", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ token: playerToken })
-	});
-	let data = await res.json();
-	if (data.game_id) {
-		currentGameId = data.game_id;
-		document.getElementById("gameIdInput").value = currentGameId;
+async function createGame(playerToken,gamestate) {
+	if (nundef(playerToken)) playerToken=DA.playerToken;
+	if (nundef(gamestate)) gamestate=DA.gamestate;
+	let res = await mPostPhp('game_user', {action:'create',token:playerToken, gamestate }); 
+	if (res.game_id) {
+		currentGameId = res.game_id;
+		document.getElementById("gameIdInput").value = currentGameId; return;
 		loadGame();
 	} else {
-		alert("Game creation failed");
+		console.log("Game Creation failed");
 	}
 }
 

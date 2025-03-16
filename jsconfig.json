@@ -4,7 +4,6 @@
     "target": "es6"
   },
   "include": [
-    "ilms",
     "iai_yaml" 
   ],
   "exclude": [
