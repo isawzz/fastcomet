@@ -1,18 +1,10 @@
 alles ist fuer immer ok - I have left this plane.
 
 ___ 6:24 AM 3/18/2025 airport 97000 
-
+6:46 AM 3/18/2025
+ok - click auf CreateGame: das geht!
+- was will aendern? ich moechte das config etc. schreiben koennen
 ___ 4:44 AM 3/17/2025 airport 96000 
-ostern:
-- kleines tuch
-- probiere mit regal
-- probiere regale weg, klavier hin
-- kaesten ausmisten
-- koffer konstruktion in meinem zi
-- volumen von kasten compressen
-- zeug von kueche in den keller!
-- org ein paar kisten!
-- teppiche in den gang
 ___ 7:02 AM 3/16/2025 airport 94000 11=3.5
 repair fridge
 gameid,state
