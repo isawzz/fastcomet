@@ -1,8 +1,19 @@
 
 onload = start;
 
-async function start() { await test1_game(); } //test0_vonDd1DragImageFromAnywhere(); }
+async function start() { await test2_game(); } //test0_vonDd1DragImageFromAnywhere(); }
 
+async function test2_game() {
+	await loadAssetsStatic(); console.log('assets', M); return;
+
+	console.log("start");
+	DA.gamestate = { turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: [] };
+	//setInterval(() => getGameState(5), 5000);  // Poll every 5 seconds
+	login();
+	
+	let elems = mLayoutTLM('dPage', { bg: 'lightblue' });
+	mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain'); mFlex(dTop);
+}
 async function test1_game() {
 	await initAssets();
 	

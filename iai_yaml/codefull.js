@@ -2468,7 +2468,7 @@ function loadColors(bh = 18, bs = 20, bl = 20) {
 }
 async function loadStaticYaml(path) {
 	let sessionType = detectSessionType();
-	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : '../';
+	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'php'? 'http://localhost:8080/':'../';
 	let ditext = await fetch(server + path).then(res => res.text());
 	return jsyaml.load(ditext);
 }
