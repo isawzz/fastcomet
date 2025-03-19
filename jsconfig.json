@@ -4,7 +4,7 @@
     "target": "es6"
   },
   "include": [
-    "iai_yaml" 
+    "ilms" 
   ],
   "exclude": [
     "**/codebig.js",

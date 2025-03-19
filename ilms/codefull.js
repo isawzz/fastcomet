@@ -1379,7 +1379,7 @@ function createStopwatch(elem) {
 	return { elem, start, stop, toggle, getElapsed, getStatus, reset };
 }
 function detectSessionType() {
-	let loc = window.location.href;
+	let loc = window.location.href; //console.log('loc', loc)
 	DA.sessionType =
 		loc.includes('moxito.online') ? 'fastcomet' :
 			loc.includes('vidulus') ? 'vps' :
@@ -2467,8 +2467,9 @@ function loadColors(bh = 18, bs = 20, bl = 20) {
 	return list;
 }
 async function loadStaticYaml(path) {
-	let sessionType = detectSessionType();
-	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : '../';
+	let sessionType = detectSessionType(); 
+	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : sessionType == 'php'? 'http://localhost:8080/fastcomet/':'../';
+	//console.log(sessionType,server,path)
 	let ditext = await fetch(server + path).then(res => res.text());
 	return jsyaml.load(ditext);
 }
