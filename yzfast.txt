@@ -1,5 +1,25 @@
 alles ist fuer immer ok - I have left this plane.
 
+___ 6:12 AM 3/20/2025 airport 100000 
+7:39 AM 3/20/2025
+wo?
+
+7:20 AM 3/20/2025
+im php file: schreibe neue users in config.yaml
+6:55 AM 3/20/2025
+- wie werden users organisiert?
+choices: 
+a) in users dir: each user gets a file
+b) in 1 users.yaml file
+=>c) in config file unter users
+
+ueberlege:
+wenn polling: schick alle info die sich veraendert hat
+
+
+6:51 AM 3/20/2025
+- each user get a color
+6:12 AM 3/20/2025
 ___ 8:01 AM 3/19/2025 airport 98000 
 8:43 AM 3/19/2025
 - open ode in mag
