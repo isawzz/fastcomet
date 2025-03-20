@@ -4,31 +4,41 @@ onload = start;
 async function start() { await test2_game(); } //test0_vonDd1DragImageFromAnywhere(); }
 
 async function test2_game() {
-	await loadAssetsStatic(); console.log('assets', M); return;
+	await loadAssetsStatic(); console.log('assets', M);
+
+	let elems = mLayoutTM('dPage', { bg: 'lightblue' });
+	mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain');
+	mLayoutTopExtraSpaceBetween('dTop');
+
+	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul'];
+	let d = mBy('dExtraRight');
+	for (const name of names) {
+		let b = mDom(d, {}, { tag: 'button', html: name, onclick: async () => await switchToUser(name) });
+	}
+
+	await switchToUser();
 
 	console.log("start");
 	DA.gamestate = { turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: [] };
 	//setInterval(() => getGameState(5), 5000);  // Poll every 5 seconds
-	login();
-	
-	let elems = mLayoutTLM('dPage', { bg: 'lightblue' });
-	mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain'); mFlex(dTop);
+	//login();
+
 }
 async function test1_game() {
 	await initAssets();
-	
+
 	let elems = mLayoutTLM('dPage', { bg: 'lightblue' });
 	mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain'); mFlex(dTop);
 }
 async function test1_hexboardTerritories() {
 	await initAssets();
 	let elems = mLayoutTLM('dPage', { bg: 'lightblue' });
-	mStyle('dMain', { overy: 'auto', bg:'black' }); mCenterFlex('dMain'); mFlex(dTop);
+	mStyle('dMain', { overy: 'auto', bg: 'black' }); mCenterFlex('dMain'); mFlex(dTop);
 
-	let board = cryBoard('dMain',5,5,80);
-	for(const tile of board){
-		iDiv(tile).onclick=()=>console.log(tile);
-		mStyle(iDiv(tile),{cursor:'pointer'})
+	let board = cryBoard('dMain', 5, 5, 80);
+	for (const tile of board) {
+		iDiv(tile).onclick = () => console.log(tile);
+		mStyle(iDiv(tile), { cursor: 'pointer' })
 	}
 }
 async function test1_hexboard() {

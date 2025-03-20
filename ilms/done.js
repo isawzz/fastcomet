@@ -83,75 +83,83 @@ async function mKeyO(imgKey, d, styles = {}, opts = {}) {
 function mLayout(dParent, rowlist, colt, rowt, styles = {}, opts = {}) {
 	dParent = toElem(dParent);
 	mStyle(dParent, styles);
-	rowlist = rowlist.map(x => x.replaceAll('@',valf(opts.suffix,''))); //console.log(rowlist);
-	rowt=rowt.replaceAll('@',valf(opts.hrow,30));
-	colt=colt.replaceAll('@', valf(opts.wcol, 30));
+	rowlist = rowlist.map(x => x.replaceAll('@', valf(opts.suffix, ''))); //console.log(rowlist);
+	rowt = rowt.replaceAll('@', valf(opts.hrow, 30));
+	colt = colt.replaceAll('@', valf(opts.wcol, 30));
 	let areas = `'${rowlist.join("' '")}'`;
 	if (dParent.id == 'dPage') M.divNames = [];
 	let newNames = mAreas(dParent, areas, colt, rowt);
 	let names = M.divNames = Array.from(new Set(M.divNames.concat(newNames)));
-	if (nundef(styles.bgSrc)) mShade(newNames); 
+	if (nundef(styles.bgSrc)) mShade(newNames);
 	return names.map(x => mBy(x));
 }
-function mLayoutLMR(dParent, styles={}, opts = {}) {
+function mLayoutLMR(dParent, styles = {}, opts = {}) {
 	let rowlist = [`dLeft@ dMain@ dRight@`];
 	let colt = `minmax(@px, auto) 1fr minmax(@px, auto)`;
 	let rowt = `1fr`;
 	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
 }
-function mLayoutLR(dParent, styles={}, opts = {}) {
+function mLayoutLR(dParent, styles = {}, opts = {}) {
 	let rowlist = [`dLeft@ dRight@`];
 	let colt = `auto 1fr`;
 	let rowt = `1fr`;
 	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
 }
-function mLayoutM(dParent, styles={}, opts = {}) {
+function mLayoutM(dParent, styles = {}, opts = {}) {
 	let rowlist = [`dMain@`];
 	let colt = `1fr`;
 	let rowt = `1fr`;
 	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
 }
-function mLayoutMR(dParent, styles={}, opts = {}) {
+function mLayoutMR(dParent, styles = {}, opts = {}) {
 	let rowlist = [`dMain@ dRight@`];
 	let colt = `minmax(auto, @px) 1fr`;
 	let rowt = `1fr`;
 	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
 }
-function mLayoutTLM(dParent, styles={}, opts = {}) {
+function mLayoutTLM(dParent, styles = {}, opts = {}) {
 	let rowlist = [`dTop@ dTop@`, `dLeft@ dMain@`];
 	let colt = `minmax(@px, auto) 1fr`;
 	let rowt = `minmax(@px, auto) 1fr`;
 	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
 }
-function mLayoutTLMR(dParent, styles={}, opts = {}) {
+function mLayoutTLMR(dParent, styles = {}, opts = {}) {
 	let rowlist = [`dTop@ dTop@ dTop@`, `dLeft@ dMain@ dRight@`];
 	let colt = `minmax(@px, auto) 1fr minmax(@px, auto)`;
 	let rowt = `minmax(@px, auto) 1fr`;
 	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
 }
-function mLayoutTLMRS(dParent, styles={}, opts = {}) {
+function mLayoutTLMRS(dParent, styles = {}, opts = {}) {
 	let rowlist = [`dTop@ dTop@ dTop@`, `dLeft@ dMain@ dRight@`, `dStatus@ dStatus@ dStatus@`];
 	let colt = `minmax(@px, auto) 1fr minmax(@px, auto)`;
 	let rowt = `minmax(@px, auto) 1fr minmax(@px, auto)`;
 	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
 }
-function mLayoutTLMS(dParent, styles={}, opts = {}) {
+function mLayoutTLMS(dParent, styles = {}, opts = {}) {
 	let rowlist = [`dTop@ dTop@`, `dLeft@ dMain@`, `dStatus@ dStatus@`];
 	let colt = `minmax(@px, auto) 1fr`;
 	let rowt = `minmax(@px, auto) 1fr minmax(@px, auto)`;
 	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
 }
-function mLayoutTM(dParent, styles={}, opts = {}, hrow = 30) {
+function mLayoutTM(dParent, styles = {}, opts = {}, hrow = 30) {
 	let rowlist = [`dTop@`, `dMain@`];
 	let colt = `1fr`;
 	let rowt = `minmax(@px, auto) 1fr`;
 	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
 }
-function mLayoutTMS(dParent, styles={}, opts = {}, hrow = 30) {
+function mLayoutTMS(dParent, styles = {}, opts = {}, hrow = 30) {
 	let rowlist = [`dTop@`, `dMain@`, `dStatus@`];
 	let colt = `1fr`;
 	let rowt = `minmax(@px, auto) 1fr minmax(@px, auto)`;
 	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
+}
+function mLayoutTopExtraSpaceBetween(dParent) {
+	dParent = toElem(dParent);
+	mStyle(dParent, {}, { id: 'dOuterTop' });
+	let dTop = mDom(dParent, { display: 'flex', justify: 'space-between' }, { id: 'dTop' });
+	let dExtra = mDom(dParent, { display: 'flex', justify: 'space-between' }, { id: 'dExtra' });
+	let [dTopLeft, dTopMiddle, dTopRight] = [mDom('dTop', {}, { id: 'dTopLeft' }), mDom('dTop', {}, { id: 'dTopMiddle' }), mDom('dTop', {}, { id: 'dTopRight' })]
+	let [dExtraLeft, dExtraMiddle, dExtraRight] = [mDom('dExtra', {}, { id: 'dExtraLeft' }), mDom('dExtra', {}, { id: 'dExtraMiddle' }), mDom('dExtra', {}, { id: 'dExtraRight' })]
 }
 
 
@@ -180,64 +188,64 @@ async function mPalette(dParent, src, showPal = true, showImg = false) {
 }
 
 async function mImageDropper(d) {
-  let fileInput = mDom(d, {}, { tag: 'input', type: 'file', accept: 'image/*' }); //,{onchange:onchangeFileInput});
-  let dropZone = mDom(d, { w: 500, hmin: 300, border: 'white 1px dashed', align: 'center' }, { html: 'Drop image here' });
-  //return;
-  function checkIfFromOwnServer(url) {
-    const ownOrigin = window.location.origin; // e.g., http://127.0.0.1:51012
-    if (url.startsWith(ownOrigin)) {
-      console.log('Dropped from inside the project (server):', url); return true;
-    } else {
-      console.log('Dropped from external website:', url); return false;
-    }
-  }
-  async function ondropImage(ev) {
-    console.log('ondropImage', ev);
-    let item = ev.dataTransfer.items[0]; console.log(item);
-    let file = item.getAsFile(); console.log(file);
-    if (file) await displayImagedata(URL.createObjectURL(file));
-    else {
-      file = ev.dataTransfer.files[0];
-      const url = await new Promise(resolve => item.getAsString(resolve));
-      console.log('Dropped from website:', url);
-      let isOwnServer = checkIfFromOwnServer(url);
-      if (isOwnServer) {
-        await displayImagedata(url);
-      } else {
-        let { dataUrl, width, height } = await resizeImage(file, 500, 1000);
-        await displayImagedata(dataUrl);
-        let name = `img${getNow()}`;
-        name = await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }, { value: name }); console.log('you entered', name);
-        console.log(width, height, name);
-        uploadImage(dataUrl, `zdata/downloads/${name}.${stringAfter(file.name, '.')}`);
-      }
-    }
+	let fileInput = mDom(d, {}, { tag: 'input', type: 'file', accept: 'image/*' }); //,{onchange:onchangeFileInput});
+	let dropZone = mDom(d, { w: 500, hmin: 300, border: 'white 1px dashed', align: 'center' }, { html: 'Drop image here' });
+	//return;
+	function checkIfFromOwnServer(url) {
+		const ownOrigin = window.location.origin; // e.g., http://127.0.0.1:51012
+		if (url.startsWith(ownOrigin)) {
+			console.log('Dropped from inside the project (server):', url); return true;
+		} else {
+			console.log('Dropped from external website:', url); return false;
+		}
+	}
+	async function ondropImage(ev) {
+		console.log('ondropImage', ev);
+		let item = ev.dataTransfer.items[0]; console.log(item);
+		let file = item.getAsFile(); console.log(file);
+		if (file) await displayImagedata(URL.createObjectURL(file));
+		else {
+			file = ev.dataTransfer.files[0];
+			const url = await new Promise(resolve => item.getAsString(resolve));
+			console.log('Dropped from website:', url);
+			let isOwnServer = checkIfFromOwnServer(url);
+			if (isOwnServer) {
+				await displayImagedata(url);
+			} else {
+				let { dataUrl, width, height } = await resizeImage(file, 500, 1000);
+				await displayImagedata(dataUrl);
+				let name = `img${getNow()}`;
+				name = await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }, { value: name }); console.log('you entered', name);
+				console.log(width, height, name);
+				uploadImage(dataUrl, `zdata/downloads/${name}.${stringAfter(file.name, '.')}`);
+			}
+		}
 
-  }
-  async function onchangeFileinput(ev) {
-    let files = ev.target.files; //console.log(files);
-    let file = files[0]; //console.log(file);
-    let src = URL.createObjectURL(file); //console.log(src);
-    await displayImagedata(src);
-  }
-  async function displayImagedata(src) {
-    mClear(dropZone);
-    let img = await mLoadImgAsync(dropZone, { wmax: 500 }, { tag: 'img', src: src });
-    console.log('img dims', img.width, img.height);
-  }
+	}
+	async function onchangeFileinput(ev) {
+		let files = ev.target.files; //console.log(files);
+		let file = files[0]; //console.log(file);
+		let src = URL.createObjectURL(file); //console.log(src);
+		await displayImagedata(src);
+	}
+	async function displayImagedata(src) {
+		mClear(dropZone);
+		let img = await mLoadImgAsync(dropZone, { wmax: 500 }, { tag: 'img', src: src });
+		console.log('img dims', img.width, img.height);
+	}
 
-  //let x = mImageDropper(d3,ondropImage);
-  function preventDefaults(ev) { ev.preventDefault(); ev.stopPropagation(); }
-  function highlight(ev) { mClass(ev.target, 'framedPicture'); }
-  function unhighlight(ev) { mClassRemove(ev.target, 'framedPicture'); }
-  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evname => {
-    dropZone.addEventListener(evname, preventDefaults, false);
-    document.body.addEventListener(evname, preventDefaults, false);
-  });
-  ['dragenter', 'dragover'].forEach(evname => { dropZone.addEventListener(evname, highlight, false); });
-  ['dragleave', 'drop'].forEach(evname => { dropZone.addEventListener(evname, unhighlight, false); });
-  dropZone.addEventListener('drop', ondropImage, false);
-  fileInput.addEventListener('change', onchangeFileinput, false);
+	//let x = mImageDropper(d3,ondropImage);
+	function preventDefaults(ev) { ev.preventDefault(); ev.stopPropagation(); }
+	function highlight(ev) { mClass(ev.target, 'framedPicture'); }
+	function unhighlight(ev) { mClassRemove(ev.target, 'framedPicture'); }
+	['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evname => {
+		dropZone.addEventListener(evname, preventDefaults, false);
+		document.body.addEventListener(evname, preventDefaults, false);
+	});
+	['dragenter', 'dragover'].forEach(evname => { dropZone.addEventListener(evname, highlight, false); });
+	['dragleave', 'drop'].forEach(evname => { dropZone.addEventListener(evname, unhighlight, false); });
+	dropZone.addEventListener('drop', ondropImage, false);
+	fileInput.addEventListener('change', onchangeFileinput, false);
 
 }
 
@@ -307,7 +315,7 @@ function removeAllEvents(elem) {
 	elem.parentNode.replaceChild(newElement, elem);
 	return newElement; // Return the new element reference
 }
-function replaceElement(elem,newElem) {
+function replaceElement(elem, newElem) {
 	elem.parentNode.replaceChild(newElem, elem);
 	return newElem;
 }
