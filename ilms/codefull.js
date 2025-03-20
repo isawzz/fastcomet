@@ -2466,13 +2466,6 @@ function loadColors(bh = 18, bs = 20, bl = 20) {
 	list = sortByMultipleProperties(list, 'fg', 'sorth', 'sorts', 'sortl', 'hue');
 	return list;
 }
-async function loadStaticYaml(path) {
-	let sessionType = detectSessionType(); 
-	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : sessionType == 'php'? 'http://localhost:8080/fastcomet/':'../';
-	//console.log(sessionType,server,path)
-	let ditext = await fetch(server + path).then(res => res.text());
-	return jsyaml.load(ditext);
-}
 function lookup(dict, keys) {
 	if (nundef(dict)) return null;
 	let d = dict;

@@ -3,6 +3,11 @@ onload = start;
 
 async function start() { await test2_game(); } //test0_vonDd1DragImageFromAnywhere(); }
 
+async function test2_usertest(){
+	await loadAssetsStatic(); console.log('assets', M);
+	let res = await mPostPhp('game_user', { username, action: 'login' },);
+
+}
 async function test2_game() {
 	await loadAssetsStatic(); console.log('assets', M);
 

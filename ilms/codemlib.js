@@ -432,29 +432,6 @@ function mPos(d, x, y, offx = 0, offy = 0, unit = 'px') {
 	let dParent = d.parentNode; mIfNotRelative(dParent);
 	mStyle(d, { left: `${x + offx}${unit}`, top: `${y + offy}${unit}`, position: 'absolute' });
 }
-async function mPostPhp(cmd, o, jsonResult = true) {
-	let sessionType = detectSessionType();
-	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
-	if (isdef(o.path) && (o.path.startsWith('zdata') || o.path.startsWith('y'))) o.path = '../../' + o.path;
-	let res = await fetch(server + `ilms/php/${cmd}.php`,
-		{
-			method: 'POST',
-			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			body: new URLSearchParams(o), // Send the line in POST request
-		}
-	);
-	let text;
-	try {
-		text = await res.text();
-		if (!jsonResult) {
-			return text;
-		}
-		let obj = JSON.parse(text);
-		return obj;
-	} catch (e) {
-		return isString(text) ? text : e;
-	}
-}
 function mSelect(dParent, styles = {}, opts = {}) {
 	let d0 = mDom(dParent, dictMerge(styles, { gap: 6 }), opts);
 	mCenterCenterFlex(d0);

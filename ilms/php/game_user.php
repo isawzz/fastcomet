@@ -6,10 +6,10 @@ header("Access-Control-Allow-Headers: Content-Type");
 
 //echo json_encode(["input" => dirname(__DIR__,2), "username" => __DIR__ . '\\..\\..\\iaidata\\games/']); die;
 define('GAME_DIR',dirname(__DIR__,2) . '/iai_data/games/');
-define('PLAYER_FILE', dirname(__DIR__,2) . '/iai_data/players.yaml'); 
-//echo json_encode(["gamesDir" => GAME_DIR, "playerFile" => PLAYER_FILE]); //die;
+define('CONFIG_FILE', dirname(__DIR__,2) . '/y/config.yaml'); 
+//echo json_encode(["gamesDir" => GAME_DIR, "playerFile" => CONFIG_FILE]); //die;
 //define('GAME_DIR', __DIR__ . '../../iaidata/games/');
-//define('PLAYER_FILE', __DIR__ . '../../iaidata/players.yaml'); 
+//define('CONFIG_FILE', __DIR__ . '../../iaidata/config.yaml'); 
 
 if (!is_dir(GAME_DIR)) mkdir(GAME_DIR, 0777, true);
 
@@ -54,6 +54,7 @@ function from_yaml($yaml) {
 if ($_POST['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     //$input = json_decode(file_get_contents("php://input"), true);
     $username = $_POST['username'];// trim($input['username'] ?? '');
+    $userdata = $_POST['userdata'];
     //echo json_encode(["input" => $input, "username" => $username]);die;
 
     if (!$username) {
@@ -61,14 +62,15 @@ if ($_POST['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $players = file_exists(PLAYER_FILE) ? from_yaml(file_get_contents(PLAYER_FILE)) : [];
+    $config = file_exists(CONFIG_FILE) ? from_yaml(file_get_contents(CONFIG_FILE)) : [];
     
-    if (!isset($players[$username])) {
-        $players[$username] = bin2hex(random_bytes(8)); // Generate a token
-        file_put_contents(PLAYER_FILE, to_yaml($players));
+    if (!isset($config["users"][$username])) {
+        $userdata["token"] = bin2hex(random_bytes(8)); // Generate a token
+        $config["users"][$username] = $userdata;
+        file_put_contents(CONFIG_FILE, to_yaml($config));
     }
 
-    echo json_encode(["username" => $username, "token" => $players[$username]]);
+    echo json_encode(["username" => $username, "token" => $userdata["token"], "config" => $config]);
     exit;
 }
 
@@ -77,16 +79,16 @@ if ($_POST['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = $_POST['token'];
     $gamestate = $_POST['gamestate'];
 
-    $players = file_exists(PLAYER_FILE) ? from_yaml(file_get_contents(PLAYER_FILE)) : [];
+    $config = file_exists(CONFIG_FILE) ? from_yaml(file_get_contents(CONFIG_FILE)) : [];
 
-    if (!in_array($token, $players)) {
+    if (!in_array($token, $config)) {
         echo json_encode(["error" => "Invalid authentication"]);
         exit;
     }
 
     $gameId = uniqid();
-    echo json_encode(["game_id" => '123',"players" => $players]);exit;
-    // $initialState = ["turn" => 1, "board" => [], "players" => []];
+    echo json_encode(["game_id" => '123',"config" => $config]);exit;
+    // $initialState = ["turn" => 1, "board" => [], "config" => []];
 
     file_put_contents(GAME_DIR . "$gameId.yaml", to_yaml($gamestate));
 
@@ -100,9 +102,9 @@ if ($_POST['action'] === 'move' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = $input['token'] ?? '';
     $gameFile = GAME_DIR . "{$input['game_id']}.yaml";
 
-    $players = file_exists(PLAYER_FILE) ? from_yaml(file_get_contents(PLAYER_FILE)) : [];
+    $config = file_exists(CONFIG_FILE) ? from_yaml(file_get_contents(CONFIG_FILE)) : [];
 
-    if (!in_array($token, $players)) {
+    if (!in_array($token, $config)) {
         echo json_encode(["error" => "Invalid authentication"]);
         exit;
     }

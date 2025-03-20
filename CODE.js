@@ -27,6 +27,29 @@ async function createGame() {
 }
 
 //#endregion
+async function mPostPhp(cmd, o, jsonResult = true) {
+	let sessionType = detectSessionType();
+	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
+	if (isdef(o.path) && (o.path.startsWith('zdata') || o.path.startsWith('y'))) o.path = '../../' + o.path;
+	let res = await fetch(server + `ilms/php/${cmd}.php`,
+		{
+			method: 'POST',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: new URLSearchParams(o), // Send the line in POST request
+		}
+	);
+	let text;
+	try {
+		text = await res.text();
+		if (!jsonResult) {
+			return text;
+		}
+		let obj = JSON.parse(text);
+		return obj;
+	} catch (e) {
+		return isString(text) ? text : e;
+	}
+}
 
 async function simpleOnDropImage(ev, elem) {
   let dt = ev.dataTransfer;
