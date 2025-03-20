@@ -1,11 +1,11 @@
 
 onload = start;
 
-async function start() { await test2_game(); } //test0_vonDd1DragImageFromAnywhere(); }
+async function start() { await test2_usertest(); } //test0_vonDd1DragImageFromAnywhere(); }
 
 async function test2_usertest(){
 	await loadAssetsStatic(); console.log('assets', M);
-	let res = await mPostPhp('game_user', { username, action: 'login' },);
+	let res = await mPostPhp('game_user', { username:'felix', action: 'login', userdata:{color:'blue'} });
 
 }
 async function test2_game() {
