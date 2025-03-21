@@ -302,6 +302,4 @@ themes:
     texture: ../assets/textures/wall1.jpg
     blendMode: overlay
     name: forest
-userlist: [amanda, annabel, diana, felix, guest, gul,lauren, mac, maya, mimi, mitra, nasi, sarah, sheeba, valerie, wolferl]
-users:
-
+users: [amanda, annabel, diana, felix, guest, gul,lauren, mac, maya, mimi, mitra, nasi, sarah, sheeba, valerie, wolferl]
