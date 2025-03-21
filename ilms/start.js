@@ -3,9 +3,15 @@ onload = start;
 
 async function start() { await test2_usertest(); } //test0_vonDd1DragImageFromAnywhere(); }
 
-async function test2_usertest(){
+async function test2_login() {
 	await loadAssetsStatic(); console.log('assets', M);
-	let res = await mPostPhp('game_user', { username:'felix', action: 'login', userdata:{color:'blue'} });
+	let username = localStorage.getItem('username');
+	let res = await mPostPhp('game_user', { username, action: 'login' });
+
+}
+async function test2_usertest() {
+	await loadAssetsStatic();// console.log('assets', M);
+	let res = await mPostPhp('game_user', { username: 'felix', action: 'login' }); 
 
 }
 async function test2_game() {

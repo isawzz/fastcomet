@@ -4,9 +4,12 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: Content-Type");
 
+//echo json_encode(["input" => dirname(__DIR__,2), "username" => __DIR__ . '\\..\\..\\iaidata\\games/']); die;
 define('GAME_DIR',dirname(__DIR__,2) . '/iai_data/games/');
 define('CONFIG_FILE', dirname(__DIR__,2) . '/y/config.yaml'); 
 //echo json_encode(["gamesDir" => GAME_DIR, "playerFile" => CONFIG_FILE]); //die;
+//define('GAME_DIR', __DIR__ . '../../iaidata/games/');
+//define('CONFIG_FILE', __DIR__ . '../../iaidata/config.yaml'); 
 
 if (!is_dir(GAME_DIR)) mkdir(GAME_DIR, 0777, true);
 
@@ -21,9 +24,47 @@ class UserData {
         $this->imgkey = $imgkey ?? 'unknown_user';
     }
 }
+// 📌 Convert array to YAML
+function to_yaml($array) {
+    $yaml = "";
+    foreach ($array as $key => $value) {
+        if (is_array($value)) {
+            $yaml .= "$key:\n";
+            foreach ($value as $subValue) {
+                $yaml .= "  - " . json_encode($subValue) . "\n";
+            }
+        } else {
+            $yaml .= "$key: " . json_encode($value) . "\n";
+        }
+    }
+    return $yaml;
+}
 
+// 📌 Parse YAML into an array
+function from_yaml($yaml) {
+    $lines = explode("\n", trim($yaml));
+    $array = [];
+    $currentKey = null;
+
+    foreach ($lines as $line) {
+        if (preg_match('/^(\w+):\s*(.*)$/', $line, $matches)) {
+            $key = $matches[1];
+            $value = trim($matches[2]);
+            $array[$key] = json_decode($value, true) ?? $value;
+            $currentKey = $key;
+        } elseif (preg_match('/^\s*-\s*(.*)$/', $line, $matches) && $currentKey) {
+            $value = json_decode(trim($matches[1]), true) ?? trim($matches[1]);
+            $array[$currentKey][] = $value;
+        }
+    }
+    return $array;
+}
+
+// 📌 1. Register/Login (No password)
 if ($_POST['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'];
+    //$input = json_decode(file_get_contents("php://input"), true);
+    $username = $_POST['username'];// trim($input['username'] ?? '');
+    //$userdata = $_POST['userdata'];
     // echo json_encode(["username" => $username]);die;
 
     if (!$username) {
@@ -31,7 +72,7 @@ if ($_POST['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $config = file_exists(CONFIG_FILE) ? file_get_contents(CONFIG_FILE) : "";
+    $config = file_exists(CONFIG_FILE) ? from_yaml(file_get_contents(CONFIG_FILE)) : [];
     //if (isset($config)) echo json_encode(["username" => $username]);die;
     echo json_encode(["username" => $username, "config" => $config]); die;
     

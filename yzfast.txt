@@ -1,16 +1,16 @@
 alles ist fuer immer ok - I have left this plane.
 
+___ 6:27 AM 3/21/2025 airport 1000 
+6:44 AM 3/21/2025
+- 
 ___ 6:12 AM 3/20/2025 airport 100000 
 7:39 AM 3/20/2025
-wo?
 
 1. fe ueberweist geld
 2. mi geh ich zu bank99 und hole mir bankauszuege der letzten 3 monate
 3. prudential letter finde ich
 4. es ist keine miete anfaellig weil ich bei meinem bruder in einer eigenen wohnung lebe (Vegagasse 3, 1190 Wien) und mein Mann derzeit bei seiner Mutter (eigenes Haus in Keylwerthgasse 1a 1190 Wien)
-
-gu soll ein ticket 
-
+gu soll ticket abholen
 
 7:20 AM 3/20/2025
 im php file: schreibe neue users in config.yaml

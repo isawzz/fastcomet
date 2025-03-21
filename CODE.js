@@ -1,3 +1,38 @@
+async function loadAssetsStatic() {
+	if (nundef(M)) M = {};
+	M = await loadStaticYaml('y/m.yaml');
+	M.superdi = await loadStaticYaml('y/superdi.yaml');
+	M.details = await loadStaticYaml('y/details.yaml');
+	M.config = await loadStaticYaml('y/config.yaml');
+	loadColors();
+	M.users = M.config.users;
+	// for (const uname of M.config.users) {
+	// 	M.users[uname] = await loadStaticYaml(`y/users/${uname}.yaml`);
+	// }
+	let [di, byColl, byFriendly, byCat, allImages] = [M.superdi, {}, {}, {}, {}];
+	for (const k in di) {
+		let o = di[k];
+		for (const cat of o.cats) lookupAddIfToList(byCat, [cat], k);
+		for (const coll of o.colls) lookupAddIfToList(byColl, [coll], k);
+		lookupAddIfToList(byFriendly, [o.friendly], k)
+		if (isdef(o.img)) {
+			let fname = stringAfterLast(o.img, '/')
+			allImages[k] = { fname, path: o.img, key: k };
+		}
+		if (isdef(o.photo)) {
+			let fname = stringAfterLast(o.photo, '/')
+			allImages[k + '_photo'] = { fname, path: o.photo, key: k };
+		}
+	}
+	M.allImages = allImages;
+	M.byCat = byCat;
+	M.byCollection = byColl;
+	M.byFriendly = byFriendly;
+	M.categories = Object.keys(byCat); M.categories.sort();
+	M.collections = Object.keys(byColl); M.collections.sort();
+	M.names = Object.keys(byFriendly); M.names.sort();
+	[M.colorList, M.colorByHex, M.colorByName] = getListAndDictsForDicolors();
+}
 
 //#region iai_yaml
 

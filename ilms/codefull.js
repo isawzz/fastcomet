@@ -2421,10 +2421,10 @@ async function loadAssetsStatic() {
 	M.details = await loadStaticYaml('y/details.yaml');
 	M.config = await loadStaticYaml('y/config.yaml');
 	loadColors();
-	M.users = {};
-	for (const uname of M.config.users) {
-		M.users[uname] = await loadStaticYaml(`y/users/${uname}.yaml`);
-	}
+	M.users = M.config.users;
+	// for (const uname of M.config.users) {
+	// 	M.users[uname] = await loadStaticYaml(`y/users/${uname}.yaml`);
+	// }
 	let [di, byColl, byFriendly, byCat, allImages] = [M.superdi, {}, {}, {}, {}];
 	for (const k in di) {
 		let o = di[k];
