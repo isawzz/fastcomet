@@ -1,25 +1,51 @@
 <?php
-header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST");
-header("Access-Control-Allow-Headers: Content-Type");
+include 'helpers.php';
 
-define('GAME_DIR',dirname(__DIR__,2) . '/iai_data/games/');
-define('CONFIG_FILE', dirname(__DIR__,2) . '/y/config.yaml'); 
-//echo json_encode(["gamesDir" => GAME_DIR, "playerFile" => CONFIG_FILE]); //die;
+if ($_POST['action'] === 'test_config' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    //echo json_encode(["config" => CONFIG_FILE]); die;
+    $username = 'martin';
+    $userdata = new UserData($username);
+    $config = yamlFileToArray(CONFIG_FILE); 
+    $config["users"][$username]=$userdata;
+    arrayToYamlFile($config, YDIR . "hallo.yaml");
+    echo json_encode(["config" => $config, "username" => $username, "userdata" => $userdata]); die;
+    
+    
+    $typeConfig = gettype($config);
+    $parsedData = Yaml::parse($config); $typeParse = gettype($parsedData);
+    echo json_encode(["config" => $config, "typeConfig"=> $typeConfig, "parsedData" => $parsedData, "typeParse" => $typeParse]); die;
 
-if (!is_dir(GAME_DIR)) mkdir(GAME_DIR, 0777, true);
+    $json = yamlToJson($config);
+    $php = json_decode($json, true);
+    $yaml = jsonToYaml($json);
+    echo json_encode(["o" => $parsedData]); die;
+    $jsonString = '{"name":"Alice","age":30,"address":{"street":"123 Maple St","city":"New York"}}';
+    $php = json_decode($jsonString, true);
+    $s = json_encode($php, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    $yamlString = jsonToYaml($s);
+    echo json_encode(["yaml" => $yamlString, "o"=> $php, "json" => $s]); die;
+    
+    echo json_encode(["user" => "hallo"]); die;
+    $user = new UserData('test', 'unknown_user');
+    echo json_encode(["user" => $user]); die;
 
-class UserData {
-    public $color;
-    public $name;
-    public $imgkey;
+    saveAsYaml(["users" => ["test" => new UserData('test', 'unknown_user')]], "hallo.yaml");
+    exit;
+}
 
-    public function __construct($name,$imgkey) {
-        $this->color = $this->randomColor();
-        $this->name = $name;
-        $this->imgkey = $imgkey ?? 'unknown_user';
-    }
+if ($_POST['action'] === 'test' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $jsonString = '{"name":"Alice","age":30,"address":{"street":"123 Maple St","city":"New York"}}';
+    $php = json_decode($jsonString, true);
+    $s = json_encode($php, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    $yamlString = jsonToYaml($s);
+    echo json_encode(["yaml" => $yamlString, "o"=> $php, "json" => $s]); die;
+    
+    echo json_encode(["user" => "hallo"]); die;
+    $user = new UserData('test', 'unknown_user');
+    echo json_encode(["user" => $user]); die;
+
+    saveAsYaml(["users" => ["test" => new UserData('test', 'unknown_user')]], "hallo.yaml");
+    exit;
 }
 
 if ($_POST['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -32,20 +58,19 @@ if ($_POST['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $config = file_exists(CONFIG_FILE) ? file_get_contents(CONFIG_FILE) : "";
-    //if (isset($config)) echo json_encode(["username" => $username]);die;
-    echo json_encode(["username" => $username, "config" => $config]); die;
+    $parsedData = Yaml::parse($config);
     
     if (!isset($config["users"][$username])) {
-        //$userdata["token"] = bin2hex(random_bytes(8)); // Generate a token
-        $userdata = new UserData($username, 'unknown_user'); //$_POST['imgkey']);
+        $userdata = new UserData($username, 'unknown_user'); 
         $config["users"][$username] = $userdata;
-        file_put_contents(CONFIG_FILE, to_yaml($config));
+        saveAsYaml($config, CONFIG_FILE);
+        //file_put_contents(CONFIG_FILE, to_yaml($config));
     }else{
-        $userdata = $config["users"][$username];
+        $userdata = $parsedData["users"][$username];
     
     }
 
-    echo json_encode(["username" => $username, "userdata" => $userdata, "config" => $config]);
+    echo json_encode(["username" => $username, "userdata" => $userdata,"config" => $parsedData]); die;
     exit;
 }
 

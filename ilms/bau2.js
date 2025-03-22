@@ -25,7 +25,7 @@ async function mPostPhp(cmd, o, projectName = 'ilms', verbose = true, jsonResult
 			return text;
 		}
 		let obj = JSON.parse(text);
-		if (verbose) console.log('from php:', obj);
+		if (verbose) console.log('from php:\n', obj);
 		return obj;
 	} catch (e) {
 		return isString(text) ? text : e;

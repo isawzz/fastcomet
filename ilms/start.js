@@ -1,8 +1,19 @@
 
 onload = start;
 
-async function start() { await test2_usertest(); } //test0_vonDd1DragImageFromAnywhere(); }
+async function start() { await test2_test_config(); } 
 
+async function test2_test_config() {
+	let res = await mPostPhp('game_user', { action: 'test_config' }); 
+	// mDom('dPage',{},{tag:'pre',html:res.json})
+	// mDom('dPage',{},{tag:'pre',html:res.yaml})
+}
+async function test2_test() {
+	let res = await mPostPhp('game_user', { action: 'test' }); 
+	mDom('dPage',{},{tag:'pre',html:res.json})
+	mDom('dPage',{},{tag:'pre',html:res.yaml})
+	console.log(res.o);
+}
 async function test2_login() {
 	await loadAssetsStatic(); console.log('assets', M);
 	let username = localStorage.getItem('username');
@@ -11,7 +22,7 @@ async function test2_login() {
 }
 async function test2_usertest() {
 	await loadAssetsStatic();// console.log('assets', M);
-	let res = await mPostPhp('game_user', { username: 'felix', action: 'login' }); 
+	let res = await mPostPhp('game_user', { username: 'hans', action: 'login' }); 
 
 }
 async function test2_game() {
