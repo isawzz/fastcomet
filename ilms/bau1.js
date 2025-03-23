@@ -3,7 +3,13 @@ async function switchToUser(username) {
 	if (!isEmpty(username)) username = normalizeString(username);
 	if (isEmpty(username)) username = 'guest';
 	let res = await mPostPhp('game_user', { username, action: 'login' });
-	console.log('res', res);
+	//wenn das config mitgeschickt wird soll ich es updaten!
+	// es muss immer mit M zusammenspielen!
+	//ich sollte ein users.yaml file haben!
+	//console.log('res', res);
+
+	//return;
+
 	mStyle('dTopRight',{maright:10,fz:20},{html:`logged in: ${username}`});
 	localStorage.setItem('username', username);
 	// iDiv(UI.nav.commands.user).innerHTML = username;

@@ -1,0 +1,111 @@
+amanda:
+  name: amanda
+  color: '#046307'
+  texture: ../assets/textures/wall1.jpg
+  blendMode: overlay
+  imgKey: amanda
+  games:
+    setgame:
+      level: 2
+    button96:
+      handicap: 3
+annabel:
+  name: annabel
+  color: '#f07f7f'
+  imgKey: annabel
+  games:
+    setgame:
+      level: 7
+diana:
+  name: diana
+  color: '#4c2882'
+  texture: ../assets/textures/marble_violet1.jpeg
+  blendMode: luminosity
+  imgKey: das
+  games:
+    setgame:
+      level: 7
+    button96:
+      handicap: 3
+felix:
+  name: felix
+  color: '#0e1e76'
+  texture: ../assets/textures/marble_meer1.jpg
+  blendMode: normal
+  imgKey: felix
+  games:
+    setgame:
+      level: 7
+    button96:
+      handicap: 3
+guest:
+  name: guest
+  color: '#002e63'
+  texture: ../assets/textures/marble_blue1.jpeg
+  imgKey: stellers_jay
+  blendMode: normal
+  bg: '#55bc41'
+  games:
+    setgame:
+      level: 7
+    button96:
+      handicap: 3
+gul:
+  name: gul
+  color: '#e6be8a'
+  texture: ../assets/textures/marble_beige1.jpeg
+  blendMode: normal
+  imgKey: leopard
+  games:
+    setgame:
+      level: 1
+lauren:
+  name: lauren
+  color: '#006c7f'
+  texture: ../assets/textures/marble_blue2.jpeg
+  blendMode: normal
+  imgKey: lauren
+  games:
+    setgame:
+      level: 7
+mimi:
+  name: mimi
+  color: '#ffe4e1'
+  texture: ../assets/textures/marble_rosa.jpeg
+  blendMode: normal
+  imgKey: mimi
+  games:
+    setgame:
+      level: 1
+    button96:
+      handicap: 3
+nasi:
+  name: nasi
+  color: '#f0e78e'
+  imgKey: nasi
+sarah:
+  name: sarah
+  color: '#f494b4'
+  imgKey: sarah
+  games:
+    setgame:
+      level: 7
+  texture: ../assets/textures/marble_grey1.jpeg
+  blendMode: luminosity
+sheeba:
+  name: sheeba
+  color: '#c71585'
+  imgKey: sheeba
+valerie:
+  name: valerie
+  color: '#ffff00'
+  imgKey: valerie
+wolferl:
+  name: wolferl
+  color: '#002e63'
+  texture: ../assets/textures/marble_blue1.jpeg
+  blendMode: normal
+  imgKey: billy
+  games:
+    setgame:
+      level: 7

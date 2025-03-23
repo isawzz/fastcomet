@@ -26,6 +26,17 @@ async function mPostPhp(cmd, o, projectName = 'ilms', verbose = true, jsonResult
 		}
 		let obj = JSON.parse(text);
 		if (verbose) console.log('from php:\n', obj);
+		let mkeys = ["config","superdi","users","details"]; 
+		for(const k of mkeys){
+			if (isdef(obj[k])) {
+				M[k] = obj[k];
+				if (k == "superdi") {
+					loadSuperdiAssets();
+				}else if (k == "users") {
+					loadUsers();
+				}
+			}
+		}
 		return obj;
 	} catch (e) {
 		return isString(text) ? text : e;

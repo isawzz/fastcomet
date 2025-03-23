@@ -2420,11 +2420,28 @@ async function loadAssetsStatic() {
 	M.superdi = await loadStaticYaml('y/superdi.yaml');
 	M.details = await loadStaticYaml('y/details.yaml');
 	M.config = await loadStaticYaml('y/config.yaml');
+	M.users = await loadStaticYaml('y/users.yaml');
 	loadColors();
-	M.users = M.config.users;
-	// for (const uname of M.config.users) {
-	// 	M.users[uname] = await loadStaticYaml(`y/users/${uname}.yaml`);
-	// }
+	loadSuperdiAssets();
+}
+function loadColors(bh = 18, bs = 20, bl = 20) {
+	if (nundef(M.dicolor)) {
+		M.dicolor = dicolor;
+		[M.colorList, M.colorByHex, M.colorByName] = getListAndDictsForDicolors();
+		M.colorNames = Object.keys(M.colorByName); M.colorNames.sort();
+	}
+	let list = M.colorList;
+	for (const x of list) {
+		let fg = colorIdealText(x.hex);
+		x.fg = fg;
+		x.sorth = Math.round(x.hue / bh) * bh;
+		x.sortl = Math.round(x.lightness * 100 / bl) * bl;
+		x.sorts = Math.round(x.sat * 100 / bs) * bs;
+	}
+	list = sortByMultipleProperties(list, 'fg', 'sorth', 'sorts', 'sortl', 'hue');
+	return list;
+}
+function loadSuperdiAssets() {
 	let [di, byColl, byFriendly, byCat, allImages] = [M.superdi, {}, {}, {}, {}];
 	for (const k in di) {
 		let o = di[k];
@@ -2449,22 +2466,8 @@ async function loadAssetsStatic() {
 	M.names = Object.keys(byFriendly); M.names.sort();
 	[M.colorList, M.colorByHex, M.colorByName] = getListAndDictsForDicolors();
 }
-function loadColors(bh = 18, bs = 20, bl = 20) {
-	if (nundef(M.dicolor)) {
-		M.dicolor = dicolor;
-		[M.colorList, M.colorByHex, M.colorByName] = getListAndDictsForDicolors();
-		M.colorNames = Object.keys(M.colorByName); M.colorNames.sort();
-	}
-	let list = M.colorList;
-	for (const x of list) {
-		let fg = colorIdealText(x.hex);
-		x.fg = fg;
-		x.sorth = Math.round(x.hue / bh) * bh;
-		x.sortl = Math.round(x.lightness * 100 / bl) * bl;
-		x.sorts = Math.round(x.sat * 100 / bs) * bs;
-	}
-	list = sortByMultipleProperties(list, 'fg', 'sorth', 'sorts', 'sortl', 'hue');
-	return list;
+function loadUsers(){
+	console.log('hier werden users updated was immer zu tun ist!!!')
 }
 function lookup(dict, keys) {
 	if (nundef(dict)) return null;

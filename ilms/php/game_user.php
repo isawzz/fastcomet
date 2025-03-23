@@ -1,13 +1,57 @@
 <?php
 include 'helpers.php';
 
+if ($_POST['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+  $username = $_POST['username'];
+  if (!$username || $username == 'null') {
+    echo json_encode(["error" => "Username required"]);
+    exit;
+  }
+  $config = yamlFileToArray(CONFIG_READ); 
+  $userdata = $config["users"][$username]; 
+  if (!isset($userdata)) {
+    $userdata = new UserData($username, 'unknown_user'); 
+    $config["users"][$username] = $userdata;
+    arrayToYamlFile($config, CONFIG_WRITE);
+  } 
+  echo json_encode(["username" => $username, "config" => $config, "userdata" => $userdata]); die;
+
+  // $config = file_exists(CONFIG_READ) ? file_get_contents(CONFIG_READ) : "";
+  // $parsedData = Yaml::parse($config);
+  
+
+  echo json_encode(["username" => $username, "userdata" => $userdata,"config" => $parsedData]); die;
+  exit;
+}
+
+if ($_POST['action'] === 'test_array' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $arr = ["config" => 1]; //, "typeConfig" => ["a" => "du"], "parsedData" => "wer", "typeParse" => "hallo"];
+    arrayToYamlFile($arr, "hallo.yaml");
+    echo json_encode(["config" => CONFIG_READ]); die;
+    echo json_encode(["config" => "success"]);
+    exit;
+}
+
 if ($_POST['action'] === 'test_config' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    //echo json_encode(["config" => CONFIG_FILE]); die;
-    $username = 'martin';
+    //echo json_encode(["config" => CONFIG_READ]); die;
+    $username = 'dieter';
     $userdata = new UserData($username);
-    $config = yamlFileToArray(CONFIG_FILE); 
+    $config = yamlFileToArray(CONFIG_READ); 
+    //echo json_encode(["config" => $config]); die;
     $config["users"][$username]=$userdata;
-    arrayToYamlFile($config, YDIR . "hallo.yaml");
+    arrayToYamlFile($config, "hallo.yaml");
+    echo json_encode(["config" => $config, "username" => $username, "userdata" => $userdata]); die;
+    exit;
+}
+
+if ($_POST['action'] === 'test_final' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    //echo json_encode(["config" => CONFIG_READ]); die;
+    $username = 'dieter';
+    $userdata = new UserData($username);
+    $config = yamlFileToArray(CONFIG_READ); 
+    //echo json_encode(["config" => $config]); die;
+    $config["users"][$username]=$userdata;
+    arrayToYamlFile($config, "hallo.yaml");
     echo json_encode(["config" => $config, "username" => $username, "userdata" => $userdata]); die;
     
     
@@ -48,38 +92,12 @@ if ($_POST['action'] === 'test' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-if ($_POST['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'];
-    // echo json_encode(["username" => $username]);die;
-
-    if (!$username) {
-        echo json_encode(["error" => "Username required"]);
-        exit;
-    }
-
-    $config = file_exists(CONFIG_FILE) ? file_get_contents(CONFIG_FILE) : "";
-    $parsedData = Yaml::parse($config);
-    
-    if (!isset($config["users"][$username])) {
-        $userdata = new UserData($username, 'unknown_user'); 
-        $config["users"][$username] = $userdata;
-        saveAsYaml($config, CONFIG_FILE);
-        //file_put_contents(CONFIG_FILE, to_yaml($config));
-    }else{
-        $userdata = $parsedData["users"][$username];
-    
-    }
-
-    echo json_encode(["username" => $username, "userdata" => $userdata,"config" => $parsedData]); die;
-    exit;
-}
-
 // 📌 2. Create a new game (Requires authentication)
 if ($_POST['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = $_POST['token'];
     $gamestate = $_POST['gamestate'];
 
-    $config = file_exists(CONFIG_FILE) ? from_yaml(file_get_contents(CONFIG_FILE)) : [];
+    $config = file_exists(CONFIG_READ) ? from_yaml(file_get_contents(CONFIG_READ)) : [];
 
     if (!in_array($token, $config)) {
         echo json_encode(["error" => "Invalid authentication"]);
@@ -102,7 +120,7 @@ if ($_POST['action'] === 'move' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = $input['token'] ?? '';
     $gameFile = GAME_DIR . "{$input['game_id']}.yaml";
 
-    $config = file_exists(CONFIG_FILE) ? from_yaml(file_get_contents(CONFIG_FILE)) : [];
+    $config = file_exists(CONFIG_READ) ? from_yaml(file_get_contents(CONFIG_READ)) : [];
 
     if (!in_array($token, $config)) {
         echo json_encode(["error" => "Invalid authentication"]);
