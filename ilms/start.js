@@ -15,10 +15,10 @@ async function test3_game() {
 	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul'];
 	let d = mBy('dExtraRight');
 	for (const name of names) {
-		let b = mDom(d, {}, { tag: 'button', html: name, onclick: async () => await switchToUser(name) });
+		let b = mDom(d, {}, { tag: 'button', html: name, onclick: async () => await switchToUser(name) }); 
 	}
 
-	let username = localStorage.getItem('username')??'hans'; console.log('username', username);
+	let username = localStorage.getItem('username')??'hans'; console.log('username', username); //return;
 	await switchToUser(username);
 
 	console.log("start");

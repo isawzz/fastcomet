@@ -2,6 +2,7 @@
 async function switchToUser(username) {
 	if (!isEmpty(username)) username = normalizeString(username);
 	if (isEmpty(username)) username = 'guest';
+	console.log('username', username); //return;
 	let res = await mPostPhp('game_user', { username, action: 'login' });
 	//wenn das config mitgeschickt wird soll ich es updaten!
 	// es muss immer mit M zusammenspielen!

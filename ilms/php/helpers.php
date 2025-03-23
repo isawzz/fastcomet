@@ -9,10 +9,11 @@ header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: Content-Type");
 
 define('GAME_DIR',dirname(__DIR__,2) . '/iai_data/games/');
+define('USERS_READ', dirname(__DIR__,2) . '/y/users.yaml'); 
+define('USERS_WRITE', 'hallo.yaml'); 
 define('CONFIG_READ', dirname(__DIR__,2) . '/y/config.yaml'); 
 define('CONFIG_WRITE', 'hallo.yaml'); 
 define('YDIR', dirname(__DIR__,2) . '/y/'); 
-//echo json_encode(["gamesDir" => GAME_DIR, "playerFile" => CONFIG_READ]); //die;
 
 if (!is_dir(GAME_DIR)) mkdir(GAME_DIR, 0777, true);
 
