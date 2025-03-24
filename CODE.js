@@ -1,3 +1,75 @@
+function calculateGoodColors(bg, fg) {
+  let fgIsLight = isdef(fg) ? colorIdealText(fg) == 'black' : colorIdealText(bg) == 'white';
+  let bgIsDark = colorIdealText(bg) == 'white';
+  if (nundef(fg)) fg = colorIdealText(bg);
+  let bgNav = bg;
+  fg = colorToHex79(fg);
+  if (fgIsLight) {
+    if (isEmpty(U.texture)) { bgNav = '#00000040'; }
+    else if (bgIsDark) { bgNav = colorTrans(bg, .8); }
+    else { bgNav = colorTrans(colorDark(bg, 50), .8); }
+  } else {
+    if (isEmpty(U.texture)) { bgNav = '#ffffff40'; }
+    else if (!bgIsDark) { bgNav = colorTrans(bg, .8); }
+    else { bgNav = colorTrans(colorLight(bg, 50), .8); }
+  }
+  let realBg = bg;
+  if (bgNav == realBg) bgNav = fgIsLight ? colorDark(bgNav, .2) : colorLight(bgNav, .2);
+  let bgContrast = fgIsLight ? colorDark(bgNav, .2) : colorLight(bgNav, .2);
+  let fgContrast = fgIsLight ? '#ffffff80' : '#00000080';
+  return [realBg, bgContrast, bgNav, fg, fgContrast];
+}
+function setCssVar(varname, val) { document.body.style.setProperty(varname, val); }
+function setColors(bg, fg) {
+  let [realBg, bgContrast, bgNav, fgNew, fgContrast] = calculateGoodColors(bg, fg);
+
+	mStyle('dPage',{bg:realBg});
+	return;
+
+  setCssVar('--bgBody', realBg);
+  setCssVar('--bgButton', 'transparent')
+  setCssVar('--bgButtonActive', bgContrast)
+  setCssVar('--bgNav', bgNav)
+  setCssVar('--fgButton', fgNew)
+  setCssVar('--fgButtonActive', fgNew)
+  setCssVar('--fgButtonDisabled', 'silver')
+  setCssVar('--fgButtonHover', fgContrast)
+  setCssVar('--fgTitle', fgNew)
+  setCssVar('--fgSubtitle', fgContrast);
+}
+async function switchToUser(username) {
+	if (!isEmpty(username)) username = normalizeString(username);
+	if (isEmpty(username)) username = 'guest';
+	console.log('username', username); //return;
+	let res = await mPostPhp('game_user', { username, action: 'login' });
+	//wenn das config mitgeschickt wird soll ich es updaten!
+	// es muss immer mit M zusammenspielen!
+	//ich sollte ein users.yaml file haben!
+	//console.log('res', res);
+
+	//return;
+
+	mStyle('dTopRight',{maright:10},{html:`${username}`});
+	localStorage.setItem('username', username);
+	// iDiv(UI.nav.commands.user).innerHTML = username;
+	// setUserTheme();
+	// menu = valf(menu, getMenu(), localStorage.getItem('menu'), 'home');
+	// await switchToMainMenu(menu);
+
+}
+async function login(username) {
+	console.log("login");
+	//let username = document.getElementById("username").value;
+	let res = await mPostPhp('game_user', { username, action: 'login' });
+	if (res.token) {
+		playerToken = DA.playerToken = res.token;
+		document.getElementById("playerInfo").innerText = `Logged in as: ${res.username}`;
+		document.getElementById("loginDiv").style.display = "none";
+		document.getElementById("gameControls").style.display = "block";
+	} else {
+		console.log("Login failed");
+	}
+}
 async function loadAssetsStatic() {
 	if (nundef(M)) M = {};
 	M = await loadStaticYaml('y/m.yaml');

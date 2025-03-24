@@ -1,8 +1,32 @@
 
 onload = start;
 
-async function start() { await test3_game(); } 
+async function start() { await test3_theme(); } 
 
+async function test3_theme() {
+	await loadAssetsStatic(); console.log('assets', M.users);
+
+	let elems = mLayoutTM('dPage');
+	mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain');
+	mLayoutTopExtraSpaceBetween('dTop');
+	mStyle('dTop',{hmin:32}); mFlexV('dTop');
+	mStyle('dExtra',{hmin:32})
+
+	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul'];
+	let d = mBy('dExtraRight');
+	for (const name of names) {
+		let b = mDom(d, {className:'button'}, { tag: 'button', html: name, onclick: async () => await switchToUser(name) }); 
+	}
+
+	let username = localStorage.getItem('username')??'hans'; console.log('username', username); //return;
+	await switchToUser(username);
+
+	console.log("start");
+	DA.gamestate = { turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: [] };
+	//setInterval(() => getGameState(5), 5000);  // Poll every 5 seconds
+	//login();
+
+}
 async function test3_game() {
 	await loadAssetsStatic(); //console.log('assets', M);
 
