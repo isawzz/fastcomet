@@ -1,48 +1,69 @@
 
 onload = start;
 
-async function start() { await test3_theme(); } 
+async function start() { await test3_game(); }
 
+async function test3_game() {
+	await loadAssetsStatic(); //console.log('assets', M.users);
+
+	let elems = mLayoutTM('dPage'); mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain'); mLayoutTopExtraSpaceBetween('dTop'); mFlexV('dTop'); //mStyle('dTop', { hmin: 32 }); mStyle('dExtra', { hmin: 32 })
+
+	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul']; let d = mBy('dExtraRight');
+	for (const name of names) { let b = mDom(d, { className: 'button' }, { tag: 'button', html: name, onclick: async () => await switchToUser(name) }); }
+
+	let username = localStorage.getItem('username') ?? 'hans'; if (username == 'felix') username = 'amanda'; else username = 'felix'; await switchToUser(username);
+
+	//console.log("start");
+	let state = DA.gamestate = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix','amanda'] };
+	if (U.name == 'felix') createGame(U.name, state);
+	else {
+		setInterval(() => getGameState(5), 5000);  // Poll every 5 seconds
+	}
+	//
+	//login();
+
+}
 async function test3_theme() {
-	await loadAssetsStatic(); console.log('assets', M.users);
+	await loadAssetsStatic(); //console.log('assets', M.users);
 
 	let elems = mLayoutTM('dPage');
 	mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain');
 	mLayoutTopExtraSpaceBetween('dTop');
-	mStyle('dTop',{hmin:32}); mFlexV('dTop');
-	mStyle('dExtra',{hmin:32})
+	mStyle('dTop', { hmin: 32 }); mFlexV('dTop');
+	mStyle('dExtra', { hmin: 32 })
 
 	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul'];
 	let d = mBy('dExtraRight');
 	for (const name of names) {
-		let b = mDom(d, {className:'button'}, { tag: 'button', html: name, onclick: async () => await switchToUser(name) }); 
+		let b = mDom(d, { className: 'button' }, { tag: 'button', html: name, onclick: async () => await switchToUser(name) });
 	}
 
-	let username = localStorage.getItem('username')??'hans'; console.log('username', username); //return;
+	let username = localStorage.getItem('username') ?? 'hans'; //console.log('username', username);
+	if (username == 'felix') username = 'amanda'; else username = 'felix';
 	await switchToUser(username);
 
-	console.log("start");
+	//console.log("start");
 	DA.gamestate = { turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: [] };
 	//setInterval(() => getGameState(5), 5000);  // Poll every 5 seconds
 	//login();
 
 }
-async function test3_game() {
+async function test3_game0() {
 	await loadAssetsStatic(); //console.log('assets', M);
 
 	let elems = mLayoutTM('dPage', { bg: 'lightblue' });
 	mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain');
 	mLayoutTopExtraSpaceBetween('dTop');
-	mStyle('dTop',{hmin:32})
-	mStyle('dExtra',{hmin:32})
+	mStyle('dTop', { hmin: 32 })
+	mStyle('dExtra', { hmin: 32 })
 
 	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul'];
 	let d = mBy('dExtraRight');
 	for (const name of names) {
-		let b = mDom(d, {}, { tag: 'button', html: name, onclick: async () => await switchToUser(name) }); 
+		let b = mDom(d, {}, { tag: 'button', html: name, onclick: async () => await switchToUser(name) });
 	}
 
-	let username = localStorage.getItem('username')??'hans'; console.log('username', username); //return;
+	let username = localStorage.getItem('username') ?? 'hans'; console.log('username', username); //return;
 	await switchToUser(username);
 
 	console.log("start");
@@ -53,24 +74,24 @@ async function test3_game() {
 }
 async function test2_login() {
 	await loadAssetsStatic(); console.log('assets', M);
-	let username = localStorage.getItem('username')??'felix'; console.log('username', username)
+	let username = localStorage.getItem('username') ?? 'felix'; console.log('username', username)
 	let res = await mPostPhp('game_user', { username, action: 'login' });
 
 }
 async function test2_test_config() {
-	let res = await mPostPhp('game_user', { action: 'test_config' }); 
+	let res = await mPostPhp('game_user', { action: 'test_config' });
 	// mDom('dPage',{},{tag:'pre',html:res.json})
 	// mDom('dPage',{},{tag:'pre',html:res.yaml})
 }
 async function test2_test() {
-	let res = await mPostPhp('game_user', { action: 'test' }); 
-	mDom('dPage',{},{tag:'pre',html:res.json})
-	mDom('dPage',{},{tag:'pre',html:res.yaml})
+	let res = await mPostPhp('game_user', { action: 'test' });
+	mDom('dPage', {}, { tag: 'pre', html: res.json })
+	mDom('dPage', {}, { tag: 'pre', html: res.yaml })
 	console.log(res.o);
 }
 async function test2_usertest() {
 	await loadAssetsStatic();// console.log('assets', M);
-	let res = await mPostPhp('game_user', { username: 'hans', action: 'login' }); 
+	let res = await mPostPhp('game_user', { username: 'hans', action: 'login' });
 
 }
 async function test2_game() {

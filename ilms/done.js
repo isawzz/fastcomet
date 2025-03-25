@@ -263,8 +263,10 @@ async function mPostPhp(cmd, o, projectName = 'ilms', verbose = true, jsonResult
 	let res = await fetch(server + `${projectName}/php/${cmd}.php`,
 		{
 			method: 'POST',
-			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			body: new URLSearchParams(o), // Send the line in POST request
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(o),
+			// headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			// body: new URLSearchParams(JSON.stringify(o)), 
 		}
 	);
 	let text;

@@ -1743,6 +1743,19 @@ function formatDate1(d) {
 function formatDate2(d) { if (nundef(d)) d = new Date(); return d.toISOString().slice(0, 19).replace("T", " "); }
 function formatDate3(d) { if (nundef(d)) d = new Date(); return d.toISOString().slice(0, 19).replace(/-/g, "/").replace("T", " "); }
 function formatNow() { return new Date().toISOString().slice(0, 19).replace("T", " "); }
+function generateTableId() { return rUniqueId('G',12); }
+function generateTableName(n) {
+  let existing = Serverdata.tables.map(x => x.friendly);
+  while (true) {
+    let cap = rChoose(M.capital);
+    let parts = cap.split(' ');
+    if (parts.length == 2) cap = stringBefore(cap, ' '); else cap = stringBefore(cap, '-');
+    cap = cap.trim();
+    let arr = ['battle of ', 'rally of ', 'showdown in ', 'summit of ', 'joust of ', 'tournament of ', 'rendezvous in ', 'soirée in ', 'festival of '];//,'encounter in ']; //['battle of ', 'war of ']
+    let s = (n == 2 ? 'duel of ' : rChoose(arr)) + cap;
+    if (!existing.includes(s)) return s;
+  }
+}
 function getBestContrastingColor(color) {
 	let [r, g, b] = colorHexToRgbArray(colorFrom(color));
 	let yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
@@ -2333,7 +2346,7 @@ function hexBoardCenters(topside, side) {
 		if (i < (rows - 1) / 2) cols += 1; else cols -= 1;
 	}
 	assertion(cols == topside - 1, `END OF COLS WRONG ${cols}`)
-	return {centers, rows, maxcols};
+	return { centers, rows, maxcols };
 }
 function hexFromCenter(dParent, center, styles = {}, opts = {}) {
 	let [w, h] = mSizeSuccession(styles);
@@ -2466,7 +2479,7 @@ function loadSuperdiAssets() {
 	M.names = Object.keys(byFriendly); M.names.sort();
 	[M.colorList, M.colorByHex, M.colorByName] = getListAndDictsForDicolors();
 }
-function loadUsers(){
+function loadUsers() {
 	console.log('hier werden users updated was immer zu tun ist!!!')
 }
 function lookup(dict, keys) {
@@ -2975,6 +2988,7 @@ function paletteShadesTri(color, from = -0.5, to = 0.5, step = 0.5) {
 	return res;
 }
 function paletteToObjects(pal) { return pal.map(x => colorO(x)); }
+
 function paletteTrans(color, from = 0.1, to = 1, step = 0.2) {
 	let res = [];
 	for (let frac = from; frac <= to; frac += step) {
@@ -3014,8 +3028,16 @@ function qsort(arr) {
 		else upper.push(arr[i])
 	return qsort(lower).concat([x]).concat(qsort(upper));
 }
+function rBgFor() { for (const d of Array.from(arguments)) { mStyle(d, { bg: rColor() }) } }
+
+function rBlend() { return rBlendCanvas(); }
+
+function rBlendCSS() { return rChoose(getBlendModesCSS()); }
+
+function rBlendCanvas() { return rChoose(getBlendModesCanvas()); }
+
 function rChoose(arr, n = 1, func = null, exceptIndices = null) {
-	if (isDict(arr)) { arr = dict2list(arr, 'key'); } //console.log(arr); }
+	if (isDict(arr)) arr = dict2list(arr, 'key');
 	let indices = arrRange(0, arr.length - 1);
 	if (isdef(exceptIndices)) {
 		for (const i of exceptIndices) removeInPlace(indices, i);
@@ -3028,31 +3050,48 @@ function rChoose(arr, n = 1, func = null, exceptIndices = null) {
 	arrShuffle(indices);
 	return indices.slice(0, n).map(x => arr[x]);
 }
-function rColor(lum, sat, hue) {
-	if (nundef(lum) && isdef(M.colorList)) return rChoose(M.colorList).hex;
-	return rColorHex(lum, sat, hue);
-}
-function rColorHex(lum100OrAlpha01 = 50, sat100Alpha01 = 100, hueVari = 60) {
+function rColorName(n = 1) { return rChoose(M.colorNames, n); }
+
+function rColor(lum100OrAlpha01 = 1, alpha01 = 1, hueVari = 60) {
 	let c;
 	if (lum100OrAlpha01 <= 1) {
 		c = '#';
 		for (let i = 0; i < 6; i++) { c += rChoose(['f', 'c', '9', '6', '3', '0']); }
-		sat100Alpha01 = lum100OrAlpha01;
+		alpha01 = lum100OrAlpha01;
 	} else {
 		let hue = rHue(hueVari);
 		let sat = 100;
 		let b = isNumber(lum100OrAlpha01) ? lum100OrAlpha01 : lum100OrAlpha01 == 'dark' ? 25 : lum100OrAlpha01 == 'light' ? 75 : 50;
 		c = colorHsl360ArgsToHex79(hue, sat, b);
 	}
-	return sat100Alpha01 < 1 ? colorTrans(c, sat100Alpha01) : c;
+	return alpha01 < 1 ? colorTrans(c, alpha01) : c;
 }
-function rColorNames(n = 1) { return rChoose(M.colorNames, n); }
+function rCommand(n = 1) { return rChoose(commandWords, n); }
+
 function rHue(vari = 36) { return (rNumber(0, vari) * Math.round(360 / vari)) % 360; }
-function rKeyType() {
-	return rChoose(getKeyTypes());
+
+function rKeyType() { return rChoose(getKeyTypes()); }
+
+function rLetter(except) { return rLetters(1, except)[0]; }
+
+function rLetters(n, except = []) {
+	let all = 'abcdefghijklmnopqrstuvwxyz';
+	for (const l of except) all = all.replace(l, '');
+	return rChoose(toLetters(all), n);
 }
 function rNumber(min = 0, max = 100) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function rTexture() { return rChoose(valf(M.textures, [])); }
+
+function rUniqueId(prefix = '', n = 10) { return prefix + rChoose(toLetters('0123456789abcdefghijklmnopqABCDEFGHIJKLMNOPQRSTUVWXYZ_'), n).join(''); }
+
+function rWord(n = 6) { return rLetters(n).join(''); }
+
+function rWords(n = 1) {
+	let words = getColorNames().map(x => x.toLowerCase());
+	let arr = rChoose(words, n);
+	return arr;
 }
 function range(f, t, st = 1) {
 	if (nundef(t)) {
@@ -3102,7 +3141,7 @@ function resizeImage(file, maxWidth, maxHeight) {
 				canvas.height = height;
 				ctx.drawImage(img, 0, 0, width, height);
 				const resizedDataUrl = canvas.toDataURL("image/jpeg", 0.8); // Quality: 0.8 (optional)
-				resolve({dataUrl:resizedDataUrl,width,height});
+				resolve({ dataUrl: resizedDataUrl, width, height });
 			};
 			img.onerror = () => {
 				console.error("Error loading image.");
@@ -3362,6 +3401,13 @@ function stringBefore(sFull, sSub) {
 	return sFull.substring(0, idx);
 }
 function toElem(d) { return isString(d) ? mBy(d) : d; }
+function toFlatObject(o) {
+	if (isString(o)) return { details: o };
+	for (const k in o) { let val = o[k]; o[k] = recFlatten(val); }
+	return o;
+}
+function toLetters(s) { return [...s]; }
+
 function toNameValueList(any) {
 	if (isEmpty(any)) return [];
 	let list = [];
@@ -3385,6 +3431,8 @@ function toNameValueList(any) {
 	}
 	return list;
 }
+function toPercent(n, total) { return Math.round(n * 100 / total); }
+
 function toWords(s, allow_ = false) {
 	let arr = allow_ ? s.split(/[\W]+/) : s.split(/[\W|_]+/);
 	return arr.filter(x => !isEmpty(x));

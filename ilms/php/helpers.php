@@ -8,7 +8,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: Content-Type");
 
-define('GAME_DIR',dirname(__DIR__,2) . '/iai_data/games/');
+define('GAME_DIR', dirname(__DIR__,2) . '/y/games/');
 define('USERS_READ', dirname(__DIR__,2) . '/y/users.yaml'); 
 define('USERS_WRITE', 'hallo.yaml'); 
 define('CONFIG_READ', dirname(__DIR__,2) . '/y/config.yaml'); 

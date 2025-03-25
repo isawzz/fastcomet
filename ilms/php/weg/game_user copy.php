@@ -1,25 +1,18 @@
 <?php
 include 'helpers.php';
 
-$data = json_decode(file_get_contents("php://input"), true);
-
-if ($data === null) {
-    echo json_encode(["error" => "Invalid JSON"]);
-    exit;
-}
-
-if ($data['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $gamestate = $data['gamestate'];
-    $game_id = $data['game_id']; 
+if ($_POST['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $gamestate = $_POST['gamestate'];
+    $game_id = $_POST['game_id']; 
     $path = GAME_DIR . "$game_id.yaml";
-    // echo json_encode(["gamestate"=>$gamestate,"type" => gettype($gamestate), "path" => $path, "test" => 'test', "game_id" => $game_id]); die;
+    echo json_encode(["gamestate"=>$gamestate,"type" => gettype($gamestate), "path" => $path, "test" => 'test', "game_id" => $game_id]); die;
     arrayToYamlFile($gamestate, $path);
     echo json_encode(["path" => $path, "game_id" => $game_id]);
     exit;
 }
 
-if ($data['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-  $username = $data['username'];
+if ($_POST['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+  $username = $_POST['username'];
   if (!$username || $username == 'null') {
     echo json_encode(["error" => "Username required"]);
     exit;
@@ -38,7 +31,7 @@ if ($data['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
   exit;
 }
 
-if ($data['action'] === 'test_array' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_POST['action'] === 'test_array' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $arr = ["users" => 1]; //, "typeConfig" => ["a" => "du"], "parsedData" => "wer", "typeParse" => "hallo"];
     arrayToYamlFile($arr, "hallo.yaml");
     echo json_encode(["users" => USERS_READ]); die;
@@ -46,7 +39,7 @@ if ($data['action'] === 'test_array' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-if ($data['action'] === 'test_config' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_POST['action'] === 'test_config' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     //echo json_encode(["users" => USERS_READ]); die;
     $username = 'dieter';
     $userdata = new UserData($username);
@@ -58,7 +51,7 @@ if ($data['action'] === 'test_config' && $_SERVER['REQUEST_METHOD'] === 'POST') 
     exit;
 }
 
-if ($data['action'] === 'test_final' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_POST['action'] === 'test_final' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     //echo json_encode(["users" => USERS_READ]); die;
     $username = 'dieter';
     $userdata = new UserData($username);
@@ -91,7 +84,7 @@ if ($data['action'] === 'test_final' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-if ($data['action'] === 'test' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_POST['action'] === 'test' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $jsonString = '{"name":"Alice","age":30,"address":{"street":"123 Maple St","city":"New York"}}';
     $php = json_decode($jsonString, true);
     $s = json_encode($php, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
@@ -108,7 +101,7 @@ if ($data['action'] === 'test' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 // 📥 3. Submit a move
-if ($data['action'] === 'move' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_POST['action'] === 'move' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents("php://input"), true);
     $player = $input['player'] ?? '';
     $gameFile = GAME_DIR . "{$input['game_id']}.yaml";
@@ -132,7 +125,7 @@ if ($data['action'] === 'move' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // 🔄 4. Get the game state
-if ($data['action'] === 'state' && isset($data['id'])) {
+if ($_POST['action'] === 'state' && isset($_POST['id'])) {
     $gameFile = GAME_DIR . "{$_GET['id']}.yaml";
 
     if (!file_exists($gameFile)) {
