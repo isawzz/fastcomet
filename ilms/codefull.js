@@ -1744,18 +1744,6 @@ function formatDate2(d) { if (nundef(d)) d = new Date(); return d.toISOString().
 function formatDate3(d) { if (nundef(d)) d = new Date(); return d.toISOString().slice(0, 19).replace(/-/g, "/").replace("T", " "); }
 function formatNow() { return new Date().toISOString().slice(0, 19).replace("T", " "); }
 function generateTableId() { return rUniqueId('G',12); }
-function generateTableName(n) {
-  let existing = Serverdata.tables.map(x => x.friendly);
-  while (true) {
-    let cap = rChoose(M.capital);
-    let parts = cap.split(' ');
-    if (parts.length == 2) cap = stringBefore(cap, ' '); else cap = stringBefore(cap, '-');
-    cap = cap.trim();
-    let arr = ['battle of ', 'rally of ', 'showdown in ', 'summit of ', 'joust of ', 'tournament of ', 'rendezvous in ', 'soirée in ', 'festival of '];//,'encounter in ']; //['battle of ', 'war of ']
-    let s = (n == 2 ? 'duel of ' : rChoose(arr)) + cap;
-    if (!existing.includes(s)) return s;
-  }
-}
 function getBestContrastingColor(color) {
 	let [r, g, b] = colorHexToRgbArray(colorFrom(color));
 	let yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
@@ -2430,6 +2418,10 @@ function list2dict(arr, keyprop = 'id', uniqueKeys = true) {
 async function loadAssetsStatic() {
 	if (nundef(M)) M = {};
 	M = await loadStaticYaml('y/m.yaml');
+	if (nundef(M.asciiCapitals)){
+    let except = ["Noum", 'Bras', 'Reykja'];
+    M.asciiCapitals = M.capital.filter(x=>!x.includes('.') && !except.some(y=>x.startsWith(y)));
+  }
 	M.superdi = await loadStaticYaml('y/superdi.yaml');
 	M.details = await loadStaticYaml('y/details.yaml');
 	M.config = await loadStaticYaml('y/config.yaml');
@@ -2622,12 +2614,6 @@ function measureText(text, styles = {}, cx = null) {
 	cx.font = isdef(styles.font) ? styles.font : `${styles.fz}px ${styles.family}`;
 	var metrics = cx.measureText(text);
 	return [metrics.width, metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent];
-}
-function normalizeString(s, sep = '_', keep = []) {
-	s = s.toLowerCase().trim();
-	let res = '';
-	for (let i = 0; i < s.length; i++) { if (isAlphaNum(s[i]) || keep.includes(s[i])) res += s[i]; else if (last(res) != sep) res += sep; }
-	return res;
 }
 function nundef(x) { return x === null || x === undefined || x === 'undefined'; }
 function onHoverMagnify(d, controlkey = null, ms = 1000, scale = 5) {

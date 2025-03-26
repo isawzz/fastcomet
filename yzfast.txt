@@ -1,6 +1,10 @@
 alles ist fuer immer ok - I have left this plane.
 
-___ 6:22 AM 3/25/2025 airport lib 31.3 8000
+___ 6:26 AM 3/26/2025 airport lib 31.3 10000
+6:49 AM 3/26/2025
+- tablenames
+ok - list_files geht!!! 
+___ 6:22 AM 3/25/2025 airport lib 31.3 9000
 8:00 AM 3/25/2025
 - generate a unique table name mit capital
 6:26 AM 3/25/2025

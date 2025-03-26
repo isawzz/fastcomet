@@ -1,4 +1,34 @@
 
+function normalizeString(s, opts = {}) {
+  let sep = valf(opts.sep, '_');
+  let keep = valf(opts.keep, []);
+  let lowercase = isdef(opts.lowercase) ? opts.lowercase : true;
+  s = lowercase ? s.toLowerCase().trim() : s.trim();
+  let res = '';
+  for (let i = 0; i < s.length; i++) { if (isAlphaNum(s[i]) || keep.includes(s[i])) res += s[i]; else if (last(res) != sep) res += sep; }
+  return res;
+}
+function fromNormalized(s, opts = {}) {
+  let sep = valf(opts.sep, '_');
+  let caps = isdef(opts.caps) ? opts.caps : true;
+  let x = s.replaceAll(sep, ' ');
+  let words = caps ? toWords(x).map(x => capitalize(x)).join(' ') : toWords(x).join(' ');
+  return words;
+}
+function generateTableName(n,existing) {
+  while (true) {
+    let cap = rChoose(M.asciiCapitals);
+    let parts = cap.split(' ');
+    if (parts.length == 2) cap = stringBefore(cap, ' '); else cap = stringBefore(cap, '-');
+    cap = cap.trim();
+    let arr = ['battle of ', 'rally of ', 'showdown in ', 'summit of ', 'joust of ', 'tournament of ', 'rendezvous in ', 'soiree in ', 'festival of '];//,'encounter in ']; //['battle of ', 'war of ']
+    if (n == 2) arr.push('duel of ');
+    let s = rChoose(arr) + cap; 
+    s = normalizeString(s, { lowercase: false });
+    if (!existing.includes(s)) return s;
+  }
+}
+
 async function createGame(player, gamestate) {
   if (nundef(player)) player = U.name;
   if (nundef(gamestate)) gamestate = {};
@@ -8,14 +38,14 @@ async function createGame(player, gamestate) {
     DA.currentGameId = res.game_id;
     //console.log('Game created!', res);
     let data = await getGameById(res.game_id);
-    console.log('Game created!',data)
+    console.log('Game created!', data)
     //loadGame();
   } else {
     console.log("Game Creation failed");
   }
 }
-async function getGameById(game_id){
-  if (nundef(game_id))  game_id = DA.currentGameId;
+async function getGameById(game_id) {
+  if (nundef(game_id)) game_id = DA.currentGameId;
   let path = `y/games/${game_id}.yaml`;
   return await loadStaticYaml(path);
 }

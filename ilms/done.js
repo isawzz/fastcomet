@@ -255,6 +255,43 @@ async function mImageDropper(d) {
 	fileInput.addEventListener('change', onchangeFileinput, false);
 
 }
+async function mPhpGetFiles(dir, projectName = 'ilms', verbose = true, jsonResult = true) {
+	let sessionType = detectSessionType();
+	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
+	if (verbose) console.log('to php:', server + `${projectName}/php/list_files.php`, dir);
+	let res = await fetch(server + `${projectName}/php/list_files.php?dir=${encodeURIComponent(dir)}`,
+		{
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+			//body: JSON.stringify(o),
+			// headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			// body: new URLSearchParams(JSON.stringify(o)), 
+		}
+	);
+	let text;
+	try {
+		text = await res.text();
+		if (!jsonResult) {
+			return text;
+		}
+		let obj = JSON.parse(text);
+		if (verbose) console.log('from php:\n', obj);
+		let mkeys = ["config","superdi","users","details"]; 
+		for(const k of mkeys){
+			if (isdef(obj[k])) {
+				M[k] = obj[k];
+				if (k == "superdi") {
+					loadSuperdiAssets();
+				}else if (k == "users") {
+					loadUsers();
+				}
+			}
+		}
+		return obj;
+	} catch (e) {
+		return isString(text) ? text : e;
+	}
+}
 async function mPostPhp(cmd, o, projectName = 'ilms', verbose = true, jsonResult = true) {
 	let sessionType = detectSessionType();
 	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';

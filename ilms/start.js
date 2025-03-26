@@ -1,8 +1,35 @@
 
 onload = start;
 
-async function start() { await test3_game(); }
+async function start() { await test3_createTableName(); }
 
+async function test3_checkCapitals() {
+	await loadAssetsStatic(); //console.log('assets', M.users);
+	for (const cap of M.capital) {
+		let s1 = stringBefore(cap, '-').trim();
+		let s = normalizeString(s1, { lowercase: false }); //console.log(s1,s); return;
+		let sback = fromNormalized(s, { caps: false });
+		if (sback != s1) console.log(s1, '->', s, '->', sback)
+	}
+}
+async function test3_createTableName() {
+	await loadAssetsStatic(); //console.log('assets', M.users);
+	let notAllowed = M.capital.filter(x=>!M.asciiCapitals.includes(x));
+	let files = await mPhpGetFiles('tables'); //console.log('files', files);
+  M.tables = files.map(x => x.split('.')[0]);
+	for (const i of range(10)) {
+		let tableName = generateTableName(2,M.tables); //mPhpGetFiles('games'); console.log('files', files);
+		if (notAllowed.some(x=>tableName.includes(x))) alert("NOT ALLOWED",tableName);
+		//console.log('tableName', tableName);break;
+		console.log(i, tableName);
+	}
+	console.log('DONE!')
+	//console.log(M.asciiCapitals);
+	//notAllowed.forEach(x=>console.log(x));
+}
+async function test3_list_files() {
+	let files = await mPhpGetFiles('games'); console.log('files', files);
+}
 async function test3_game() {
 	await loadAssetsStatic(); //console.log('assets', M.users);
 
@@ -14,7 +41,7 @@ async function test3_game() {
 	let username = localStorage.getItem('username') ?? 'hans'; if (username == 'felix') username = 'amanda'; else username = 'felix'; await switchToUser(username);
 
 	//console.log("start");
-	let state = DA.gamestate = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix','amanda'] };
+	let state = DA.gamestate = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix', 'amanda'] };
 	if (U.name == 'felix') createGame(U.name, state);
 	else {
 		setInterval(() => getGameState(5), 5000);  // Poll every 5 seconds
