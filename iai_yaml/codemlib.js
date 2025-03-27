@@ -432,7 +432,7 @@ function mPos(d, x, y, offx = 0, offy = 0, unit = 'px') {
 	let dParent = d.parentNode; mIfNotRelative(dParent);
 	mStyle(d, { left: `${x + offx}${unit}`, top: `${y + offy}${unit}`, position: 'absolute' });
 }
-async function mPostPhp(cmd, o, projectName = 'iai_yaml', verbose = true, jsonResult = true) {
+async function mPostPhp(cmd, o, projectName = 'iai_yaml', verbose = false, jsonResult = true) {
 	let sessionType = detectSessionType();
 	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
 	if (isdef(o.path) && (o.path.startsWith('zdata') || o.path.startsWith('y'))) o.path = '../../' + o.path;

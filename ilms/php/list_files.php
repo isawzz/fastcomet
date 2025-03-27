@@ -15,15 +15,37 @@ if (!$directory || strpos($directory, $allowedBasePath) !== 0 || !is_dir($direct
     exit;
 }
 
-$files = [];
-if ($handle = opendir($directory)) {
-    while (($file = readdir($handle)) !== false) {
-        if ($file != "." && $file != "..") {
-            $files[] = $file;
-        }
-    }
-    closedir($handle);
+// $files = [];
+// if ($handle = opendir($directory)) {
+//     while (($file = readdir($handle)) !== false) {
+//         if ($file != "." && $file != "..") {
+//             $files[] = $file;
+//         }
+//     }
+//     closedir($handle);
+// }
+
+$files = array_diff(scandir($directory), array('.', '..')); // Exclude '.' and '..'
+
+// Get file creation times
+$fileData = [];
+foreach ($files as $file) {
+    $filePath = $directory . DIRECTORY_SEPARATOR . $file;
+    $fileData[] = [
+        "name" => $file,
+        "mtime" => filemtime($filePath) // Get creation time
+    ];
 }
 
-echo json_encode($files);
+// Sort files by creation time (oldest to newest)
+usort($fileData, function ($a, $b) {
+    return $a["mtime"] - $b["mtime"];
+});
+
+// Return JSON response
+echo json_encode(array_column($fileData, 'name')); // Return sorted file names
+exit;
 ?>
+
+<!-- echo json_encode($files);
+?> -->

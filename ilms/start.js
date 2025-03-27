@@ -1,8 +1,36 @@
 
 onload = start;
 
-async function start() { await test3_createTableName(); }
+async function start() { await test3_game(); }
 
+async function test3_game() {
+	DA.pollCounter = 0;
+	await loadAssetsStatic(); //console.log('tables', M.tables); return;
+
+	let elems = mLayoutTM('dPage'); mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain'); mLayoutTopExtraSpaceBetween('dTop'); mFlexV('dTop'); //mStyle('dTop', { hmin: 32 }); mStyle('dExtra', { hmin: 32 })
+
+	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul']; let d = mBy('dExtraRight');
+	for (const name of names) { let b = mDom(d, { className: 'button' }, { tag: 'button', html: name, onclick: async () => await switchToUser(name) }); }
+
+	let username = localStorage.getItem('username') ?? 'hans'; if (username == 'felix') username = 'amanda'; else username = 'felix'; 
+	await switchToUser(username);
+
+	//testbuttons
+	mDom(dExtraLeft,{maleft:10},{tag:'button',html:'start',onclick:()=>pollStart()})
+	mDom(dExtraLeft,{maleft:10},{tag:'button',html:'stop',onclick:()=>pollStop()})
+
+	//console.log("start");
+	let state = DA.gamestate = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix', 'amanda'] };
+	if (U.name == 'felix') await myAsync(0,createGame,U.name, state);
+	else {
+		pollStart(0);
+		//setInterval(() => getGameById(), 4000);  // Poll every 5 seconds
+
+	}
+	//pollStart();
+	//console.log('tables',M.tables);
+
+}
 async function test3_checkCapitals() {
 	await loadAssetsStatic(); //console.log('assets', M.users);
 	for (const cap of M.capital) {
@@ -30,7 +58,7 @@ async function test3_createTableName() {
 async function test3_list_files() {
 	let files = await mPhpGetFiles('games'); console.log('files', files);
 }
-async function test3_game() {
+async function test3_game1() {
 	await loadAssetsStatic(); //console.log('assets', M.users);
 
 	let elems = mLayoutTM('dPage'); mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain'); mLayoutTopExtraSpaceBetween('dTop'); mFlexV('dTop'); //mStyle('dTop', { hmin: 32 }); mStyle('dExtra', { hmin: 32 })

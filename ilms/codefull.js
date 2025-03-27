@@ -1743,7 +1743,7 @@ function formatDate1(d) {
 function formatDate2(d) { if (nundef(d)) d = new Date(); return d.toISOString().slice(0, 19).replace("T", " "); }
 function formatDate3(d) { if (nundef(d)) d = new Date(); return d.toISOString().slice(0, 19).replace(/-/g, "/").replace("T", " "); }
 function formatNow() { return new Date().toISOString().slice(0, 19).replace("T", " "); }
-function generateTableId() { return rUniqueId('G',12); }
+function generateTableId() { return rUniqueId('G', 12); }
 function getBestContrastingColor(color) {
 	let [r, g, b] = colorHexToRgbArray(colorFrom(color));
 	let yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
@@ -2418,10 +2418,12 @@ function list2dict(arr, keyprop = 'id', uniqueKeys = true) {
 async function loadAssetsStatic() {
 	if (nundef(M)) M = {};
 	M = await loadStaticYaml('y/m.yaml');
-	if (nundef(M.asciiCapitals)){
-    let except = ["Noum", 'Bras', 'Reykja'];
-    M.asciiCapitals = M.capital.filter(x=>!x.includes('.') && !except.some(y=>x.startsWith(y)));
-  }
+	if (nundef(M.asciiCapitals)) {
+		let except = ["Noum", 'Bras', 'Reykja'];
+		M.asciiCapitals = M.capital.filter(x => !x.includes('.') && !except.some(y => x.startsWith(y)));
+		let files = await mPhpGetFiles('tables'); //console.log('files', files);
+		M.tables = files.map(x => x.split('.')[0]);
+	}
 	M.superdi = await loadStaticYaml('y/superdi.yaml');
 	M.details = await loadStaticYaml('y/details.yaml');
 	M.config = await loadStaticYaml('y/config.yaml');

@@ -10,11 +10,11 @@ if ($data === null) {
 
 if ($data['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $gamestate = $data['gamestate'];
-    $game_id = $data['game_id']; 
-    $path = GAME_DIR . "$game_id.yaml";
-    // echo json_encode(["gamestate"=>$gamestate,"type" => gettype($gamestate), "path" => $path, "test" => 'test', "game_id" => $game_id]); die;
+    $table_id = $data['table_id']; 
+    $path = GAME_DIR . "$table_id.yaml";
+    // echo json_encode(["gamestate"=>$gamestate,"type" => gettype($gamestate), "path" => $path, "test" => 'test', "table_id" => $table_id]); die;
     arrayToYamlFile($gamestate, $path);
-    echo json_encode(["path" => $path, "game_id" => $game_id]);
+    echo json_encode(["path" => $path, "table_id" => $table_id]);
     exit;
 }
 
@@ -111,7 +111,7 @@ if ($data['action'] === 'test' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 if ($data['action'] === 'move' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents("php://input"), true);
     $player = $input['player'] ?? '';
-    $gameFile = GAME_DIR . "{$input['game_id']}.yaml";
+    $gameFile = GAME_DIR . "{$input['table_id']}.yaml";
 
     $users = file_exists(USERS_READ) ? from_yaml(file_get_contents(USERS_READ)) : [];
 

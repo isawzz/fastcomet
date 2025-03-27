@@ -1,3 +1,10 @@
+async function getGameState(table_id) {
+  console.log('polling:',table_id,await getGameById()); return;
+	let response = await fetch(`http://yourserver.com/game.php?action=state&id=${table_id}`);
+	let data = await response.json();
+	console.log("Game State:", yaml.dump(data.state)); // Convert JSON to YAML
+}
+
 function calculateGoodColors(bg, fg) {
   let fgIsLight = isdef(fg) ? colorIdealText(fg) == 'black' : colorIdealText(bg) == 'white';
   let bgIsDark = colorIdealText(bg) == 'white';

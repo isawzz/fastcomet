@@ -1,8 +1,13 @@
 alles ist fuer immer ok - I have left this plane.
 
+___ 3:30 AM 3/27/2025 airport lib 31.3 11000
+3:41 AM 3/27/2025
+- fetchgame geht nicht!
+3:30 AM 3/27/2025
+ok - post vs get
 ___ 6:26 AM 3/26/2025 airport lib 31.3 10000
 6:49 AM 3/26/2025
-- tablenames
+ok - tablenames
 ok - list_files geht!!! 
 ___ 6:22 AM 3/25/2025 airport lib 31.3 9000
 8:00 AM 3/25/2025

@@ -255,7 +255,7 @@ async function mImageDropper(d) {
 	fileInput.addEventListener('change', onchangeFileinput, false);
 
 }
-async function mPhpGetFiles(dir, projectName = 'ilms', verbose = true, jsonResult = true) {
+async function mPhpGetFiles(dir, projectName = 'ilms', verbose = false, jsonResult = true) {
 	let sessionType = detectSessionType();
 	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
 	if (verbose) console.log('to php:', server + `${projectName}/php/list_files.php`, dir);
@@ -292,7 +292,7 @@ async function mPhpGetFiles(dir, projectName = 'ilms', verbose = true, jsonResul
 		return isString(text) ? text : e;
 	}
 }
-async function mPostPhp(cmd, o, projectName = 'ilms', verbose = true, jsonResult = true) {
+async function mPostPhp(cmd, o, projectName = 'ilms', verbose = false, jsonResult = true) {
 	let sessionType = detectSessionType();
 	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
 	if (isdef(o.path) && (o.path.startsWith('zdata') || o.path.startsWith('y'))) o.path = '../../' + o.path;
