@@ -3,9 +3,9 @@
 async function switchToUser(username) {
   if (!isEmpty(username)) username = normalizeString(username);
   if (isEmpty(username)) username = 'guest';
-  let res = await mPhpGet('game_user', { username, action: 'login' });
+  let res = await mPhpPost('game_user', { username, action: 'login' });
   U = res.userdata;
-  DA.table_id = localStorage.getItem('table_id');
+  DA.tid = localStorage.getItem('tid');
   let bg = U.color;
   let fg = U.fg ?? colorIdealText(bg);
   mStyle('dTopRight', { className: 'button', display: 'inline', h: '80%', bg, fg }, { html: `${username}` });
@@ -32,6 +32,88 @@ function bgImageFromPath(path) { return isdef(path) ? `url('${path}')` : null; }
 
 //#endregion
 
+async function mPhpGet(cmd, o, projectName = 'ilms', verbose = false, jsonResult = true) {
+	let sessionType = detectSessionType();
+	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
+
+	let suffix='';
+	for(const k in o){
+		let s=JSON.stringify(o[k]);
+		if (!isEmpty(suffix)) suffix+='&';
+		suffix+=`${k}=${encodeURIComponent(o[k])}`;
+	}
+
+	let command = server + `${projectName}/php/${cmd}.php?${suffix}`; 
+	if (verbose) console.log('to php:', command, o); //return;
+
+	let res = await fetch(command,
+		{
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+		}
+	);
+	let text;
+	try {
+		text = await res.text();
+		if (!jsonResult) {
+			return text;
+		}
+		let obj = JSON.parse(text);
+		if (verbose) console.log('from php:\n', obj);
+		let mkeys = ["config","superdi","users","details"]; 
+		for(const k of mkeys){
+			if (isdef(obj[k])) {
+				M[k] = obj[k];
+				if (k == "superdi") {
+					loadSuperdiAssets();
+				}else if (k == "users") {
+					loadUsers();
+				}
+			}
+		}
+		return obj;
+	} catch (e) {
+		return isString(text) ? text : e;
+	}
+}
+async function mPhpPost(cmd, o, projectName = 'ilms', verbose = false, jsonResult = true) {
+	let sessionType = detectSessionType();
+	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
+	if (isdef(o.path) && (o.path.startsWith('zdata') || o.path.startsWith('y'))) o.path = '../../' + o.path;
+	if (verbose) console.log('to php:', server + `${projectName}/php/${cmd}.php`, o);
+	let res = await fetch(server + `${projectName}/php/${cmd}.php`,
+		{
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(o),
+			// headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			// body: new URLSearchParams(JSON.stringify(o)), 
+		}
+	);
+	let text;
+	try {
+		text = await res.text();
+		if (!jsonResult) {
+			return text;
+		}
+		let obj = JSON.parse(text);
+		if (verbose) console.log('from php:\n', obj);
+		let mkeys = ["config","superdi","users","details"]; 
+		for(const k of mkeys){
+			if (isdef(obj[k])) {
+				M[k] = obj[k];
+				if (k == "superdi") {
+					loadSuperdiAssets();
+				}else if (k == "users") {
+					loadUsers();
+				}
+			}
+		}
+		return obj;
+	} catch (e) {
+		return isString(text) ? text : e;
+	}
+}
 
 async function loadStaticYaml(path) {
 	let sessionType = detectSessionType(); 
@@ -290,50 +372,6 @@ async function mImageDropper(d) {
 	fileInput.addEventListener('change', onchangeFileinput, false);
 
 }
-async function mPhpGet(cmd, o, projectName = 'ilms', verbose = false, jsonResult = true) {
-	let sessionType = detectSessionType();
-	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
-
-	let suffix='';
-	for(const k in o){
-		let s=JSON.stringify(o[k]);
-		if (!isEmpty(suffix)) suffix+='&';
-		suffix+=`${k}=${encodeURIComponent(s)}`;
-	}
-
-	let command = server + `${projectName}/php/${cmd}.php?${suffix}`;
-	if (verbose) console.log('to php:', command, o);
-
-	let res = await fetch(command,
-		{
-			method: 'GET',
-			headers: { 'Content-Type': 'application/json' },
-		}
-	);
-	let text;
-	try {
-		text = await res.text();
-		if (!jsonResult) {
-			return text;
-		}
-		let obj = JSON.parse(text);
-		if (verbose) console.log('from php:\n', obj);
-		let mkeys = ["config","superdi","users","details"]; 
-		for(const k of mkeys){
-			if (isdef(obj[k])) {
-				M[k] = obj[k];
-				if (k == "superdi") {
-					loadSuperdiAssets();
-				}else if (k == "users") {
-					loadUsers();
-				}
-			}
-		}
-		return obj;
-	} catch (e) {
-		return isString(text) ? text : e;
-	}
-}
 async function mPhpGetFiles(dir, projectName = 'ilms', verbose = false, jsonResult = true) {
 	let sessionType = detectSessionType();
 	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
@@ -343,44 +381,6 @@ async function mPhpGetFiles(dir, projectName = 'ilms', verbose = false, jsonResu
 			method: 'GET',
 			headers: { 'Content-Type': 'application/json' },
 			//body: JSON.stringify(o),
-			// headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			// body: new URLSearchParams(JSON.stringify(o)), 
-		}
-	);
-	let text;
-	try {
-		text = await res.text();
-		if (!jsonResult) {
-			return text;
-		}
-		let obj = JSON.parse(text);
-		if (verbose) console.log('from php:\n', obj);
-		let mkeys = ["config","superdi","users","details"]; 
-		for(const k of mkeys){
-			if (isdef(obj[k])) {
-				M[k] = obj[k];
-				if (k == "superdi") {
-					loadSuperdiAssets();
-				}else if (k == "users") {
-					loadUsers();
-				}
-			}
-		}
-		return obj;
-	} catch (e) {
-		return isString(text) ? text : e;
-	}
-}
-async function mPhpGet(cmd, o, projectName = 'ilms', verbose = false, jsonResult = true) {
-	let sessionType = detectSessionType();
-	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
-	if (isdef(o.path) && (o.path.startsWith('zdata') || o.path.startsWith('y'))) o.path = '../../' + o.path;
-	if (verbose) console.log('to php:', server + `${projectName}/php/${cmd}.php`, o);
-	let res = await fetch(server + `${projectName}/php/${cmd}.php`,
-		{
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(o),
 			// headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			// body: new URLSearchParams(JSON.stringify(o)), 
 		}

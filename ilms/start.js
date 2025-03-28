@@ -1,17 +1,8 @@
 
 onload = start;
 
-async function start() { await test3_delete(); }
+async function start() { await test3_game(); }
 
-async function test3_delete(){
-	await loadAssetsStatic(); 
-	let state = DA.gamestate = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix', 'amanda'] };
-	let tid = await createGame('felix', state);
-	console.log(await getTables())
-	await mPhpGet('delete_dir',{dir:'tables'},'ilms',true)
-	console.log(await getTables())
-
-}
 async function test3_game() {
 	DA.pollCounter = 0;
 	await loadAssetsStatic(); //console.log('tables', M.tables); return;
@@ -25,15 +16,28 @@ async function test3_game() {
 	await switchToUser(username);
 
 	//testbuttons
-	//mDom(dExtraLeft,{maleft:10},{tag:'button',html:'start',onclick:()=>pollStart()})
-	mDom(dExtraLeft,{maleft:10},{tag:'button',html:'stop',onclick:()=>pollStop()})
+	mDom(dExtraLeft,{maleft:10},{tag:'button',html:'create',onclick:async()=>await createTable()});
+	mDom(dExtraLeft,{maleft:10},{tag:'button',html:'load',onclick:async()=>await loadTable()});
+	mDom(dExtraLeft,{maleft:10},{tag:'button',html:'present',onclick:async()=>await presentTable()});
+	mDom(dExtraLeft,{maleft:10},{tag:'button',html:'delete',onclick:async()=>await deleteAllTables()});
+//	mDom(dExtraLeft,{maleft:10},{tag:'button',html:'stop',onclick:()=>pollStop()})
 
-	let state = DA.gamestate = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix', 'amanda'] };
-	let tid = await createGame('felix', state);
-	console.log(await getTables())
+	// let state = DA.tData = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix', 'amanda'] };
+	// let tid = await createTable('felix', state);
+	// //console.log(await getTables());
 
-	await mPhpGet('delete_dir',{dir:'tables'})
+	// let table = await loadTable(tid); //console.log(table); return;
+	// await presentTable(table);
 
+
+}
+async function test3_delete(){
+	await loadAssetsStatic(); 
+	let state = DA.tData = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix', 'amanda'] };
+	let tid = await createTable('felix', state);
+	console.log(await getTables());
+	await mPhpGet('delete_dir',{dir:'tables'},'ilms',true)
+	console.log(await getTables());
 
 }
 async function test3_checkCapitals() {
@@ -74,8 +78,8 @@ async function test3_game1() {
 	let username = localStorage.getItem('username') ?? 'hans'; if (username == 'felix') username = 'amanda'; else username = 'felix'; await switchToUser(username);
 
 	//console.log("start");
-	let state = DA.gamestate = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix', 'amanda'] };
-	if (U.name == 'felix') createGame(U.name, state);
+	let state = DA.tData = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix', 'amanda'] };
+	if (U.name == 'felix') createTable(U.name, state);
 	else {
 		setInterval(() => getGameState(5), 5000);  // Poll every 5 seconds
 	}
@@ -103,7 +107,7 @@ async function test3_theme() {
 	await switchToUser(username);
 
 	//console.log("start");
-	DA.gamestate = { turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: [] };
+	DA.tData = { turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: [] };
 	//setInterval(() => getGameState(5), 5000);  // Poll every 5 seconds
 	//login();
 
@@ -127,7 +131,7 @@ async function test3_game0() {
 	await switchToUser(username);
 
 	console.log("start");
-	DA.gamestate = { turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: [] };
+	DA.tData = { turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: [] };
 	//setInterval(() => getGameState(5), 5000);  // Poll every 5 seconds
 	//login();
 
@@ -135,23 +139,23 @@ async function test3_game0() {
 async function test2_login() {
 	await loadAssetsStatic(); console.log('assets', M);
 	let username = localStorage.getItem('username') ?? 'felix'; console.log('username', username)
-	let res = await mPhpGet('game_user', { username, action: 'login' });
+	let res = await mPhpPost('game_user', { username, action: 'login' });
 
 }
 async function test2_test_config() {
-	let res = await mPhpGet('game_user', { action: 'test_config' });
+	let res = await mPhpPost('game_user', { action: 'test_config' });
 	// mDom('dPage',{},{tag:'pre',html:res.json})
 	// mDom('dPage',{},{tag:'pre',html:res.yaml})
 }
 async function test2_test() {
-	let res = await mPhpGet('game_user', { action: 'test' });
+	let res = await mPhpPost('game_user', { action: 'test' });
 	mDom('dPage', {}, { tag: 'pre', html: res.json })
 	mDom('dPage', {}, { tag: 'pre', html: res.yaml })
 	console.log(res.o);
 }
 async function test2_usertest() {
 	await loadAssetsStatic();// console.log('assets', M);
-	let res = await mPhpGet('game_user', { username: 'hans', action: 'login' });
+	let res = await mPhpPost('game_user', { username: 'hans', action: 'login' });
 
 }
 async function test2_game() {
@@ -170,7 +174,7 @@ async function test2_game() {
 	await switchToUser();
 
 	console.log("start");
-	DA.gamestate = { turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: [] };
+	DA.tData = { turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: [] };
 	//setInterval(() => getGameState(5), 5000);  // Poll every 5 seconds
 	//login();
 

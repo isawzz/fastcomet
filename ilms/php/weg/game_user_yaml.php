@@ -93,7 +93,7 @@ if ($_POST['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 // 📌 2. Create a new game (Requires authentication)
 if ($_POST['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = $_POST['token'];
-    $gamestate = $_POST['gamestate'];
+    $tData = $_POST['tData'];
 
     $config = file_exists(CONFIG_FILE) ? from_yaml(file_get_contents(CONFIG_FILE)) : [];
 
@@ -106,7 +106,7 @@ if ($_POST['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode(["game_id" => '123',"config" => $config]);exit;
     // $initialState = ["turn" => 1, "board" => [], "config" => []];
 
-    file_put_contents(GAME_DIR . "$gameId.yaml", to_yaml($gamestate));
+    file_put_contents(GAME_DIR . "$gameId.yaml", to_yaml($tData));
 
     echo json_encode(["game_id" => $gameId]);
     exit;

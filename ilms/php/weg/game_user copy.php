@@ -2,11 +2,11 @@
 include 'helpers.php';
 
 if ($_POST['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $gamestate = $_POST['gamestate'];
+    $tData = $_POST['tData'];
     $game_id = $_POST['game_id']; 
     $path = GAME_DIR . "$game_id.yaml";
-    echo json_encode(["gamestate"=>$gamestate,"type" => gettype($gamestate), "path" => $path, "test" => 'test', "game_id" => $game_id]); die;
-    arrayToYamlFile($gamestate, $path);
+    echo json_encode(["tData"=>$tData,"type" => gettype($tData), "path" => $path, "test" => 'test', "game_id" => $game_id]); die;
+    arrayToYamlFile($tData, $path);
     echo json_encode(["path" => $path, "game_id" => $game_id]);
     exit;
 }

@@ -13,9 +13,13 @@ function normalizeString(s, opts = {}) {
 function fromNormalized(s, opts = {}) {
   let sep = valf(opts.sep, '_');
   let caps = isdef(opts.caps) ? opts.caps : true;
-  let x = s.replaceAll(sep, ' ');
+  let x = replaceAll(s,sep, ' ');
   let words = caps ? toWords(x).map(x => capitalize(x)).join(' ') : toWords(x).join(' ');
   return words;
+}
+function replaceAll(str, search, replacement) {
+  console.log(str,search,replacement)
+  return str.split(search).join(replacement);
 }
 function generateTableName(n,existing) {
   while (true) {

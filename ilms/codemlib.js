@@ -382,11 +382,11 @@ function mOnEnterInput(elem, handler) {
 	});
 }
 async function mPhpDeleteFile(path) { return await mPhpGet('delete_file', { path }); }
-async function mPhpGetFile(path) { return await mPhpGet('read_file', { path }, false); }
-async function mPhpPostAudio(url, path) { return await mPhpGet('dl', { url, path }); }
-async function mPhpPostFile(text, path) { return await mPhpGet('write_file', { text, path }, false); }
-async function mPhpPostLine(line, path) { return await mPhpGet('append_action', { line, path }, false); }
-async function mPhpPostText(text, path) { return await mPhpGet('append_text', { text, path }, false); }
+async function mPhpGetFile(path) { return await mPhpPost('read_file', { path }, false); }
+async function mPhpPostAudio(url, path) { return await mPhpPost('dl', { url, path }); }
+async function mPhpPostFile(text, path) { return await mPhpPost('write_file', { text, path }, false); }
+async function mPhpPostLine(line, path) { return await mPhpPost('append_action', { line, path }, false); }
+async function mPhpPostText(text, path) { return await mPhpPost('append_text', { text, path }, false); }
 function mPickOneOfGrid(dParent, styles = {}, opts = {}) {
 	let d0 = mDom(dParent, dictMerge(styles, { gap: 6 }), opts);
 	mGrid(d0);

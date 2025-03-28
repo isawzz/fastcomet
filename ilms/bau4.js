@@ -1,8 +1,8 @@
 
 async function gamePresent(){
   console.log('polling!', DA.pollCounter);
-  DA.table = await loadTable();
-  console.log('',DA.pollCounter,'PRESENT', DA.table_id); //,DA.table);
+  DA.tData = await loadTable();
+  console.log('',DA.pollCounter,'PRESENT', DA.tid); //,DA.tData);
 }
 async function myAsync(ms,func){
   pollStop();
@@ -25,11 +25,11 @@ function pollStop(){
 
 // 📌 3. Load Game State
 async function loadGame() {
-  let table_id = DA.table_id;
-  //let res = await loadStaticYaml(fetch(`game.php?action=state&id=${table_id}`);
+  let tid = DA.tid;
+  //let res = await loadStaticYaml(fetch(`game.php?action=state&id=${tid}`);
   let data = await res.json();
   if (data.state) {
-    table_id = table_id;
+    tid = tid;
     boardState = data.state.board;
     renderBoard();
     document.getElementById("moveBtn").style.display = "inline-block";
@@ -62,7 +62,7 @@ async function makeMove(x, y) {
     await fetch("game.php?action=move", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: playerToken, table_id: table_id, state: { board: boardState } })
+      body: JSON.stringify({ token: playerToken, tid: tid, state: { board: boardState } })
     });
     renderBoard();
   }
