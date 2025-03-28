@@ -2421,8 +2421,7 @@ async function loadAssetsStatic() {
 	if (nundef(M.asciiCapitals)) {
 		let except = ["Noum", 'Bras', 'Reykja'];
 		M.asciiCapitals = M.capital.filter(x => !x.includes('.') && !except.some(y => x.startsWith(y)));
-		let files = await mPhpGetFiles('tables'); //console.log('files', files);
-		M.tables = files.map(x => x.split('.')[0]);
+		M.tables = await getTables();
 	}
 	M.superdi = await loadStaticYaml('y/superdi.yaml');
 	M.details = await loadStaticYaml('y/details.yaml');

@@ -1,3 +1,38 @@
+
+//#region user
+async function switchToUser(username) {
+  if (!isEmpty(username)) username = normalizeString(username);
+  if (isEmpty(username)) username = 'guest';
+  let res = await mPhpGet('game_user', { username, action: 'login' });
+  U = res.userdata;
+  DA.table_id = localStorage.getItem('table_id');
+  let bg = U.color;
+  let fg = U.fg ?? colorIdealText(bg);
+  mStyle('dTopRight', { className: 'button', display: 'inline', h: '80%', bg, fg }, { html: `${username}` });
+  localStorage.setItem('username', username);
+  setTheme(U);
+}
+function setColors(item) {
+  let bg = item.color;
+  let fg = item.fg ?? colorIdealText(bg);
+  mStyle('dPage', { bg, fg });
+}
+function setTheme(item) {
+  setColors(item);
+  setTexture(item);
+}
+function setTexture(item) {
+  let bgImage = valf(item.bgImage, bgImageFromPath(item.texture), '');
+  let bgBlend = valf(item.bgBlend, item.blendMode, '');
+  let bgSize = bgImage.includes('marble') || bgImage.includes('wall') ? '100vw 100vh' : '';
+  let bgRepeat = 'repeat';
+  mStyle('dPage', { bgImage, bgBlend, bgSize, bgRepeat });
+}
+function bgImageFromPath(path) { return isdef(path) ? `url('${path}')` : null; }
+
+//#endregion
+
+
 async function loadStaticYaml(path) {
 	let sessionType = detectSessionType(); 
 	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : sessionType == 'php'? 'http://localhost:8080/fastcomet/':'../';
@@ -255,6 +290,50 @@ async function mImageDropper(d) {
 	fileInput.addEventListener('change', onchangeFileinput, false);
 
 }
+async function mPhpGet(cmd, o, projectName = 'ilms', verbose = false, jsonResult = true) {
+	let sessionType = detectSessionType();
+	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
+
+	let suffix='';
+	for(const k in o){
+		let s=JSON.stringify(o[k]);
+		if (!isEmpty(suffix)) suffix+='&';
+		suffix+=`${k}=${encodeURIComponent(s)}`;
+	}
+
+	let command = server + `${projectName}/php/${cmd}.php?${suffix}`;
+	if (verbose) console.log('to php:', command, o);
+
+	let res = await fetch(command,
+		{
+			method: 'GET',
+			headers: { 'Content-Type': 'application/json' },
+		}
+	);
+	let text;
+	try {
+		text = await res.text();
+		if (!jsonResult) {
+			return text;
+		}
+		let obj = JSON.parse(text);
+		if (verbose) console.log('from php:\n', obj);
+		let mkeys = ["config","superdi","users","details"]; 
+		for(const k of mkeys){
+			if (isdef(obj[k])) {
+				M[k] = obj[k];
+				if (k == "superdi") {
+					loadSuperdiAssets();
+				}else if (k == "users") {
+					loadUsers();
+				}
+			}
+		}
+		return obj;
+	} catch (e) {
+		return isString(text) ? text : e;
+	}
+}
 async function mPhpGetFiles(dir, projectName = 'ilms', verbose = false, jsonResult = true) {
 	let sessionType = detectSessionType();
 	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
@@ -292,7 +371,7 @@ async function mPhpGetFiles(dir, projectName = 'ilms', verbose = false, jsonResu
 		return isString(text) ? text : e;
 	}
 }
-async function mPostPhp(cmd, o, projectName = 'ilms', verbose = false, jsonResult = true) {
+async function mPhpGet(cmd, o, projectName = 'ilms', verbose = false, jsonResult = true) {
 	let sessionType = detectSessionType();
 	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
 	if (isdef(o.path) && (o.path.startsWith('zdata') || o.path.startsWith('y'))) o.path = '../../' + o.path;

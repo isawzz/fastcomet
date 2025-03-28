@@ -1,8 +1,17 @@
 
 onload = start;
 
-async function start() { await test3_game(); }
+async function start() { await test3_delete(); }
 
+async function test3_delete(){
+	await loadAssetsStatic(); 
+	let state = DA.gamestate = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix', 'amanda'] };
+	let tid = await createGame('felix', state);
+	console.log(await getTables())
+	await mPhpGet('delete_dir',{dir:'tables'},'ilms',true)
+	console.log(await getTables())
+
+}
 async function test3_game() {
 	DA.pollCounter = 0;
 	await loadAssetsStatic(); //console.log('tables', M.tables); return;
@@ -16,19 +25,15 @@ async function test3_game() {
 	await switchToUser(username);
 
 	//testbuttons
-	mDom(dExtraLeft,{maleft:10},{tag:'button',html:'start',onclick:()=>pollStart()})
+	//mDom(dExtraLeft,{maleft:10},{tag:'button',html:'start',onclick:()=>pollStart()})
 	mDom(dExtraLeft,{maleft:10},{tag:'button',html:'stop',onclick:()=>pollStop()})
 
-	//console.log("start");
 	let state = DA.gamestate = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix', 'amanda'] };
-	if (U.name == 'felix') await myAsync(0,createGame,U.name, state);
-	else {
-		pollStart(0);
-		//setInterval(() => getGameById(), 4000);  // Poll every 5 seconds
+	let tid = await createGame('felix', state);
+	console.log(await getTables())
 
-	}
-	//pollStart();
-	//console.log('tables',M.tables);
+	await mPhpGet('delete_dir',{dir:'tables'})
+
 
 }
 async function test3_checkCapitals() {
@@ -130,23 +135,23 @@ async function test3_game0() {
 async function test2_login() {
 	await loadAssetsStatic(); console.log('assets', M);
 	let username = localStorage.getItem('username') ?? 'felix'; console.log('username', username)
-	let res = await mPostPhp('game_user', { username, action: 'login' });
+	let res = await mPhpGet('game_user', { username, action: 'login' });
 
 }
 async function test2_test_config() {
-	let res = await mPostPhp('game_user', { action: 'test_config' });
+	let res = await mPhpGet('game_user', { action: 'test_config' });
 	// mDom('dPage',{},{tag:'pre',html:res.json})
 	// mDom('dPage',{},{tag:'pre',html:res.yaml})
 }
 async function test2_test() {
-	let res = await mPostPhp('game_user', { action: 'test' });
+	let res = await mPhpGet('game_user', { action: 'test' });
 	mDom('dPage', {}, { tag: 'pre', html: res.json })
 	mDom('dPage', {}, { tag: 'pre', html: res.yaml })
 	console.log(res.o);
 }
 async function test2_usertest() {
 	await loadAssetsStatic();// console.log('assets', M);
-	let res = await mPostPhp('game_user', { username: 'hans', action: 'login' });
+	let res = await mPhpGet('game_user', { username: 'hans', action: 'login' });
 
 }
 async function test2_game() {

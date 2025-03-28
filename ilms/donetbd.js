@@ -1,4 +1,6 @@
 
+function addIf(arr, el) { if (!arr.includes(el)) arr.push(el); }
+
 function normalizeString(s, opts = {}) {
   let sep = valf(opts.sep, '_');
   let keep = valf(opts.keep, []);
