@@ -1,7 +1,10 @@
 onload = start;
 
-async function start() { return;mlib_p5();return;project_p5(); }
+async function start() { mlib_ilms(); }//return;mlib_p5();return;project_p5(); }
 
+async function mlib_ilms(){
+	codePackMLib('../ilms',['codefull','codemlib','done','bau1','bau1','bau2','bau3','bau4']);
+}
 async function mlib_p5(){
 	codePackMLib('../p5',['codesmall','ajetzt','action','color','done','onclick','bau1','bau2','bau3','bau4','start']);
 }

@@ -89,6 +89,7 @@ function mClear(d) {
 	toElem(d).innerHTML = '';
 }
 async function mCollapse(divs, dParent, styles = {}) {
+	//assumes that divs have first element a title, next to which a + or - is added
 	function collapseOne(div) {
 		let b = div.firstChild.firstChild;
 		b.textContent = '+';
@@ -105,15 +106,18 @@ async function mCollapse(divs, dParent, styles = {}) {
 	function toggleOne(div) { if (isCollapsedOne(div)) expandOne(div); else collapseOne(div); }
 	function collapseAll() { divs.map(collapseOne); }
 	function expandAll() { divs.map(expandOne); }
+
 	divs.forEach(div => {
 		let d1 = div.firstChild;
 		let b = mDom(d1, { margin: 5, cursor: 'pointer' }, { tag: 'span', html: '- ' }); mInsert(d1, b, 0);
 		b.onclick = () => { toggleOne(div); }
 	});
+
 	let dController = null;
 	if (isdef(dParent)) {
 		let bExpand = await mKey('circle_chevron_down', dParent, styles, { tag: 'button', onclick: expandAll });
 		let bCollapse = await mKey('circle_chevron_up', dParent, styles, { tag: 'button', onclick: collapseAll });
+
 		dController = mToggleButton(bExpand, bCollapse);
 	}
 	return { divs, dController, toggleOne, collapseOne, expandOne, isCollapsedOne, collapseAll, expandAll };
@@ -214,6 +218,7 @@ function mFlexV(d) { mStyle(d, { display: 'flex', 'align-items': 'center' }); }
 function mFlexVWrap(d) { mStyle(d, { display: 'flex', 'align-items': 'center', 'flex-flow': 'row wrap' }); }
 function mFlexWrap(d) { mFlex(d, 'w'); }
 function mGather(f, d, styles = {}, opts = {}) {
+	//f can be: mInput, 
 	return new Promise((resolve, _) => {
 		let dShield = mShield();
 		let fCancel = _ => { dShield.remove(); hotkeyDeactivate('Escape'); resolve(null) };
@@ -256,62 +261,6 @@ function mHomeLogo(d, key, styles = {}, handler = null, menu = null) {
 	return ui;
 }
 function mIfNotRelative(d) { d = toElem(d); if (isEmpty(d.style.position)) d.style.position = 'relative'; }
-async function mImageDropper(d) {
-	let fileInput = mDom(d, {}, { tag: 'input', type: 'file', accept: 'image/*' }); //,{onchange:onchangeFileInput});
-	let dropZone = mDom(d, { w: 500, hmin: 300, border: 'white 1px dashed', align: 'center' }, { html: 'Drop image here' });
-	function checkIfFromOwnServer(url) {
-		const ownOrigin = window.location.origin;
-		if (url.startsWith(ownOrigin)) {
-			console.log('Dropped from inside the project (server):', url); return true;
-		} else {
-			console.log('Dropped from external website:', url); return false;
-		}
-	}
-	async function ondropImage(ev) {
-		console.log('ondropImage', ev);
-		let item = ev.dataTransfer.items[0]; console.log(item);
-		let file = item.getAsFile(); console.log(file);
-		if (file) await displayImagedata(URL.createObjectURL(file));
-		else {
-			file = ev.dataTransfer.files[0];
-			const url = await new Promise(resolve => item.getAsString(resolve));
-			console.log('Dropped from website:', url);
-			let isOwnServer = checkIfFromOwnServer(url);
-			if (isOwnServer) {
-				await displayImagedata(url);
-			} else {
-				let { dataUrl, width, height } = await resizeImage(file, 500, 1000);
-				await displayImagedata(dataUrl);
-				let name = `img${getNow()}`;
-				name = await mGather(mInput, 'dTop', { bg: 'pink', padding: 4 }, { value: name }); console.log('you entered', name);
-				console.log(width, height, name);
-				uploadImage(dataUrl, `zdata/downloads/${name}.${stringAfter(file.name, '.')}`);
-			}
-		}
-	}
-	async function onchangeFileinput(ev) {
-		let files = ev.target.files;
-		let file = files[0];
-		let src = URL.createObjectURL(file);
-		await displayImagedata(src);
-	}
-	async function displayImagedata(src) {
-		mClear(dropZone);
-		let img = await mLoadImgAsync(dropZone, { wmax: 500 }, { tag: 'img', src: src });
-		console.log('img dims', img.width, img.height);
-	}
-	function preventDefaults(ev) { ev.preventDefault(); ev.stopPropagation(); }
-	function highlight(ev) { mClass(ev.target, 'framedPicture'); }
-	function unhighlight(ev) { mClassRemove(ev.target, 'framedPicture'); }
-	['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evname => {
-		dropZone.addEventListener(evname, preventDefaults, false);
-		document.body.addEventListener(evname, preventDefaults, false);
-	});
-	['dragenter', 'dragover'].forEach(evname => { dropZone.addEventListener(evname, highlight, false); });
-	['dragleave', 'drop'].forEach(evname => { dropZone.addEventListener(evname, unhighlight, false); });
-	dropZone.addEventListener('drop', ondropImage, false);
-	fileInput.addEventListener('change', onchangeFileinput, false);
-}
 function mImg(src, d, styles = {}, opts = {}) {
 	let [w, h] = mSizeSuccession(styles, 40);
 	addKeys({ w, h, 'object-fit': 'cover', 'object-position': 'center center' }, styles);
@@ -353,172 +302,6 @@ function mInput(dParent, styles = {}, opts = {}) {
 	return d;
 }
 function mInsert(dParent, el, index = 0) { dParent.insertBefore(el, dParent.childNodes[index]); return el; }
-async function mKey(imgKey, d, styles = {}, opts = {}) {
-	styles = jsCopy(styles);
-	let type = opts.prefer;
-	let o = type != 'plain' ? lookup(M.superdi, [imgKey]) : null;
-	let src;
-	if (nundef(o) && imgKey.includes('.')) src = imgKey;
-	else if (isdef(o) && (type == 'img' || type == 'photo') && isdef(o[type])) src = o[type];
-	else if (isdef(o) && isdef(o.img)) src = o.img;
-	if (isdef(src)) {
-		let [w, h] = mSizeSuccession(styles, 40);
-		addKeys({ w, h }, styles);
-		addKeys({ tag: 'img', src }, opts);
-		let d0 = mDom(d, styles, opts);
-		mCenterCenterFlex(d0);
-		let img = await mImgAsync(d0, styles, opts, roundIfTransparentCorner);
-		return d0;
-	} else if (isdef(o)) {
-		if (nundef(type)) type = isdef(o.text) ? 'text' : isdef(o.fa6) ? 'fa6' : isdef(o.fa) ? 'fa' : isdef(o.ga) ? 'ga' : null;
-		let family = type == 'text' ? 'emoNoto' : type == 'fa6' ? 'fa6' : type == 'fa' ? 'pictoFa' : 'pictoGame';
-		let html = type == 'text' ? o.text : String.fromCharCode('0x' + o[type]);
-		addKeys({ family }, styles);
-		let d0 = mDom(d, styles, opts);
-		mCenterCenterFlex(d0);
-		let d1 = mDom(d0, {}, { html });
-		let r = getRect(d1);
-		[w, h] = [r.w, r.h];
-		return d0;
-	} else {
-		addKeys({ html: imgKey }, opts)
-		let img = mDom(d, styles, opts);
-		return img;
-	}
-	console.log('type', type)
-}
-async function mKeyO(imgKey, d, styles = {}, opts = {}) {
-	styles = jsCopy(styles);
-	let type = opts.prefer;
-	let o = type != 'plain' ? lookup(M.superdi, [imgKey]) : null;
-	let src;
-	if (nundef(o) && imgKey.includes('.')) src = imgKey;
-	else if (isdef(o) && (type == 'img' || type == 'photo') && isdef(o[type])) src = o[type];
-	else if (isdef(o) && isdef(o.img)) src = o.img;
-	if (isdef(src)) {
-		let [w, h] = mSizeSuccession(styles, 40);
-		addKeys({ w, h }, styles);
-		addKeys({ tag: 'img', src }, opts);
-		let d0 = mDom(d, styles, opts);
-		mCenterCenterFlex(d0);
-		let img = await mImgAsync(d0, styles, opts, roundIfTransparentCorner);
-		return d0;
-	} else if (isdef(o)) {
-		let [w, h] = mSizeSuccession(styles, 40);
-		let sz = h;
-		addKeys({ h }, styles);
-		if (nundef(type)) type = isdef(o.text) ? 'text' : isdef(o.fa6) ? 'fa6' : isdef(o.fa) ? 'fa' : isdef(o.ga) ? 'ga' : null;
-		let family = type == 'text' ? 'emoNoto' : type == 'fa6' ? 'fa6' : type == 'fa' ? 'pictoFa' : 'pictoGame';
-		let html = type == 'text' ? o.text : String.fromCharCode('0x' + o[type]);
-		addKeys({ family }, styles);
-		let d0 = mDom(d, styles, opts);
-		mCenterCenterFlex(d0);
-		let d1 = mDom(d0, {}, { html });
-		let r = getRect(d1);
-		[w, h] = [r.w, r.h];
-		let scale = Math.min(sz / w, sz / h);
-		d1.style.transformOrigin = 'center center';
-		d1.style.transform = `scale(${scale})`;
-		d1.style.transform = `scale(${scale})`;
-		return d0;
-	} else {
-		addKeys({ html: imgKey }, opts)
-		let img = mDom(d, styles, opts);
-		return img;
-	}
-	console.log('type', type)
-}
-function mLayout(dParent, rowlist, colt, rowt, styles = {}, opts = {}) {
-	dParent = toElem(dParent);
-	mStyle(dParent, styles);
-	rowlist = rowlist.map(x => x.replaceAll('@', valf(opts.suffix, ''))); //console.log(rowlist);
-	rowt = rowt.replaceAll('@', valf(opts.hrow, 30));
-	colt = colt.replaceAll('@', valf(opts.wcol, 30));
-	let areas = `'${rowlist.join("' '")}'`;
-	if (dParent.id == 'dPage') M.divNames = [];
-	let newNames = mAreas(dParent, areas, colt, rowt);
-	let names = M.divNames = Array.from(new Set(M.divNames.concat(newNames)));
-	if (nundef(styles.bgSrc)) mShade(newNames);
-	return names.map(x => mBy(x));
-}
-function mLayoutLMR(dParent, styles = {}, opts = {}) {
-	let rowlist = [`dLeft@ dMain@ dRight@`];
-	let colt = `minmax(@px, auto) 1fr minmax(@px, auto)`;
-	let rowt = `1fr`;
-	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
-}
-function mLayoutLR(dParent, styles = {}, opts = {}) {
-	let rowlist = [`dLeft@ dRight@`];
-	let colt = `auto 1fr`;
-	let rowt = `1fr`;
-	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
-}
-function mLayoutM(dParent, styles = {}, opts = {}) {
-	let rowlist = [`dMain@`];
-	let colt = `1fr`;
-	let rowt = `1fr`;
-	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
-}
-function mLayoutMR(dParent, styles = {}, opts = {}) {
-	let rowlist = [`dMain@ dRight@`];
-	let colt = `minmax(auto, @px) 1fr`;
-	let rowt = `1fr`;
-	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
-}
-function mLayoutTLM(dParent, styles = {}, opts = {}) {
-	let rowlist = [`dTop@ dTop@`, `dLeft@ dMain@`];
-	let colt = `minmax(@px, auto) 1fr`;
-	let rowt = `minmax(@px, auto) 1fr`;
-	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
-}
-function mLayoutTLMR(dParent, styles = {}, opts = {}) {
-	let rowlist = [`dTop@ dTop@ dTop@`, `dLeft@ dMain@ dRight@`];
-	let colt = `minmax(@px, auto) 1fr minmax(@px, auto)`;
-	let rowt = `minmax(@px, auto) 1fr`;
-	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
-}
-function mLayoutTLMRS(dParent, styles = {}, opts = {}) {
-	let rowlist = [`dTop@ dTop@ dTop@`, `dLeft@ dMain@ dRight@`, `dStatus@ dStatus@ dStatus@`];
-	let colt = `minmax(@px, auto) 1fr minmax(@px, auto)`;
-	let rowt = `minmax(@px, auto) 1fr minmax(@px, auto)`;
-	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
-}
-function mLayoutTLMS(dParent, styles = {}, opts = {}) {
-	let rowlist = [`dTop@ dTop@`, `dLeft@ dMain@`, `dStatus@ dStatus@`];
-	let colt = `minmax(@px, auto) 1fr`;
-	let rowt = `minmax(@px, auto) 1fr minmax(@px, auto)`;
-	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
-}
-function mLayoutTM(dParent, styles = {}, opts = {}, hrow = 30) {
-	let rowlist = [`dTop@`, `dMain@`];
-	let colt = `1fr`;
-	let rowt = `minmax(@px, auto) 1fr`;
-	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
-}
-function mLayoutTMS(dParent, styles = {}, opts = {}, hrow = 30) {
-	let rowlist = [`dTop@`, `dMain@`, `dStatus@`];
-	let colt = `1fr`;
-	let rowt = `minmax(@px, auto) 1fr minmax(@px, auto)`;
-	return mLayout(dParent, rowlist, colt, rowt, styles, opts);
-}
-function mLayoutTopExtraSpaceBetween(dParent) {
-	dParent = toElem(dParent);
-	mStyle(dParent, {}, { id: 'dOuterTop' });
-	let dTop = mDom(dParent, { display: 'flex', justify: 'space-between' }, { id: 'dTop' });
-	let dExtra = mDom(dParent, { display: 'flex', justify: 'space-between' }, { id: 'dExtra' });
-	let [dTopLeft, dTopMiddle, dTopRight] = [mDom('dTop', {}, { id: 'dTopLeft' }), mDom('dTop', {}, { id: 'dTopMiddle' }), mDom('dTop', {}, { id: 'dTopRight' })]
-	let [dExtraLeft, dExtraMiddle, dExtraRight] = [mDom('dExtra', {}, { id: 'dExtraLeft' }), mDom('dExtra', {}, { id: 'dExtraMiddle' }), mDom('dExtra', {}, { id: 'dExtraRight' })]
-}
-function mLinebreak(dParent, gap = 0) {
-	dParent = toElem(dParent);
-	let display = getComputedStyle(dParent).display;
-	if (display == 'flex') {
-		d = mDom(dParent, { 'flex-basis': '100%', h: gap, hline: gap, w: '100%' }, { html: '' });
-	} else {
-		d = mDom(dParent, { hline: gap, h: gap }, { html: '&nbsp;' });
-	}
-	return d;
-}
 function mLoadImgAsync(d, styles = {}, opts = {}, callback = null) {
 	return new Promise((resolve, reject) => {
 		let img = document.createElement('img');
@@ -533,6 +316,16 @@ function mLoadImgAsync(d, styles = {}, opts = {}, callback = null) {
 		};
 		img.src = opts.src;
 	});
+}
+function mLinebreak(dParent, gap = 0) {
+	dParent = toElem(dParent);
+	let display = getComputedStyle(dParent).display;
+	if (display == 'flex') {
+		d = mDom(dParent, { 'flex-basis': '100%', h: gap, hline: gap, w: '100%' }, { html: '' });
+	} else {
+		d = mDom(dParent, { hline: gap, h: gap }, { html: '&nbsp;' });
+	}
+	return d;
 }
 function mMagnify(elem, scale = 5) {
 	elem.classList.add(`topmost`);
@@ -588,142 +381,8 @@ function mOnEnterInput(elem, handler) {
 		}
 	});
 }
-async function mPalette(dParent, src, showPal = true, showImg = false) {
-	async function getPaletteFromCanvas(canvas, n) {
-		if (nundef(ColorThiefObject)) ColorThiefObject = new ColorThief();
-		const dataUrl = canvas.toDataURL();
-		const img = new Image();
-		img.src = dataUrl;
-		return new Promise((resolve, reject) => {
-			img.onload = () => {
-				const palette = ColorThiefObject.getPalette(img, n);
-				resolve(palette ? palette.map(x => colorFrom(x)) : ['black', 'white']);
-			};
-			img.onerror = () => {
-				reject(new Error('Failed to load the image from canvas.'));
-			};
-		});
-	}
-	let dc = mDom(dParent, { display: showImg ? 'inline' : 'none' })
-	let ca = await getCanvasCtx(dc, { w: 100, h: 100, fill: 'white' }, { src });
-	let palette = await getPaletteFromCanvas(ca.cv);
-	if (!showImg) dc.remove();
-	if (showPal) showPaletteMini(dParent, palette);
-	return palette;
-}
 async function mPhpDeleteFile(path) { return await mPhpGet('delete_file', { path }); }
-async function mPhpGet(cmd, o, projectName = 'ilms', verbose = false, jsonResult = true) {
-	let sessionType = detectSessionType();
-	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
-	let suffix = '';
-	for (const k in o) {
-		let s = JSON.stringify(o[k]);
-		if (!isEmpty(suffix)) suffix += '&';
-		suffix += `${k}=${encodeURIComponent(o[k])}`;
-	}
-	let command = server + `${projectName}/php/${cmd}.php?${suffix}`;
-	if (verbose) console.log('to php:', command, o); //return;
-	let res = await fetch(command,
-		{
-			method: 'GET',
-			headers: { 'Content-Type': 'application/json' },
-		}
-	);
-	let text;
-	try {
-		text = await res.text();
-		if (!jsonResult) {
-			return text;
-		}
-		let obj = JSON.parse(text);
-		if (verbose) console.log('from php:\n', obj);
-		let mkeys = ["config", "superdi", "users", "details"];
-		for (const k of mkeys) {
-			if (isdef(obj[k])) {
-				M[k] = obj[k];
-				if (k == "superdi") {
-					loadSuperdiAssets();
-				} else if (k == "users") {
-					loadUsers();
-				}
-			}
-		}
-		return obj;
-	} catch (e) {
-		return isString(text) ? text : e;
-	}
-}
 async function mPhpGetFile(path) { return await mPhpPost('read_file', { path }, false); }
-async function mPhpGetFiles(dir, projectName = 'ilms', verbose = false, jsonResult = true) {
-	let sessionType = detectSessionType();
-	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
-	if (verbose) console.log('to php:', server + `${projectName}/php/list_files.php`, dir);
-	let res = await fetch(server + `${projectName}/php/list_files.php?dir=${encodeURIComponent(dir)}`,
-		{
-			method: 'GET',
-			headers: { 'Content-Type': 'application/json' },
-		}
-	);
-	let text;
-	try {
-		text = await res.text();
-		if (!jsonResult) {
-			return text;
-		}
-		let obj = JSON.parse(text);
-		if (verbose) console.log('from php:\n', obj);
-		let mkeys = ["config", "superdi", "users", "details"];
-		for (const k of mkeys) {
-			if (isdef(obj[k])) {
-				M[k] = obj[k];
-				if (k == "superdi") {
-					loadSuperdiAssets();
-				} else if (k == "users") {
-					loadUsers();
-				}
-			}
-		}
-		return obj;
-	} catch (e) {
-		return isString(text) ? text : e;
-	}
-}
-async function mPhpPost(cmd, o, projectName = 'ilms', verbose = false, jsonResult = true) {
-	let sessionType = detectSessionType();
-	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
-	if (isdef(o.path) && (o.path.startsWith('zdata') || o.path.startsWith('y'))) o.path = '../../' + o.path;
-	if (verbose) console.log('to php:', server + `${projectName}/php/${cmd}.php`, o);
-	let res = await fetch(server + `${projectName}/php/${cmd}.php`,
-		{
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(o),
-		}
-	);
-	let text;
-	try {
-		text = await res.text();
-		if (!jsonResult) {
-			return text;
-		}
-		let obj = JSON.parse(text);
-		if (verbose) console.log('from php:\n', obj);
-		let mkeys = ["config", "superdi", "users", "details"];
-		for (const k of mkeys) {
-			if (isdef(obj[k])) {
-				M[k] = obj[k];
-				if (k == "superdi") {
-					loadSuperdiAssets();
-				} else if (k == "users") {
-					loadUsers();
-				}
-			}
-		}
-		return obj;
-	} catch (e) {
-		return isString(text) ? text : e;
-	}
-}
 async function mPhpPostAudio(url, path) { return await mPhpPost('dl', { url, path }); }
 async function mPhpPostFile(text, path) { return await mPhpPost('write_file', { text, path }, false); }
 async function mPhpPostLine(line, path) { return await mPhpPost('append_action', { line, path }, false); }
@@ -927,5 +586,13 @@ function mToggleElem(elem, key, states, seq, i, handler) {
 function mYesNo(dParent, styles = {}, opts = {}) {
 	return mSelect(dParent, styles, dictMerge(opts, { list: ['yes', 'no'] }));
 }
+
+
+
+
+
+
+
+
 
 
