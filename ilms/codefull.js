@@ -1409,31 +1409,6 @@ function createStopwatch(elem) {
   updateDisplay();
   return { elem, start, stop, toggle, getElapsed, getStatus, reset };
 }
-async function createTable(player, tData) {
-  if (nundef(player)) player = U.name;
-  if (nundef(tData)) tData = {players: ['felix', 'amanda']};
-  let tid = generateTableName(tData.players.length,M.tables); 
-  tData.id = tid;
-  let res = await mPhpPost('game_user', { action: 'create', tid, tData });
-  if (res.tid) {
-    DA.tid = res.tid;
-    DA.tData = null;
-    return res.tid;
-  } else {
-    console.log("Game Creation failed");
-    return null;
-  }
-}
-async function deleteAllTables(){
-  await mPhpGet('delete_dir',{dir:'tables'});
-  DA.tid = null;
-  DA.tData = null;
-  localStorage.removeItem('tid');
-  M.tables = [];
-  mClear('dMain');
-  mClear('dTopLeft');
-  console.log('all tables deleted!');
-}
 function detectSessionType() {
   let loc = window.location.href; 
   DA.sessionType =
@@ -1829,7 +1804,7 @@ function fromNormalized(s, opts = {}) {
 }
 async function gamePresent(){
   console.log('polling!', DA.pollCounter);
-  DA.tData = await loadTable();
+  DA.tData = await tableLoad();
   console.log('',DA.pollCounter,'PRESENT', DA.tid); //,DA.tData);
 }
 function generateTableId() { return rUniqueId('G', 12); }
@@ -2596,24 +2571,6 @@ function loadSuperdiAssets() {
   M.names = Object.keys(byFriendly); M.names.sort();
   [M.colorList, M.colorByHex, M.colorByName] = getListAndDictsForDicolors();
 }
-async function loadTable(tid) {
-  tid = valf(tid, DA.tid, localStorage.getItem('tid'), arrLast(M.tables));
-  if (nundef(tid)) {console.log('no table found!'); return;}
-  console.log('...loading table', tid);
-  let path = `y/tables/${tid}.yaml`; 
-  let tData = await loadStaticYaml(path);
-  if (tData) {
-    console.log('table loaded', tData);
-    localStorage.setItem('tid', tid);
-    addIf(M.tables, tid);
-    DA.tData = tData;
-    DA.tid = tid;
-    return tData;
-  } else {
-    console.log("Table not found",tid);
-    return null;
-  }
-}
 function loadUsers() {
   console.log('hier werden users updated was immer zu tun ist!!!')
 }
@@ -3181,15 +3138,6 @@ function pollStop(){
   if (nundef(TO.poll)) {console.log('nothing active!');return;}
   console.log('',DA.pollCounter,'pollStop');
   clearTimeout(TO.poll);
-}
-async function presentTable(tData){
-  tData = valf(tData,DA.tData,isdef(DA.tid)?await loadTable(DA.tid):null);
-  if (nundef(tData)) {console.log('no table found!'); return;}
-  let title= fromNormalized(tData.id);
-  mClear('dTopLeft');
-  mDom('dTopLeft',{family:'algerian',maleft:10},{html:title});
-  mClear('dMain')
-  mDom('dMain',{},{tag:'pre',html:jsonToYaml(tData)});
 }
 function qsort(arr) {
   if (arr.length <= 1) return arr
