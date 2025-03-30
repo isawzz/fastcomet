@@ -2543,8 +2543,10 @@ async function loadGame() {
 async function loadStaticYaml(path) {
   let sessionType = detectSessionType(); 
   let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : sessionType == 'php'? 'http://localhost:8080/fastcomet/':'../';
-  let ditext = await fetch(server + path).then(res => res.text());
-  return jsyaml.load(ditext);
+  let res = await fetch(server + path);
+  if (!res.ok) return null;
+  //if (ditext.includes('<title>Error</title>')) return null;
+  return jsyaml.load(await res.text());
 }
 function loadSuperdiAssets() {
   let [di, byColl, byFriendly, byCat, allImages] = [M.superdi, {}, {}, {}, {}];

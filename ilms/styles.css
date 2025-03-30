@@ -28,9 +28,10 @@ select {
   box-shadow: none;
   cursor: pointer;
 }
-.button{
-  padding:2px 10px;
-  margin:4px 10px 2px 0px;
+
+.button {
+  padding: 2px 10px;
+  margin: 4px 10px 2px 0px;
   border-radius: 10px;
 }
 
@@ -129,6 +130,22 @@ button:active {
   box-shadow: none;
 }
 
+.section {
+  border-radius: 10px;
+  border: 2px silver solid;
+  background-color: #f0f0f090;
+  margin: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  /* transition: all 0.5s ease-in-out; */
+}
+
+.section:empty {
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
 .title {
   font-size: 24px;
   font-weight: bold;
@@ -166,6 +183,7 @@ button:active {
   z-index: 100000;
 }
 
+/*#region hex zeug*/
 .hex_NO::after {
   content: "";
   position: absolute;
@@ -215,3 +233,6 @@ button:active {
   background-size: 100% 100%;
 
 }
+/*#endregion */
+
+

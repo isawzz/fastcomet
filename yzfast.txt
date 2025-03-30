@@ -1,5 +1,12 @@
 alles ist fuer immer ok - I have left this plane.
 
+___ 7:37 AM 3/30/2025 airport lib 4.4. 14000
+8:47 AM 3/30/2025
+- state: join
+- bessere art ein game zu createn: create game
+- each user can join the game or quit the game
+- game is start ready when creator presses startgame
+
 ___ 5:41 AM 3/29/2025 airport lib 4.4. 13000
 6:01 AM 3/29/2025
 - test

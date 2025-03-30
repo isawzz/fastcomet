@@ -773,6 +773,69 @@ function mPos(d, x, y, offx = 0, offy = 0, unit = 'px') {
 	let dParent = d.parentNode; mIfNotRelative(dParent);
 	mStyle(d, { left: `${x + offx}${unit}`, top: `${y + offy}${unit}`, position: 'absolute' });
 }
+function mRadio(label, val, name, dParent, styles = {}, onchangeHandler, group_id, is_on) {
+	let cursor = styles.cursor; delete styles.cursor;
+	let d = mDiv(dParent, styles, group_id + '_' + val);
+	let id = isdef(group_id) ? `i_${group_id}_${val}` : getUID();
+	let type = isdef(group_id) ? 'radio' : 'checkbox';
+	let checked = isdef(is_on) ? is_on : false;
+	let inp = mCreateFrom(`<input class='radio' id='${id}' type="${type}" name="${name}" value="${val}">`);
+	if (checked) inp.checked = true;
+	let text = mCreateFrom(`<label for='${inp.id}'>${label}</label>`);
+	if (isdef(cursor)) { inp.style.cursor = text.style.cursor = cursor; }
+	mAppend(d, inp);
+	mAppend(d, text);
+	if (isdef(onchangeHandler)) {
+		inp.onchange = ev => {
+			ev.cancelBubble = true;
+			if (onchangeHandler == 'toggle') {
+			} else if (isdef(onchangeHandler)) {
+				onchangeHandler(ev.target.checked, name, val);
+			}
+		};
+	}
+	return d;
+}
+function mRadioGroup(dParent, styles, id, legend, legendstyles) {
+	let dOuter = mDom(dParent, { bg: 'white', rounding: 10, margin: 4 })
+	let f = mCreate('fieldset');
+	f.id = id;
+	if (isdef(styles)) mStyle(f, styles);
+	if (isdef(legend)) {
+		let l = mCreate('legend');
+		l.innerHTML = legend;
+		mAppend(f, l);
+		if (isdef(legendstyles)) { mStyle(l, legendstyles); }
+	}
+	mAppend(dOuter, f);
+	return f;
+}
+function mRemove(elem) {
+	elem = toElem(elem); if (nundef(elem)) return;
+	var a = elem.attributes, i, l, n;
+	if (a) {
+		for (i = a.length - 1; i >= 0; i -= 1) {
+			n = a[i].name;
+			if (typeof elem[n] === 'function') {
+				elem[n] = null;
+			}
+		}
+	}
+	a = elem.childNodes;
+	if (a) {
+		l = a.length;
+		for (i = a.length - 1; i >= 0; i -= 1) {
+			mRemove(elem.childNodes[i]);
+		}
+	}
+	elem.remove();
+}
+function mRemoveClass(d) { for (let i = 1; i < arguments.length; i++) d.classList.remove(arguments[i]); }
+function mRemoveIfExists(d) { d = toElem(d); if (isdef(d)) d.remove(); }
+function mRemoveStyle(d, styles) { for (const k of styles) d.style[k] = null; }
+function mRise(d, ms = 800) {
+	toElem(d).animate([{ opacity: 0, transform: 'translateY(50px)' }, { opacity: 1, transform: 'translateY(0px)' },], { fill: 'both', duration: ms, easing: 'ease' });
+}
 function mSelect(dParent, styles = {}, opts = {}) {
 	let d0 = mDom(dParent, dictMerge(styles, { gap: 6 }), opts);
 	mCenterCenterFlex(d0);

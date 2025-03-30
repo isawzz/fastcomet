@@ -19,16 +19,13 @@ async function test4_game0() {
 	mDom(dExtraLeft,{className:'button',maleft:10},{tag:'button',html:'create',onclick:async()=>await tableCreate()});
 	mDom(dExtraLeft,{className:'button'},{tag:'button',html:'load',onclick:async()=>await tableLoad()});
 	mDom(dExtraLeft,{className:'button'},{tag:'button',html:'present',onclick:async()=>await tablePresent()});
+	mDom(dExtraLeft,{className:'button'},{tag:'button',html:'games',onclick:showGames});
+	mDom(dExtraLeft,{className:'button'},{tag:'button',html:'tables',onclick:async()=>await tablesList()});
 	mDom(dExtraLeft,{className:'button'},{tag:'button',html:'delete',onclick:async()=>await tablesDeleteAll()});
-	// mDom(dExtraLeft,{maleft:10},{tag:'button',html:'stop',onclick:()=>pollStop()})
 
-	// let state = DA.tData = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix', 'amanda'] };
-	// let tid = await createTable('felix', state);
-	// //console.log(await getTables());
-
-	// let table = await loadTable(tid); //console.log(table); return;
-	// await presentTable(table);
-
+	//etzt muss ich die games presenten die es gibt
+	tablesList();
+	//showGames();
 
 }
 

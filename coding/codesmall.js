@@ -1,7 +1,4 @@
 
-
-
-
 async function codeDictForFiles(files) {
 	let di = {};
 	for (const name of files) {
@@ -24,7 +21,7 @@ async function codePackClosure(project, names, filterfuncs) {
 	fullnames = fullnames.concat(names.map(x => `${project}/${x}.js`));
 	let di = await codeDictForFiles(fullnames);
 	codeDictToText(di, 'codebig.txt');
-	let keys = findFunctionClosure(di, filterfuncs);
+	let keys = findFunctionClosure(di, filterfuncs); console.log(keys)
 	let di2 = {};
 	for (const k of keys) { di2[k] = di[k]; }
 	codeDictToText(di2, 'codesmall.txt');
@@ -102,8 +99,9 @@ function downloadAsText(text, filename) {
 
 function findFunctionClosure(di, initialFunctions, outputFile) {
 	const closure = new Set();
-	const toProcess = [...initialFunctions];
+	const toProcess = initialFunctions;// [...initialFunctions];
 	DA.di = di;
+	console.log('di', di,'initialFunctions',initialFunctions)
 
 	while (toProcess.length > 0) {
 		const funcName = toProcess.pop();
@@ -221,20 +219,6 @@ function toWords(s, allow_ = false) {
 function trim(str) {
 	return str.replace(/^\s+|\s+$/gm, '');
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
