@@ -1,12 +1,26 @@
 alles ist fuer immer ok - I have left this plane.
 
+___ 7:11 AM 3/31/2025 airport lib 4.4. 15000
+8:20 AM 3/31/2025
+- was ist das problem? gamePlayerOptions soll oeffnen!!!
+7:11 AM 3/31/2025
+7:40 AM 3/31/2025
+- M.tables soll ein dict TableId=>TableData sein
 ___ 7:37 AM 3/30/2025 airport lib 4.4. 14000
+8:31 PM 3/30/2025
+9:46 PM 3/30/2025 jetzt kann ich schlafen gehen! 
+i have to break the cycle!
+ich muss jetzt los!
+1. akh,2.
+estop:5:39 PM 3/30/2025 =>sl nach 8h39! (best 10h39)
+=>sollte noch einiges gehen aber wie komm ich hoch? und wohin?
+4:33 PM 3/30/2025: 10/10
+- welches ist das simpleste spiel?
 8:47 AM 3/30/2025
 - state: join
 - bessere art ein game zu createn: create game
 - each user can join the game or quit the game
 - game is start ready when creator presses startgame
-
 ___ 5:41 AM 3/29/2025 airport lib 4.4. 13000
 6:01 AM 3/29/2025
 - test

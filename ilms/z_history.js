@@ -1,12 +1,128 @@
 
 //#region games: orig vs alternative
+function UGetName() { return U.name; }
+function MGetUserColor(uname) { return Serverdata.users[uname].color; }
+function MGetUserOptionsForGame(name, gamename) { return lookup(Serverdata.users, [name, 'games', gamename]); }
+
+function collectOptions() {
+  let poss = MGetGame(DA.gamename).options;
+  let options = DA.options = {};
+  if (nundef(poss)) return options;
+  for (const p in poss) {
+    let fs = mBy(`d_${p}`);
+    let val = getCheckedRadios(fs)[0];
+    options[p] = isNumber(val) ? Number(val) : val;
+  }
+  return options;
+}
+function collectPlayers() {
+  let players = {};
+  for (const name of DA.playerList) { players[name] = allPlToPlayer(name); }
+  return players;
+}
+function highlightPlayerItem(item) { mStyle(iDiv(item), { bg: MGetUserColor(item.name), fg: 'white', border: `white` }); }
 async function onclickGameMenuItem(ev) {
   let gamename = evToAttr(ev, 'gamename');
   await showGameMenu(gamename);
 }
+async function onclickOpenToJoinGame() {
+  let options = collectOptions();
+  let players = collectPlayers();
+  mRemove('dGameMenu');
+  let t = createOpenTable(DA.gamename, players, options);
+  let res = await mPostRoute('postTable', t);
+}
+async function saveAndUpdatePlayerOptions(allPl, gamename) {
+  let name = allPl.name;
+  let poss = MGetGamePlayerOptionsAsDict(gamename);
+  if (nundef(poss)) return;
+  let opts = {};
+  for (const p in poss) { allPl[p] = getRadioValue(p); if (p != 'playmode') opts[p] = allPl[p]; }
+  let id = 'dPlayerOptions'; mRemoveIfExists(id); //dont need UI anymore
+  let oldOpts = valf(MGetUserOptionsForGame(name, gamename), {});
+  let changed = false;
+  for (const p in poss) {
+    if (p == 'playmode') continue;
+    if (oldOpts[p] != opts[p]) { changed = true; break; }
+  }
+  if (changed) {
+    let games = valf(MGetUser(name).games, {});
+    games[gamename] = opts;
+    await postUserChange({ name, games })
+  }
+}
+async function saveDataFromPlayerOptionsUI(gamename) {
+  let id = 'dPlayerOptions';
+  let lastAllPl = DA.lastAllPlayerItem;
+  let dold = mBy(id);
+  if (isdef(dold)) { await saveAndUpdatePlayerOptions(lastAllPl, gamename); dold.remove(); }
+}
+async function showGameMenu(gamename) {
+	let users = M.users = await loadStaticYaml('y/users.yaml'); //console.log('users',users); return;
+	mRemoveIfExists('dGameMenu');
+	let dMenu = mDom('dMain', {}, { className: 'section', id: 'dGameMenu' });
+	mDom(dMenu, { maleft: 12 }, { html: `<h2>game options</h2>` });
+	let style = { display: 'flex', justify: 'center', w: '100%', gap: 10, matop: 6 };
+	let dPlayers = mDom(dMenu, style, {id:'dMenuPlayers'}); //mCenterFlex(dPlayers);
+	let dOptions = mDom(dMenu, style,  {id:'dMenuOptions'}); //'dMenuOptions'); //mCenterFlex(dOptions);
+	let dButtons = mDom(dMenu, style,  {id:'dMenuButtons'}); //'dMenuButtons');
+	DA.gamename = gamename;
+	DA.gameOptions = {};
+	DA.playerList = [];
+	DA.allPlayers = {};
+	DA.lastName = null;
+	await showGamePlayers(dPlayers, users);
+	await showGameOptions(dOptions, gamename);
+	let astart = mButton('Start', onclickStartGame, dButtons, {}, ['button', 'input']);
+	let ajoin = mButton('Open to Join', onclickOpenToJoinGame, dButtons, {}, ['button', 'input']);
+	let acancel = mButton('Cancel', () => mClear(dMenu), dButtons, {}, ['button', 'input']);
+	let bclear = mButton('Clear Players', onclickClearPlayers, dButtons, {}, ['button', 'input']);
+}
+async function showGameMenuPlayerDialog(name, shift = false) {
+	let allPlItem = DA.allPlayers[name];
+	let gamename = DA.gamename;
+	let da = iDiv(allPlItem);
+	if (!DA.playerList.includes(name)) await setPlayerPlaying(allPlItem, gamename);
+	else await setPlayerNotPlaying(allPlItem, gamename);
+}
+async function showGamePlayers(dParent, users) {
+	let me = UGetName();
+	mStyle(dParent, { wrap: true });
+	let userlist = ['amanda', 'felix', 'mimi'];
+	for (const name in users) addIf(userlist, name);
+	for (const name of userlist) {
+		let d = mDom(dParent, { align: 'center', padding: 2, cursor: 'pointer', border: `transparent` });
+		let img = showUserImage(name, d, 40);
+		let label = mDom(d, { matop: -4, fz: 12, hline: 12 }, { html: name });
+		d.setAttribute('username', name)
+		d.onclick = onclickGameMenuPlayer;
+		let item = userToPlayer(name, DA.gamename); item.div = d; item.isSelected = false;
+		DA.allPlayers[name] = item;
+	}
+	await clickOnPlayer(me);
+}
+async function showGameOptions(dParent, gamename) {
+	let poss = MGetGameOptions(gamename);
+	if (nundef(poss)) return;
+	for (const p in poss) {
+		let key = p;
+		let val = poss[p];
+		if (isString(val)) {
+			let list = val.split(',');
+			let legend = formatLegend(key);
+			let fs = mRadioGroup(dParent, {}, `d_${key}`, legend);
+			for (const v of list) { mRadio(v, isNumber(v) ? Number(v) : v, key, fs, { cursor: 'pointer' }, null, key, true); }
+			measureFieldset(fs);
+		}
+	}
+	let inpsolo = mBy(`i_gamemode_solo`);//console.log('HALLO',inpsolo)
+	let inpmulti = mBy(`i_gamemode_multi`);
+	if (isdef(inpsolo)) inpsolo.onclick = setPlayersToSolo;
+	if (isdef(inpmulti)) inpmulti.onclick = setPlayersToMulti;
+}
 async function showTables(from) {
 	await updateTestButtonsLogin();
-	let me = getUname();
+	let me = UGetName();
 	let tables = Serverdata.tables = await mGetRoute('tables');
 	tables.map(x => x.prior = x.status == 'open' ? 0 : x.turn.includes(me) ? 1 : x.playerNames.includes(me) ? 2 : 3);
 	sortBy(tables, 'prior');

@@ -8,6 +8,14 @@ if ($data === null) {
     exit;
 }
 
+if ($data['action'] === 'savey' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $path = YDIR . $data['file'] . '.yaml';
+    $o = $data['o']; 
+    arrayToYamlFile($o, $path);
+    echo json_encode(["path" => $path, "code" => $data['file']]);
+    exit;
+}
+
 if ($data['action'] === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $tData = $data['tData'];
     $tid = $data['tid']; 

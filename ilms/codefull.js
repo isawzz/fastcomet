@@ -2353,9 +2353,16 @@ function getRelCoords(ev, elem) {
   return { x: x, y: y };
 }
 function getStyleProp(elem, prop) { return getComputedStyle(elem).getPropertyValue(prop); }
+
 async function getTables(){
   let files = await mPhpGetFiles('tables'); //console.log('files', files);
-  return M.tables = files.map(x => x.split('.')[0]);
+  M.tableFilenames = files.map(x => x.split('.')[0]);
+	M.tables = {};
+	for (const f of M.tableFilenames) {
+		let t = await loadStaticYaml(`y/tables/${f}.yaml`); //console.log(t);
+		M.tables[f] = t;
+	}
+  return M.tables;
 }
 function getTriangleDownPoly(x, y, w, h) {
   let tridown = [[-0.5, 0.5], [0.5, 0.5], [-0.5, 0.5]];
@@ -2499,11 +2506,6 @@ function list2dict(arr, keyprop = 'id', uniqueKeys = true) {
 async function loadAssetsStatic() {
   if (nundef(M)) M = {};
   M = await loadStaticYaml('y/m.yaml');
-  if (nundef(M.asciiCapitals)) {
-    let except = ["Noum", 'Bras', 'Reykja'];
-    M.asciiCapitals = M.capital.filter(x => !x.includes('.') && !except.some(y => x.startsWith(y)));
-    M.tables = await getTables();
-  }
   M.superdi = await loadStaticYaml('y/superdi.yaml');
   M.details = await loadStaticYaml('y/details.yaml');
   M.config = await loadStaticYaml('y/config.yaml');
@@ -2572,6 +2574,14 @@ function loadSuperdiAssets() {
   M.collections = Object.keys(byColl); M.collections.sort();
   M.names = Object.keys(byFriendly); M.names.sort();
   [M.colorList, M.colorByHex, M.colorByName] = getListAndDictsForDicolors();
+}
+async function loadTables(){
+  if (nundef(M.asciiCapitals)) {
+    let except = ["Noum", 'Bras', 'Reykja'];
+    M.asciiCapitals = M.capital.filter(x => !x.includes('.') && !except.some(y => x.startsWith(y)));
+  }
+  M.tables = await getTables();
+
 }
 function loadUsers() {
   console.log('hier werden users updated was immer zu tun ist!!!')

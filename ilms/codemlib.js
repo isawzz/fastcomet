@@ -688,46 +688,10 @@ async function mPhpGetFiles(dir, projectName = 'ilms', verbose = false, jsonResu
 		return isString(text) ? text : e;
 	}
 }
-async function mPhpPost(cmd, o, projectName = 'ilms', verbose = false, jsonResult = true) {
-	let sessionType = detectSessionType();
-	let server = sessionType == 'fastcomet' ? 'https://moxito.online/' : 'http://localhost:8080/fastcomet/';
-	if (isdef(o.path) && (o.path.startsWith('zdata') || o.path.startsWith('y'))) o.path = '../../' + o.path;
-	if (verbose) console.log('to php:', server + `${projectName}/php/${cmd}.php`, o);
-	let res = await fetch(server + `${projectName}/php/${cmd}.php`,
-		{
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(o),
-		}
-	);
-	let text;
-	try {
-		text = await res.text();
-		if (!jsonResult) {
-			return text;
-		}
-		let obj = JSON.parse(text);
-		if (verbose) console.log('from php:\n', obj);
-		let mkeys = ["config", "superdi", "users", "details"];
-		for (const k of mkeys) {
-			if (isdef(obj[k])) {
-				M[k] = obj[k];
-				if (k == "superdi") {
-					loadSuperdiAssets();
-				} else if (k == "users") {
-					loadUsers();
-				}
-			}
-		}
-		return obj;
-	} catch (e) {
-		return isString(text) ? text : e;
-	}
-}
-async function mPhpPostAudio(url, path) { return await mPhpPost('dl', { url, path }); }
-async function mPhpPostFile(text, path) { return await mPhpPost('write_file', { text, path }, false); }
-async function mPhpPostLine(line, path) { return await mPhpPost('append_action', { line, path }, false); }
-async function mPhpPostText(text, path) { return await mPhpPost('append_text', { text, path }, false); }
+async function mPhpPostAudio(url, path, projectName='ilms', verbose=true) { return await mPhpPost('dl', { url, path }); }
+async function mPhpPostFile(text, path, projectName='ilms', verbose=true) { return await mPhpPost('write_file', { text, path },projectName, verbose); }
+async function mPhpPostLine(line, path, projectName='ilms', verbose=true) { return await mPhpPost('append_action', { line, path }, false); }
+async function mPhpPostText(text, path, projectName='ilms', verbose=true) { return await mPhpPost('append_text', { text, path }, false); }
 function mPickOneOfGrid(dParent, styles = {}, opts = {}) {
 	let d0 = mDom(dParent, dictMerge(styles, { gap: 6 }), opts);
 	mGrid(d0);

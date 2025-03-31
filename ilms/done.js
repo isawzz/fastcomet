@@ -1,7 +1,35 @@
 
+async function createOpenTable(gamename, players, options) {
+  let me = UGetName();
+  let playerNames = [me]; console.log('me', me)
+  assertion(me in players, "_createOpenTable without owner!!!!!")
+  for (const name in players) { addIf(playerNames, name); }
+  let table = {
+    status: 'open',
+    id: generateTableId(),
+    fen: null,
+    game: gamename,
+    owner: playerNames[0],
+    friendly: generateTableName(playerNames.length,[]), //MGetTableNames()),
+    players,
+    playerNames: playerNames,
+    options
+  };
+	let tid = table.id;
+	let tData = table;
+	let res = await mPhpPost('game_user', { action: 'create', tid, tData });
+	if (res.tid) {
+		console.log("Game Creation:", res.tid);
+		return await tableGetDefault(res.tid);
+	} else {
+		console.log("Game Creation failed");
+		return null;
+	}
+  return table;
+}
 async function tableCreate(player, tData) {
-	if (nundef(player)) player = U.name;
-	if (nundef(tData)) tData = { players: ['felix', 'amanda'] };
+	if (nundef(player)) player = UGetName();
+	if (nundef(tData)) tData = { players: ['felix', 'amanda'], status:'open' };
 	let tid = generateTableName(tData.players.length, M.tables);
 	tData.id = tid;
 	let res = await mPhpPost('game_user', { action: 'create', tid, tData });

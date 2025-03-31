@@ -1,12 +1,11 @@
 <?php
-include 'helpers.php';
+header('Content-Type: text/plain'); // Set response type to plain text
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Headers: Content-Type");
 
-$data = json_decode(file_get_contents("php://input"), true);
-
-if ($data === null) {
-    echo json_encode(["error" => "Invalid JSON"]);
-    exit;
-}
+$path = $_POST['path'] ?? '';
+$text = $_POST['text'] ?? '';
 
 if (strpos($path, 'zdata/') == false && strpos($path, 'y/') == false){
     echo json_encode(['status' => 'error', 'message' => 'illegal filename', "filename" => $path, "content" => $text]);

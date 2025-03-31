@@ -1,0 +1,38 @@
+status: open
+id: GGbpOHnL_cZhQ
+fen: null
+game: bluff
+owner: amanda
+friendly: summit_of_Copenhagen
+players:
+  amanda:
+    name: amanda
+    color: '#046307'
+    texture: ../assets/textures/wall1.jpg
+    blendMode: overlay
+    imgKey: amanda
+    playmode: human
+  diana:
+    name: diana
+    color: '#4c2882'
+    texture: ../assets/textures/marble_violet1.jpeg
+    blendMode: luminosity
+    imgKey: das
+    playmode: human
+  guest:
+    name: guest
+    color: '#002e63'
+    texture: ../assets/textures/marble_blue1.jpeg
+    imgKey: stellers_jay
+    blendMode: normal
+    bg: '#55bc41'
+    playmode: human
+playerNames:
+  - amanda
+  - diana
+  - guest
+options:
+  mode: multi
+  min_handsize: 2
+  max_handsize: 7
+  strategy: random

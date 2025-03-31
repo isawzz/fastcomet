@@ -1,4 +1,23 @@
 
+function MGet() { return lookup(M, [...arguments]); }
+function MGetGame(gamename) { return M.config.games[gamename]; }
+function MGetGameOptions(gamename) { return MGetGame(gamename).options; }
+function MGetGamePlayerOptions(gamename) { return MGetGame(gamename).ploptions; }
+function MGetGamePlayerOptionsAsDict(gamename) { return valf(MGetGamePlayerOptions(gamename), {}); }
+function MGetTables(){return M.tables;}
+function MGetUser(uname) { return M.users[uname]; }
+function MGetUserColor(uname) { return MGetUser(uname).color; }
+function MGetUserOptionsForGame(name, gamename) { return lookup(M.users, [name, 'games', gamename]); }
+
+function MGetGamePlayerOptionsAsDict(gamename) { return valf(MGetGamePlayerOptions(gamename), {}); }
+
+function TGetGameOption(prop) { return lookup(T, ['options', prop]); }
+
+function UGetName() { return U.name; }
+function UGetName() { return U.name; }
+
+
+
 function mGrid(rows, cols, dParent, styles = {}, opts = {}) {
   [rows, cols] = [Math.ceil(rows), Math.ceil(cols)]
   addKeys({ display: 'inline-grid', gridCols: 'repeat(' + cols + ',1fr)' }, styles);

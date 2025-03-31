@@ -41,7 +41,7 @@ async function showCalendarApp() {
 }
 function showChatMessage(o) {
 	let d = mBy('dChatWindow'); if (nundef(d)) return;
-	if (o.user == getUname()) mDom(d, { align: 'right' }, { html: `${o.msg}` })
+	if (o.user == UGetName()) mDom(d, { align: 'right' }, { html: `${o.msg}` })
 	else mDom(d, { align: 'left' }, { html: `${o.user}: ${o.msg}` })
 }
 function showChatWindow() {
@@ -50,7 +50,7 @@ function showChatWindow() {
 	UI.chatWindow = mDom(dChat, {}, { id: 'dChatWindow' });
 	mOnEnter(UI.chatInput, ev => {
 		let inp = ev.target;
-		Socket.emit('message', { user: getUname(), msg: ev.target.value });
+		Socket.emit('message', { user: UGetName(), msg: ev.target.value });
 		ev.target.value = '';
 	});
 }
@@ -120,7 +120,7 @@ async function showColors() {
 	}
 }
 async function showDashboard() {
-	let me = getUname();
+	let me = UGetName();
 	if (me == 'guest') { mDom('dMain', { align: 'center', className: 'section' }, { html: 'click username in upper right corner to log in' }); return; }
 	homeSidebar(150);
 	mAdjustPage(150);
@@ -230,53 +230,6 @@ function showFleetingMessage(msg, dParent, styles = {}, ms = 3000, msDelay = 0, 
 		TOFleetingMessage = setTimeout(() => fleetingMessage(msg, dFleetingMessage, styles, ms, fade), 10);
 	}
 }
-async function showGameMenu(gamename) {
-	let users = M.users = await loadStaticYaml('y/users.yaml'); console.log('users',users); return;
-	mRemoveIfExists('dGameMenu');
-	let dMenu = mDom('dMain', {}, { className: 'section', id: 'dGameMenu' });
-	mDom(dMenu, { maleft: 12 }, { html: `<h2>game options</h2>` });
-	let style = { display: 'flex', justify: 'center', w: '100%', gap: 10, matop: 6 };
-	let dPlayers = mDiv(dMenu, style, 'dMenuPlayers'); //mCenterFlex(dPlayers);
-	let dOptions = mDiv(dMenu, style, 'dMenuOptions'); //mCenterFlex(dOptions);
-	let dButtons = mDiv(dMenu, style, 'dMenuButtons');
-	DA.gamename = gamename;
-	DA.gameOptions = {};
-	DA.playerList = [];
-	DA.allPlayers = {};
-	DA.lastName = null;
-	await showGamePlayers(dPlayers, users);
-	await showGameOptions(dOptions, gamename);
-	let astart = mButton('Start', onclickStartGame, dButtons, {}, ['button', 'input']);
-	let ajoin = mButton('Open to Join', onclickOpenToJoinGame, dButtons, {}, ['button', 'input']);
-	let acancel = mButton('Cancel', () => mClear(dMenu), dButtons, {}, ['button', 'input']);
-	let bclear = mButton('Clear Players', onclickClearPlayers, dButtons, {}, ['button', 'input']);
-}
-async function showGameMenuPlayerDialog(name, shift = false) {
-	let allPlItem = DA.allPlayers[name];
-	let gamename = DA.gamename;
-	let da = iDiv(allPlItem);
-	if (!DA.playerList.includes(name)) await setPlayerPlaying(allPlItem, gamename);
-	else await setPlayerNotPlaying(allPlItem, gamename);
-}
-async function showGameOptions(dParent, gamename) {
-	let poss = getGameOptions(gamename);
-	if (nundef(poss)) return;
-	for (const p in poss) {
-		let key = p;
-		let val = poss[p];
-		if (isString(val)) {
-			let list = val.split(',');
-			let legend = formatLegend(key);
-			let fs = mRadioGroup(dParent, {}, `d_${key}`, legend);
-			for (const v of list) { mRadio(v, isNumber(v) ? Number(v) : v, key, fs, { cursor: 'pointer' }, null, key, true); }
-			measureFieldset(fs);
-		}
-	}
-	let inpsolo = mBy(`i_gamemode_solo`);//console.log('HALLO',inpsolo)
-	let inpmulti = mBy(`i_gamemode_multi`);
-	if (isdef(inpsolo)) inpsolo.onclick = setPlayersToSolo;
-	if (isdef(inpmulti)) inpmulti.onclick = setPlayersToMulti;
-}
 function showGameover(table, dParent) {
 	let winners = table.winners;
 	let msg = winners.length > 1 ? `GAME OVER - The winners are ${winners.join(', ')}!!!` : `GAME OVER - The winner is ${winners[0]}!!!`;
@@ -285,23 +238,7 @@ function showGameover(table, dParent) {
 	mDom(d, { h: 12 }, { html: '<br>' })
 	mButton('PLAY AGAIN', () => onclickStartTable(table.id), d, { className: 'button', fz: 24 });
 }
-async function showGamePlayers(dParent, users) {
-	let me = getUname();
-	mStyle(dParent, { wrap: true });
-	let userlist = ['amanda', 'felix', 'mimi'];
-	for (const name in users) addIf(userlist, name);
-	for (const name of userlist) {
-		let d = mDom(dParent, { align: 'center', padding: 2, cursor: 'pointer', border: `transparent` });
-		let img = showUserImage(name, d, 40);
-		let label = mDom(d, { matop: -4, fz: 12, hline: 12 }, { html: name });
-		d.setAttribute('username', name)
-		d.onclick = onclickGameMenuPlayer;
-		let item = userToPlayer(name, DA.gamename); item.div = d; item.isSelected = false;
-		DA.allPlayers[name] = item;
-	}
-	await clickOnPlayer(me);
-}
-function showGames() {
+async function showGames() {
 	let dParent = mBy('dGameList'); if (isdef(dParent)) { mClear(dParent); } else dParent = mDom('dMain', {}, { className: 'section', id: 'dGameList' });
 	mText(`<h2>start new game</h2>`, dParent, { maleft: 12 });
 	let d = mDom(dParent, { fg: 'white' }, { id: 'game_menu' }); mCenterCenterFlex(d); //mFlexWrap(d);
@@ -514,7 +451,7 @@ function showRibbon(dParent, msg) {
 	return d;
 }
 async function showTable(id) {
-	let me = getUname();
+	let me = UGetName();
 	let table = await mGetRoute('table', { id });  //console.log('table',table)
 	if (!table) { showMessage('table deleted!'); return await showTables('showTable'); }
 	DA.Interrupt = true;
@@ -628,7 +565,7 @@ function showTrick() {
 	}
 }
 function showUserImage(uname, d, sz = 40) {
-	let u = Serverdata.users[uname];
+	let u = MGetUser(uname);
 	let key = u.imgKey;
 	let m = M.superdi[key];
 	if (nundef(m)) {

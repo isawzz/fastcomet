@@ -6,7 +6,7 @@ async function start() { await test4_game0(); }
 async function test4_game0() {
 	DA.pollCounter = 0;
 	await loadAssetsStatic(); //console.log('tables', M.tables); return;
-
+	await loadTables();
 	let elems = mLayoutTM('dPage'); mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain'); mLayoutTopExtraSpaceBetween('dTop'); mFlexV('dTop'); //mStyle('dTop', { hmin: 32 }); mStyle('dExtra', { hmin: 32 })
 
 	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul']; let d = mBy('dExtraRight');
@@ -24,8 +24,9 @@ async function test4_game0() {
 	mDom(dExtraLeft,{className:'button'},{tag:'button',html:'delete',onclick:async()=>await tablesDeleteAll()});
 
 	//etzt muss ich die games presenten die es gibt
-	tablesList();
-	//showGames();
+	//tablesList();
+	await showGames();
+	await showGameMenu('setgame');
 
 }
 

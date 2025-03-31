@@ -9,7 +9,7 @@ async function onchangeAutoSwitch(){
 async function onchangeBotSwitch(ev) {
   let elem = ev.target;
   assertion(T, "NO TABLE!!!!!!!!!!!!!!!")
-  let name = getUname();
+  let name = UGetName();
   let id = T.id;
   let playmode = (elem.checked) ? 'bot' : 'human';
   let olist = [{ keys: ['players', name, 'playmode'], val: playmode }];
@@ -44,7 +44,7 @@ function onclickClear(inp, grid) {
   sortCheckboxes(grid);
 }
 async function onclickClearPlayers() {
-  let me = getUname();
+  let me = UGetName();
   DA.playerList = [me];
   for (const name in DA.allPlayers) {
     if (name != me) unselectPlayerItem(DA.allPlayers[name]);
@@ -68,7 +68,7 @@ function onclickDay(d, styles) {
   let tsDay = d.id;
   let tsCreated = Date.now();
   let id = generateEventId(tsDay, tsCreated);
-  let uname = U ? getUname() : 'guest';
+  let uname = U ? UGetName() : 'guest';
   let o = { id: id, created: tsCreated, day: tsDay, time: '', text: '', user: uname, shared: false, subscribers: [] };
   Items[id] = o;
   let x = uiTypeEvent(d, o, styles);
@@ -137,7 +137,7 @@ async function onclickHomeNew() {
 }
 async function onclickJoinTable(id) {
   let table = Serverdata.tables.find(x => x.id == id);
-  let me = getUname();
+  let me = UGetName();
   assertion(table.status == 'open', 'too late to join! game has already started!')
   assertion(!table.playerNames.includes(me), `${me} already joined!!!`);
   table.players[me] = createGamePlayer(me, table.game);
@@ -146,7 +146,7 @@ async function onclickJoinTable(id) {
 }
 async function onclickLeaveTable(id) {
   let table = Serverdata.tables.find(x => x.id == id);
-  let me = getUname();
+  let me = UGetName();
   assertion(table.status == 'open', 'too late to leave! game has already started!')
   assertion(table.playerNames.includes(me), `${me} NOT in joined players!!!!`);
   delete table.players[me];
@@ -215,13 +215,6 @@ async function onclickNATIONS() {
       d.onclick = () => selectCivSpot(d);
     }
   }
-}
-async function onclickOpenToJoinGame() {
-  let options = collectOptions();
-  let players = collectPlayers();
-  mRemove('dGameMenu');
-  let t = createOpenTable(DA.gamename, players, options);
-  let res = await mPostRoute('postTable', t);
 }
 function onclickPasteDetailObject(text, inputs, wIdeal, df, styles, opts) {
   function parseToInputs(o) {
@@ -428,7 +421,7 @@ async function onclickTable(id) {
 async function onclickTableMenu() {
   let id = getTid();
   if (nundef(id)) {
-    let me = getUname();
+    let me = UGetName();
     let table = Serverdata.tables.find(x => x.status == 'started' && x.turn.includes(me));
     if (nundef(table)) table = Serverdata.tables.find(x => x.status == 'started' && x.playerNames.includes(me));
     if (nundef(table)) table = Serverdata.tables.find(x => x.status != 'open' && x.playerNames.includes(me));
@@ -557,7 +550,7 @@ async function onsockTable(x) {
   console.log('SOCK::table', x); 
   let [msg, id, turn, isNew] = [x.msg, x.id, x.turn, x.isNew];
   let menu = getMenu();
-  let me = getUname();
+  let me = UGetName();
   console.log('menu',menu,'me',me,'turn',turn,'isNew',isNew)
   if (turn.includes(me) && menu == 'play') { Tid = id; await switchToMainMenu('table'); }
   else if (isNew  && menu == 'play') { Tid = id; await switchToMainMenu('table'); }
