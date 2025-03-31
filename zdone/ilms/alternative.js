@@ -19,13 +19,18 @@ function highlightPlayerItem(item) { mStyle(iDiv(item), { bg: MGetUserColor(item
 
 async function onclickGameMenuItem(ev) {
 	let gamename = evToAttr(ev, 'gamename');
+	//hier sollte noch was fuer die options kommen, but for now, just create the game to join
+
 	await showGameMenu(gamename);
+
+
+	//await tableCreate(U.name, { game: gamename, players: [], status: 'join' });
 }
 async function onclickOpenToJoinGame() {
   let options = collectOptions();
   let players = collectPlayers();
   mRemove('dGameMenu');
-  let t = await tableCreate(DA.gamename, players, options);
+  let t = await createOpenTable(DA.gamename, players, options);
   //let res = await mPostRoute('postTable', t);
 }
 async function saveAndUpdatePlayerOptions(allPl, gamename) {

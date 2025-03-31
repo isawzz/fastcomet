@@ -1,5 +1,40 @@
 
 
+
+
+function MGet() { return lookup(M, [...arguments]); }
+function MGetGame(gamename) { return M.config.games[gamename]; }
+function MGetGameColor(gamename) { return MGetGame(gamename).color; }
+function MGetGameFriendly(gamename) { return MGetGame(gamename).friendly; }
+function MGetGameOptions(gamename) { return MGetGame(gamename).options; }
+function MGetGamePlayerOptions(gamename) { return MGetGame(gamename).ploptions; }
+function MGetGamePlayerOptionsAsDict(gamename) { return valf(MGetGamePlayerOptions(gamename), {}); }
+function MGetTables() { return M.tables; }
+function MGetUser(uname) { return M.users[uname]; }
+function MGetUserColor(uname) { return MGetUser(uname).color; }
+function MGetUserOptionsForGame(name, gamename) { return lookup(M.users, [name, 'games', gamename]); }
+function MTGetGameProp(prop) { return MGetGame(T.game)[prop]; }
+function TGetGameOption(prop) { return lookup(T, ['options', prop]); }
+function UGetName() { return U.name; }
+function _showYaml(o, title, dParent, styles = {}, opts = {}) {
+  o = toFlatObject(o);
+  mLinebreak(dParent);
+  let keys = Object.keys(o);
+  let grid = mGrid(keys.length, 2, dParent, styles);
+  mDom(grid, { 'grid-column': 'span 2', align: 'center', weight: 'bold' }, { html: title });
+  console.log('type', typeof o);
+  if (isList(o)) {
+    arrSort(o);
+    o.map((x, i) => { mDom(grid, { fg: 'red', align: 'right' }, { html: i }); mDom(grid, { maleft: 10 }, { html: x }); });
+  } else if (isDict(o)) {
+    keys.sort();
+    for (const k of keys) {
+      mDom(grid, { fg: 'red', align: 'right', w: '200' }, { html: k })
+      mDom(grid, { maleft: 10, w: '60%', align: '800' }, { html: o[k] });
+    }
+  }
+  return dParent;
+}
 async function actionLoadAll() {
   let action = await mPhpGetFile('zdata/action.txt');
   DA.action = null;
@@ -1380,6 +1415,34 @@ function createLineBetweenPoints(dboard, pointA, pointB, thickness = 10) {
   } else {
     console.error(`Parent element with selector '${dboard}' not found.`);
   }
+}
+async function createOpenTable(gamename, players, options) {
+  let me = UGetName();
+  let playerNames = [me]; console.log('me', me)
+  assertion(me in players, "_createOpenTable without owner!!!!!")
+  for (const name in players) { addIf(playerNames, name); }
+  let table = {
+    status: 'open',
+    id: generateTableId(),
+    fen: null,
+    game: gamename,
+    owner: playerNames[0],
+    friendly: generateTableName(playerNames.length, []), //MGetTableNames()),
+    players,
+    playerNames: playerNames,
+    options
+  };
+  let tid = table.id;
+  let tData = table;
+  let res = await mPhpPost('game_user', { action: 'create', tid, tData });
+  if (res.tid) {
+    console.log("Game Creation:", res.tid);
+    return await tableGetDefault(res.tid);
+  } else {
+    console.log("Game Creation failed");
+    return null;
+  }
+  return table;
 }
 function createPanZoomCanvas(parentElement, src, wCanvas, hCanvas) {
   const canvas = document.createElement('canvas');
@@ -3325,7 +3388,7 @@ async function onclickOpenToJoinGame() {
   let options = collectOptions();
   let players = collectPlayers();
   mRemove('dGameMenu');
-  let t = await tableCreate(DA.gamename, players, options);
+  let t = await createOpenTable(DA.gamename, players, options);
 }
 function onclickPasteDetailObject(text, inputs, wIdeal, df, styles, opts) {
   function parseToInputs(o) {
@@ -4457,12 +4520,7 @@ function showGameover(table, dParent) {
   mButton('PLAY AGAIN', () => onclickStartTable(table.id), d, { className: 'button', fz: 24 });
 }
 async function showGames() {
-  let dParent = mBy('dGameList'); 
-  if (isdef(dParent)) { mClear(dParent); } 
-  else {
-    mClear('dMain');
-    dParent = mDom('dMain', {}, { className: 'section', id: 'dGameList' });
-  }
+  let dParent = mBy('dGameList'); if (isdef(dParent)) { mClear(dParent); } else dParent = mDom('dMain', {}, { className: 'section', id: 'dGameList' });
   mText(`<h2>start new game</h2>`, dParent, { maleft: 12 });
   let d = mDom(dParent, { fg: 'white' }, { id: 'game_menu' }); mCenterCenterFlex(d); //mFlexWrap(d);
   let gamelist = 'accuse aristo bluff ferro fishgame fritz huti lacuna nations setgame sheriff spotit wise'; if (DA.TEST0) gamelist += ' a_game'; gamelist = toWords(gamelist);
@@ -5001,6 +5059,20 @@ async function switchToUser(username) {
   mStyle('dTopRight', { className: 'button', display: 'inline', h: '80%', bg, fg }, { html: `${username}` });
   localStorage.setItem('username', username);
   setTheme(U);
+}
+async function tableCreate(player, tData) {
+  if (nundef(player)) player = UGetName();
+  if (nundef(tData)) tData = { players: ['felix', 'amanda'], status: 'open' };
+  let tid = generateTableName(tData.players.length, M.tables);
+  tData.id = tid;
+  let res = await mPhpPost('game_user', { action: 'create', tid, tData });
+  if (res.tid) {
+    console.log("Game Creation:", res.tid);
+    return await tableGetDefault(res.tid);
+  } else {
+    console.log("Game Creation failed");
+    return null;
+  }
 }
 async function tableGetDefault(tid = null, tData = null) {
   if (nundef(tid)) tid = valf(DA.tid, localStorage.getItem('tid'), arrLast(M.tables));

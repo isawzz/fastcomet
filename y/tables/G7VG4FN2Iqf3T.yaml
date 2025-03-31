@@ -1,0 +1,30 @@
+status: open
+id: G7VG4FN2Iqf3T
+fen: null
+game: setgame
+owner: amanda
+friendly: festival_of_Tehran
+players:
+  felix:
+    name: felix
+    color: '#0e1e76'
+    texture: ../assets/textures/marble_meer1.jpg
+    blendMode: normal
+    imgKey: felix
+    level: 4
+    playmode: human
+  amanda:
+    name: amanda
+    color: '#046307'
+    texture: ../assets/textures/wall1.jpg
+    blendMode: overlay
+    imgKey: amanda
+    level: 2
+    playmode: human
+playerNames:
+  - amanda
+  - felix
+options:
+  use_level: 'no,yes'
+  numCards: '6,9,15,12'
+  gamemode: 'solo,multi'

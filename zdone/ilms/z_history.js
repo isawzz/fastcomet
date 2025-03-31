@@ -1,40 +1,4 @@
 
-async function tableCreate(player, tData) {
-  if (nundef(player)) player = UGetName();
-  if (nundef(tData)) tData = { players: ['felix', 'amanda'], status: 'open' };
-  let tid = generateTableName(tData.players.length, M.tables);
-  tData.id = tid;
-  let res = await mPhpPost('game_user', { action: 'create', tid, tData });
-  if (res.tid) {
-    console.log("Game Creation:", res.tid);
-    return await tableGetDefault(res.tid);
-  } else {
-    console.log("Game Creation failed");
-    return null;
-  }
-}
-
-function _showYaml(o, title, dParent, styles = {}, opts = {}) {
-  o = toFlatObject(o);
-  mLinebreak(dParent);
-  let keys = Object.keys(o);
-  let grid = mGrid(keys.length, 2, dParent, styles);
-  mDom(grid, { 'grid-column': 'span 2', align: 'center', weight: 'bold' }, { html: title });
-  console.log('type', typeof o);
-  if (isList(o)) {
-    arrSort(o);
-    o.map((x, i) => { mDom(grid, { fg: 'red', align: 'right' }, { html: i }); mDom(grid, { maleft: 10 }, { html: x }); });
-  } else if (isDict(o)) {
-    keys.sort();
-    for (const k of keys) {
-      mDom(grid, { fg: 'red', align: 'right', w: '200' }, { html: k })
-      mDom(grid, { maleft: 10, w: '60%', align: '800' }, { html: o[k] });
-    }
-  }
-  return dParent;
-}
-
-
 //#region games: orig vs alternative
 function UGetName() { return U.name; }
 function MGetUserColor(uname) { return Serverdata.users[uname].color; }
