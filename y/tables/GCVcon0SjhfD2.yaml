@@ -1,9 +1,9 @@
 status: open
-id: G7VG4FN2Iqf3T
+id: GCVcon0SjhfD2
 fen: null
 game: setgame
-owner: amanda
-friendly: festival_of_Tehran
+owner: felix
+friendly: rally_of_Dublin
 players:
   felix:
     name: felix
@@ -22,8 +22,8 @@ players:
     level: 2
     playmode: human
 playerNames:
-  - amanda
   - felix
+  - amanda
 options:
   use_level: 'no,yes'
   numCards: '6,9,15,12'

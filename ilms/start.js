@@ -26,6 +26,10 @@ async function test4_game0() {
 	//etzt muss ich die games presenten die es gibt
 	//tablesList();
 	await showTables();
+	DA.state = 'no_table';
+
+	TO.poll = setInterval(onPoll,1000);	
+	document.addEventListener("visibilitychange", handleVisibilityChange);
 	//await showGames();
 	//await showGameMenu('setgame');
 

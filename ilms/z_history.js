@@ -1,4 +1,10 @@
 
+async function gamePresent() {
+  console.log('polling!', DA.pollCounter);
+  DA.tData = await tableLoad();
+  console.log('', DA.pollCounter, 'PRESENT', DA.tid); //,DA.tData);
+}
+
 async function tableCreate(player, tData) {
   if (nundef(player)) player = UGetName();
   if (nundef(tData)) tData = { players: ['felix', 'amanda'], status: 'open' };

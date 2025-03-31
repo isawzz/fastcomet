@@ -1963,11 +1963,6 @@ function fromNormalized(s, opts = {}) {
   let words = caps ? toWords(x).map(x => capitalize(x)).join(' ') : toWords(x).join(' ');
   return words;
 }
-async function gamePresent() {
-  console.log('polling!', DA.pollCounter);
-  DA.tData = await tableLoad();
-  console.log('', DA.pollCounter, 'PRESENT', DA.tid); //,DA.tData);
-}
 function generateTableId() { return rUniqueId('G', 12); }
 function generateTableName(n, existing) {
   while (true) {
@@ -5003,7 +4998,7 @@ async function switchToUser(username) {
   setTheme(U);
 }
 async function tableGetDefault(tid = null, tData = null) {
-  if (nundef(tid)) tid = valf(DA.tid, localStorage.getItem('tid'), arrLast(M.tables));
+  if (nundef(tid)) tid = valf(DA.tid, localStorage.getItem('tid'), arrLast(Object.keys(M.tables)));
   if (nundef(tid)) return null;
   if (nundef(tData)) { tData = valf(DA.tData, await loadStaticYaml(`y/tables/${tid}.yaml`)); }
   [DA.tid, DA.tData] = [tid, tData];
