@@ -25,8 +25,9 @@ async function test4_game0() {
 
 	//etzt muss ich die games presenten die es gibt
 	//tablesList();
-	await showGames();
-	await showGameMenu('setgame');
+	await showTables();
+	//await showGames();
+	//await showGameMenu('setgame');
 
 }
 

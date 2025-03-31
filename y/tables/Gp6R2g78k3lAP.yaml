@@ -1,0 +1,30 @@
+status: open
+id: Gp6R2g78k3lAP
+fen: null
+game: setgame
+owner: felix
+friendly: showdown_in_Nuuk
+players:
+  felix:
+    name: felix
+    color: '#0e1e76'
+    texture: ../assets/textures/marble_meer1.jpg
+    blendMode: normal
+    imgKey: felix
+    level: 4
+    playmode: human
+  gul:
+    name: gul
+    color: '#e6be8a'
+    texture: ../assets/textures/marble_beige1.jpeg
+    blendMode: normal
+    imgKey: leopard
+    level: 1
+    playmode: human
+playerNames:
+  - felix
+  - gul
+options:
+  use_level: 'yes'
+  numCards: 12
+  gamemode: multi

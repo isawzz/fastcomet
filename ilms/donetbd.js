@@ -1,5 +1,21 @@
 
 
+function getGameValues() {
+  let user = U.id;
+  let game = G.id;
+  let level = G.level;
+  let settings = { numColors: 1, numRepeat: 1, numPics: 1, numSteps: 1, colors: ColorList };
+  settings = mergeOverride(settings, DB.settings);
+  if (isdef(U.settings)) settings = mergeOverride(settings, U.settings);
+  if (isdef(DB.games[game])) settings = mergeOverride(settings, DB.games[game]);
+  let next = lookup(DB.games, [game, 'levels', level]); if (next) settings = mergeOverride(settings, next);
+  next = lookup(U, ['games', game]); if (next) settings = mergeOverride(settings, next);
+  next = lookup(U, ['games', game, 'levels', level]); if (next) settings = mergeOverride(settings, next);
+  delete settings.levels;
+  Speech.setLanguage(settings.language);
+  return settings;
+}
+
 //cryptid
 function cryBoard(dParent, cols, rows, sz) {
 	dParent = toElem(dParent);

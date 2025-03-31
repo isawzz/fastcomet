@@ -35,7 +35,7 @@ felix:
   imgKey: felix
   games:
     setgame:
-      level: 7
+      level: 4
     button96:
       handicap: 3
 guest:
@@ -67,7 +67,7 @@ lauren:
   imgKey: lauren
   games:
     setgame:
-      level: 7
+      level: 1
 mimi:
   name: mimi
   color: '#ffe4e1'

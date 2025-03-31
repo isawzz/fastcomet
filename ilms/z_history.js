@@ -130,7 +130,7 @@ async function showTables(from) {
 	if (isdef(dParent)) { mClear(dParent); }
 	else dParent = mDom('dMain', {}, { className: 'section', id: 'dTableList' });
 	if (isEmpty(tables)) { mText('no active game tables', dParent); return []; }
-	tables.map(x => x.game_friendly = capitalize(getGameFriendly(x.game)));
+	tables.map(x => x.game_friendly = capitalize(MGetGameFriendly(x.game)));
 	mText(`<h2>game tables</h2>`, dParent, { maleft: 12 })
 	let t = UI.tables = mDataTable(tables, dParent, null, ['friendly', 'game_friendly', 'playerNames'], 'tables', false);
 	mTableCommandify(t.rowitems.filter(ri => ri.o.status != 'open'), {
