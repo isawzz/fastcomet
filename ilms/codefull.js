@@ -5014,18 +5014,6 @@ async function tableLoad(tid) {
   addIf(M.tables, tid);
   return tData;
 }
-async function tablePresent(tData) {
-  let o = await tableGetDefault(null, tData);
-  if (!o) { console.log('no table found!'); return; }
-  console.log(o)
-  let tid = o.tid;
-  tData = o.tData;
-  let title = fromNormalized(tid);
-  mClear('dTopLeft');
-  mDom('dTopLeft', { family: 'algerian', maleft: 10 }, { html: title });
-  mClear('dMain')
-  mDom('dMain', {}, { tag: 'pre', html: jsonToYaml(tData) });
-}
 async function tablesDeleteAll() {
   await mPhpGet('delete_dir', { dir: 'tables' });
   DA.tid = null;

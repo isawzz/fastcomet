@@ -1,4 +1,19 @@
 
+function onPoll() {
+	console.log('', DA.pollCounter++, 'polling', DA.state);
+	switch (DA.state) {
+		case 'table_started':
+		case 'table_clicked':
+		case 'table_created': break;
+		case 'table_running': if (tableHasChanged()) tablePresent(); pollStart(); break;
+		case 'no_table':
+		case 'table_left':
+		case 'table_paused':
+		case 'table_ended':
+		case 'table_joined': break;
+		default: pollStop(); break;
+	}
+}
 async function gamePresent() {
   console.log('polling!', DA.pollCounter);
   DA.tData = await tableLoad();

@@ -1,7 +1,7 @@
 alles ist fuer immer ok - I have left this plane.
 
-___ 7:11 AM 3/31/2025 airport lib 4.4. 15000
-11:59 AM 3/31/2025
+___ 6:37 AM 4/1/2025 airport lib 15.4. 16000
+6:38 AM 4/1/2025
 states! DA.state
 no_table: do not poll
 table_created: me created a new table
@@ -13,6 +13,8 @@ table_left: same as paused???
 table_ended: this table is no longer active, game has ended
 table_running: game running!
 
+___ 7:11 AM 3/31/2025 airport lib 4.4. 15000
+11:59 AM 3/31/2025
 11:53 AM 3/31/2025 und nun?
 er soll nicht wenn er present sagt und tables existieren no table found sagen!!!
 10:01 AM 3/31/2025 was ist los?

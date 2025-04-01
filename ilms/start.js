@@ -1,8 +1,34 @@
 
 onload = start;
 
-async function start() { await test4_game0(); }
+async function start() { await test4_compare(); }
 
+async function test4_compare() {
+
+	// Example usage:
+	const obj1 = {
+		name: 'John',
+		age: 30,
+		address: {
+			city: 'New York',
+			zip: 10001
+		},
+		hobbies: ['Reading', 'Traveling']
+	};
+
+	const obj2 = {
+		name: 'John',
+		age: 31,
+		address: {
+			city: 'New York',
+			zip: 10002
+		},
+		hobbies: ['Reading', 'Cooking']
+	};
+	const differences = deepCompare(obj1, obj2);
+	console.log(differences);
+
+}
 async function test4_game0() {
 	DA.pollCounter = 0;
 	await loadAssetsStatic(); //console.log('tables', M.tables); return;
@@ -12,23 +38,27 @@ async function test4_game0() {
 	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul']; let d = mBy('dExtraRight');
 	for (const name of names) { let b = mDom(d, { className: 'button' }, { tag: 'button', html: name, onclick: async () => await switchToUser(name) }); }
 
-	let username = localStorage.getItem('username') ?? 'hans'; if (username == 'felix') username = 'amanda'; else username = 'felix'; 
+	let username = localStorage.getItem('username') ?? 'hans'; if (username == 'felix') username = 'amanda'; else username = 'felix';
 	await switchToUser(username);
 
 	//testbuttons
-	mDom(dExtraLeft,{className:'button',maleft:10},{tag:'button',html:'create',onclick:async()=>await tableCreate()});
-	mDom(dExtraLeft,{className:'button'},{tag:'button',html:'load',onclick:async()=>await tableLoad()});
-	mDom(dExtraLeft,{className:'button'},{tag:'button',html:'present',onclick:async()=>await tablePresent()});
-	mDom(dExtraLeft,{className:'button'},{tag:'button',html:'games',onclick:showGames});
-	mDom(dExtraLeft,{className:'button'},{tag:'button',html:'tables',onclick:async()=>await tablesList()});
-	mDom(dExtraLeft,{className:'button'},{tag:'button',html:'delete',onclick:async()=>await tablesDeleteAll()});
+	mDom(dExtraLeft, { className: 'button', maleft: 10 }, { tag: 'button', html: 'create', onclick: async () => await tableCreate() });
+	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'load', onclick: async () => await tableLoad() });
+	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'present', onclick: async () => await tablePresent() });
+	mDom(dExtraLeft, { w: 20, bg: 'green', opacity: 0, display: 'inline' }, { html: ' | ' });
+	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'games', onclick: showGames });
+	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'tables', onclick: async () => await tablesList() });
+	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'delete', onclick: async () => await tablesDeleteAll() });
+	mDom(dExtraLeft, { w: 20, bg: 'green', opacity: 0, display: 'inline' }, { html: ' | ' });
+	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'play', onclick: async () => await tablePlay() });
+	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'pause', onclick: async () => await tablePause() });
 
 	//etzt muss ich die games presenten die es gibt
 	//tablesList();
 	await showTables();
-	DA.state = 'no_table';
+	//DA.state = 'no_table';
 
-	TO.poll = setInterval(onPoll,1000);	
+	TO.poll = setInterval(onPoll, 1000);
 	document.addEventListener("visibilitychange", handleVisibilityChange);
 	//await showGames();
 	//await showGameMenu('setgame');
@@ -45,14 +75,14 @@ async function test3_game() {
 	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul']; let d = mBy('dExtraRight');
 	for (const name of names) { let b = mDom(d, { className: 'button' }, { tag: 'button', html: name, onclick: async () => await switchToUser(name) }); }
 
-	let username = localStorage.getItem('username') ?? 'hans'; if (username == 'felix') username = 'amanda'; else username = 'felix'; 
+	let username = localStorage.getItem('username') ?? 'hans'; if (username == 'felix') username = 'amanda'; else username = 'felix';
 	await switchToUser(username);
 
 	//testbuttons
-	mDom(dExtraLeft,{maleft:10},{tag:'button',html:'create',onclick:async()=>await tableCreate()});
-	mDom(dExtraLeft,{maleft:10},{tag:'button',html:'load',onclick:async()=>await tableLoad()});
-	mDom(dExtraLeft,{maleft:10},{tag:'button',html:'present',onclick:async()=>await tablePresent()});
-	mDom(dExtraLeft,{maleft:10},{tag:'button',html:'delete',onclick:async()=>await tablesDeleteAll()});
+	mDom(dExtraLeft, { maleft: 10 }, { tag: 'button', html: 'create', onclick: async () => await tableCreate() });
+	mDom(dExtraLeft, { maleft: 10 }, { tag: 'button', html: 'load', onclick: async () => await tableLoad() });
+	mDom(dExtraLeft, { maleft: 10 }, { tag: 'button', html: 'present', onclick: async () => await tablePresent() });
+	mDom(dExtraLeft, { maleft: 10 }, { tag: 'button', html: 'delete', onclick: async () => await tablesDeleteAll() });
 	// mDom(dExtraLeft,{maleft:10},{tag:'button',html:'stop',onclick:()=>pollStop()})
 
 	// let state = DA.tData = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix', 'amanda'] };
@@ -64,12 +94,12 @@ async function test3_game() {
 
 
 }
-async function test3_delete(){
-	await loadAssetsStatic(); 
+async function test3_delete() {
+	await loadAssetsStatic();
 	let state = DA.tData = { player: U.name, turn: 1, board: [["", "", ""], ["", "", ""], ["", "", ""]], players: ['felix', 'amanda'] };
 	let tid = await tableCreate('felix', state);
 	console.log(await getTables());
-	await mPhpGet('delete_dir',{dir:'tables'},'ilms',true)
+	await mPhpGet('delete_dir', { dir: 'tables' }, 'ilms', true)
 	console.log(await getTables());
 
 }
@@ -84,12 +114,12 @@ async function test3_checkCapitals() {
 }
 async function test3_createTableName() {
 	await loadAssetsStatic(); //console.log('assets', M.users);
-	let notAllowed = M.capital.filter(x=>!M.asciiCapitals.includes(x));
+	let notAllowed = M.capital.filter(x => !M.asciiCapitals.includes(x));
 	let files = await mPhpGetFiles('tables'); //console.log('files', files);
-  M.tables = files.map(x => x.split('.')[0]);
+	M.tables = files.map(x => x.split('.')[0]);
 	for (const i of range(10)) {
-		let tableName = generateTableName(2,M.tables); //mPhpGetFiles('games'); console.log('files', files);
-		if (notAllowed.some(x=>tableName.includes(x))) alert("NOT ALLOWED",tableName);
+		let tableName = generateTableName(2, M.tables); //mPhpGetFiles('games'); console.log('files', files);
+		if (notAllowed.some(x => tableName.includes(x))) alert("NOT ALLOWED", tableName);
 		//console.log('tableName', tableName);break;
 		console.log(i, tableName);
 	}
