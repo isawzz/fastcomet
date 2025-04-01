@@ -1,34 +1,8 @@
 
 onload = start;
 
-async function start() { await test4_compare(); }
+async function start() { await test4_game0(); }
 
-async function test4_compare() {
-
-	// Example usage:
-	const obj1 = {
-		name: 'John',
-		age: 30,
-		address: {
-			city: 'New York',
-			zip: 10001
-		},
-		hobbies: ['Reading', 'Traveling']
-	};
-
-	const obj2 = {
-		name: 'John',
-		age: 31,
-		address: {
-			city: 'New York',
-			zip: 10002
-		},
-		hobbies: ['Reading', 'Cooking']
-	};
-	const differences = deepCompare(obj1, obj2);
-	console.log(differences);
-
-}
 async function test4_game0() {
 	DA.pollCounter = 0;
 	await loadAssetsStatic(); //console.log('tables', M.tables); return;
@@ -64,7 +38,32 @@ async function test4_game0() {
 	//await showGameMenu('setgame');
 
 }
+async function test4_compare() {
 
+	// Example usage:
+	const obj1 = {
+		name: 'John',
+		age: 30,
+		address: {
+			city: 'New York',
+			zip: 10001
+		},
+		hobbies: ['Reading', 'Traveling']
+	};
+
+	const obj2 = {
+		name: 'John',
+		age: 31,
+		address: {
+			city: 'New York',
+			zip: 10002
+		},
+		hobbies: ['Reading', 'Cooking']
+	};
+	const differences = deepCompare(obj1, obj2);
+	console.log(differences);
+
+}
 //******************* v1.0 ************** */
 async function test3_game() {
 	DA.pollCounter = 0;

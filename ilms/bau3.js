@@ -4,7 +4,8 @@ async function tablePresent(tData) {
   if (!o) { console.log('no table found!'); DA.state = 'no_table'; return; }
   console.log(o);
 
-	deepCompare(DA.tData, o.tData);
+	let changes = deepCompare(DA.tData, o.tData);
+  if (!changes) {console.log('not presenting!'); return;}
 
   let tid = o.tid;
   tData = o.tData;
