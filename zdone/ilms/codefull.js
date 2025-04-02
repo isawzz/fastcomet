@@ -1,40 +1,4 @@
 
-
-
-
-function MGet() { return lookup(M, [...arguments]); }
-function MGetGame(gamename) { return M.config.games[gamename]; }
-function MGetGameColor(gamename) { return MGetGame(gamename).color; }
-function MGetGameFriendly(gamename) { return MGetGame(gamename).friendly; }
-function MGetGameOptions(gamename) { return MGetGame(gamename).options; }
-function MGetGamePlayerOptions(gamename) { return MGetGame(gamename).ploptions; }
-function MGetGamePlayerOptionsAsDict(gamename) { return valf(MGetGamePlayerOptions(gamename), {}); }
-function MGetTables() { return M.tables; }
-function MGetUser(uname) { return M.users[uname]; }
-function MGetUserColor(uname) { return MGetUser(uname).color; }
-function MGetUserOptionsForGame(name, gamename) { return lookup(M.users, [name, 'games', gamename]); }
-function MTGetGameProp(prop) { return MGetGame(T.game)[prop]; }
-function TGetGameOption(prop) { return lookup(T, ['options', prop]); }
-function UGetName() { return U.name; }
-function _showYaml(o, title, dParent, styles = {}, opts = {}) {
-  o = toFlatObject(o);
-  mLinebreak(dParent);
-  let keys = Object.keys(o);
-  let grid = mGrid(keys.length, 2, dParent, styles);
-  mDom(grid, { 'grid-column': 'span 2', align: 'center', weight: 'bold' }, { html: title });
-  console.log('type', typeof o);
-  if (isList(o)) {
-    arrSort(o);
-    o.map((x, i) => { mDom(grid, { fg: 'red', align: 'right' }, { html: i }); mDom(grid, { maleft: 10 }, { html: x }); });
-  } else if (isDict(o)) {
-    keys.sort();
-    for (const k of keys) {
-      mDom(grid, { fg: 'red', align: 'right', w: '200' }, { html: k })
-      mDom(grid, { maleft: 10, w: '60%', align: '800' }, { html: o[k] });
-    }
-  }
-  return dParent;
-}
 async function actionLoadAll() {
   let action = await mPhpGetFile('zdata/action.txt');
   DA.action = null;
@@ -1416,34 +1380,6 @@ function createLineBetweenPoints(dboard, pointA, pointB, thickness = 10) {
     console.error(`Parent element with selector '${dboard}' not found.`);
   }
 }
-async function createOpenTable(gamename, players, options) {
-  let me = UGetName();
-  let playerNames = [me]; console.log('me', me)
-  assertion(me in players, "_createOpenTable without owner!!!!!")
-  for (const name in players) { addIf(playerNames, name); }
-  let table = {
-    status: 'open',
-    id: generateTableId(),
-    fen: null,
-    game: gamename,
-    owner: playerNames[0],
-    friendly: generateTableName(playerNames.length, []), //MGetTableNames()),
-    players,
-    playerNames: playerNames,
-    options
-  };
-  let tid = table.id;
-  let tData = table;
-  let res = await mPhpPost('game_user', { action: 'create', tid, tData });
-  if (res.tid) {
-    console.log("Game Creation:", res.tid);
-    return await tableGetDefault(res.tid);
-  } else {
-    console.log("Game Creation failed");
-    return null;
-  }
-  return table;
-}
 function createPanZoomCanvas(parentElement, src, wCanvas, hCanvas) {
   const canvas = document.createElement('canvas');
   canvas.width = wCanvas;
@@ -2025,11 +1961,6 @@ function fromNormalized(s, opts = {}) {
   let x = replaceAll(s, sep, ' ');
   let words = caps ? toWords(x).map(x => capitalize(x)).join(' ') : toWords(x).join(' ');
   return words;
-}
-async function gamePresent() {
-  console.log('polling!', DA.pollCounter);
-  DA.tData = await tableLoad();
-  console.log('', DA.pollCounter, 'PRESENT', DA.tid); //,DA.tData);
 }
 function generateTableId() { return rUniqueId('G', 12); }
 function generateTableName(n, existing) {
@@ -3388,7 +3319,7 @@ async function onclickOpenToJoinGame() {
   let options = collectOptions();
   let players = collectPlayers();
   mRemove('dGameMenu');
-  let t = await createOpenTable(DA.gamename, players, options);
+  let t = await tableCreate(DA.gamename, players, options);
 }
 function onclickPasteDetailObject(text, inputs, wIdeal, df, styles, opts) {
   function parseToInputs(o) {
@@ -4476,7 +4407,6 @@ async function showGameMenuPlayerDialog(name, shift = false) {
   else await setPlayerNotPlaying(allPlItem, gamename);
 }
 async function showGameOptions(dParent, gamename) {
-  console.log('HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
   let poss = MGetGameOptions(gamename); console.log('!!!', poss)
   if (nundef(poss)) return;
   for (const p in poss) {
@@ -4520,8 +4450,13 @@ function showGameover(table, dParent) {
   mButton('PLAY AGAIN', () => onclickStartTable(table.id), d, { className: 'button', fz: 24 });
 }
 async function showGames() {
-  let dParent = mBy('dGameList'); if (isdef(dParent)) { mClear(dParent); } else dParent = mDom('dMain', {}, { className: 'section', id: 'dGameList' });
-  mText(`<h2>start new game</h2>`, dParent, { maleft: 12 });
+  let dParent = mBy('dGameList');
+  if (isdef(dParent)) { mClear(dParent); }
+  else {
+    mClear('dMain');
+    dParent = mDom('dMain', {}, { className: 'section', id: 'dGameList' });
+  }
+  mText(`<h2>games</h2>`, dParent, { maleft: 12 });
   let d = mDom(dParent, { fg: 'white' }, { id: 'game_menu' }); mCenterCenterFlex(d); //mFlexWrap(d);
   let gamelist = 'accuse aristo bluff ferro fishgame fritz huti lacuna nations setgame sheriff spotit wise'; if (DA.TEST0) gamelist += ' a_game'; gamelist = toWords(gamelist);
   for (const gname of gamelist) {
@@ -4727,42 +4662,6 @@ async function showTable(id) {
   assertion(table.status == 'started', `showTable status ERROR ${table.status}`);
   await updateTestButtonsLogin(table.playerNames);
   func.activate(table, items);
-}
-async function showTables(from) {
-  let me = UGetName();
-  let tables = dict2list(await getTables()); console.log(tables);
-  tables.map(x => x.prior = x.status == 'open' ? 0 : x.turn.includes(me) ? 1 : x.playerNames.includes(me) ? 2 : 3);
-  sortBy(tables, 'prior');
-  let dParent = mBy('dTableList');
-  if (isdef(dParent)) { mClear(dParent); }
-  else dParent = mDom('dMain', {}, { className: 'section', id: 'dTableList' });
-  if (isEmpty(tables)) { mText('no active game tables', dParent); return []; }
-  tables.map(x => x.game_friendly = capitalize(MGetGameFriendly(x.game)));
-  mText(`<h2>game tables</h2>`, dParent, { maleft: 12 })
-  let t = UI.tables = mDataTable(tables, dParent, null, ['friendly', 'game_friendly', 'playerNames'], 'tables', false);
-  mTableCommandify(t.rowitems.filter(ri => ri.o.status != 'open'), {
-    0: (item, val) => hFunc(val, 'onclickTable', item.o.id, item.id),
-  });
-  mTableStylify(t.rowitems.filter(ri => ri.o.status == 'open'), { 0: { fg: 'blue' }, });
-  let d = iDiv(t);
-  for (const ri of t.rowitems) {
-    let r = iDiv(ri);
-    let id = ri.o.id;
-    if (ri.o.prior == 1) mDom(r, {}, { tag: 'td', html: getWaitingHtml(24) });
-    if (ri.o.status == 'open') {
-      let playerNames = ri.o.playerNames;
-      if (playerNames.includes(me)) {
-        if (ri.o.owner != me) {
-          let h1 = hFunc('leave', 'onclickLeaveTable', ri.o.id); let c = mAppend(r, mCreate('td')); c.innerHTML = h1;
-        }
-      } else {
-        let h1 = hFunc('join', 'onclickJoinTable', ri.o.id); let c = mAppend(r, mCreate('td')); c.innerHTML = h1;
-      }
-    }
-    if (ri.o.owner != me) continue;
-    let h = hFunc('delete', 'onclickDeleteTable', id); let c = mAppend(r, mCreate('td')); c.innerHTML = h;
-    if (ri.o.status == 'open') { let h1 = hFunc('start', 'onclickStartTable', id); let c1 = mAppend(r, mCreate('td')); c1.innerHTML = h1; }
-  }
 }
 function showText(dParent, text, bg = 'black') {
   return mDom(dParent, { align: 'center', wmin: 120, padding: 2, bg, fg: colorIdealText(bg) }, { html: text });
@@ -5060,22 +4959,8 @@ async function switchToUser(username) {
   localStorage.setItem('username', username);
   setTheme(U);
 }
-async function tableCreate(player, tData) {
-  if (nundef(player)) player = UGetName();
-  if (nundef(tData)) tData = { players: ['felix', 'amanda'], status: 'open' };
-  let tid = generateTableName(tData.players.length, M.tables);
-  tData.id = tid;
-  let res = await mPhpPost('game_user', { action: 'create', tid, tData });
-  if (res.tid) {
-    console.log("Game Creation:", res.tid);
-    return await tableGetDefault(res.tid);
-  } else {
-    console.log("Game Creation failed");
-    return null;
-  }
-}
 async function tableGetDefault(tid = null, tData = null) {
-  if (nundef(tid)) tid = valf(DA.tid, localStorage.getItem('tid'), arrLast(M.tables));
+  if (nundef(tid)) tid = valf(DA.tid, localStorage.getItem('tid'), arrLast(Object.keys(M.tables)));
   if (nundef(tid)) return null;
   if (nundef(tData)) { tData = valf(DA.tData, await loadStaticYaml(`y/tables/${tid}.yaml`)); }
   [DA.tid, DA.tData] = [tid, tData];
@@ -5088,38 +4973,15 @@ async function tableLoad(tid) {
   let tData = o.tData;
   console.log('table loaded', tData);
   localStorage.setItem('tid', tid);
-  addIf(M.tables, tid);
+  M.tables[tid] = tData;
   return tData;
-}
-async function tablePresent(tData) {
-  let o = await tableGetDefault(null, tData);
-  if (!o) { console.log('no table found!'); return; }
-  console.log(o)
-  let tid = o.tid;
-  tData = o.tData;
-  let title = fromNormalized(tid);
-  mClear('dTopLeft');
-  mDom('dTopLeft', { family: 'algerian', maleft: 10 }, { html: title });
-  mClear('dMain')
-  mDom('dMain', {}, { tag: 'pre', html: jsonToYaml(tData) });
 }
 async function tablesDeleteAll() {
   await mPhpGet('delete_dir', { dir: 'tables' });
   DA.tid = null;
   DA.tData = null;
   localStorage.removeItem('tid');
-  M.tables = [];
-  mClear('dMain');
-  mClear('dTopLeft');
-  console.log('all tables deleted!');
-}
-async function tablesList() {
-  let files = await mPhpGetFiles('tables'); //console.log('files', files); return;
-  await showTables(files.map(x => x.split('.')[0])); return;
-  DA.tid = null;
-  DA.tData = null;
-  localStorage.removeItem('tid');
-  M.tables = [];
+  M.tables = {};
   mClear('dMain');
   mClear('dTopLeft');
   console.log('all tables deleted!');
@@ -5536,4 +5398,6 @@ function valf() {
   for (const arg of arguments) if (isdef(arg)) return arg;
   return null;
 }
+
+
 

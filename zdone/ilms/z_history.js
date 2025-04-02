@@ -1,4 +1,132 @@
 
+function onPoll() {
+	console.log('', DA.pollCounter++, 'polling', DA.state);
+	switch (DA.state) {
+		case 'table_started':
+		case 'table_clicked':
+		case 'table_created': break;
+		case 'table_running': if (tableHasChanged()) tablePresent(); pollStart(); break;
+		case 'no_table':
+		case 'table_left':
+		case 'table_paused':
+		case 'table_ended':
+		case 'table_joined': break;
+		default: pollStop(); break;
+	}
+}
+function _showYaml(o, title, dParent, styles = {}, opts = {}) {
+	o = toFlatObject(o);
+	//addKeys({rounding: 8, padding: 4, w:200, h:70}, styles);
+	mLinebreak(dParent);
+	let keys = Object.keys(o);
+	let grid = mGrid(keys.length, 2, dParent, styles); //, { wcols: 'auto' });
+	mDom(grid, { 'grid-column': 'span 2', align: 'center', weight: 'bold' }, { html: title });
+	//mDom(grid, {}, { html: '&nbsp;' });
+	//let cellStyles = { hpadding: 4 };
+	console.log('type', typeof o);
+	if (isList(o)) {
+		arrSort(o);
+		o.map((x, i) => { mDom(grid, { fg: 'red', align: 'right' }, { html: i }); mDom(grid, { maleft: 10 }, { html: x }); });
+	} else if (isDict(o)) {
+		keys.sort();
+		for (const k of keys) {
+			// mDom(grid, { fg: 'red', align: 'right', w:'30%' }, { html: k })
+			// mDom(grid, { maleft: 10, w:'60%', align:'left' }, { html: o[k] });
+			mDom(grid, { fg: 'red', align: 'right', w:'200' }, { html: k })
+			mDom(grid, { maleft: 10, w:'60%', align:'800' }, { html: o[k] });
+		}
+	}
+	return dParent;
+}
+async function _showTables(files) {
+	mClear('dMain');
+	let d = mDom('dMain'); mCenterCenterFlex(d); mFlexWrap(d);
+	M.tables = await getTables();
+	for(const id in M.tables){
+		let t = M.tables[id];
+		showYaml(t, fromNormalized(id), d, { bg: 'black', fg: 'white', rounding: 10, padding: 10, margin: 10, w100:true });
+		//mDom('dMain',{},{tag:'pre',html:mYaml(t)});
+
+	}
+}
+async function showTables(from) {
+  let me = UGetName();
+  let tables = dict2list(await getTables()); console.log(tables);
+  tables.map(x => x.prior = x.status == 'open' ? 0 : x.turn.includes(me) ? 1 : x.playerNames.includes(me) ? 2 : 3);
+  sortBy(tables, 'prior');
+  let dParent = mBy('dTableList');
+  if (isdef(dParent)) { mClear(dParent); }
+  else dParent = mDom('dMain', {}, { className: 'section', id: 'dTableList' });
+  if (isEmpty(tables)) { mText('no active game tables', dParent); return []; }
+  tables.map(x => x.game_friendly = capitalize(MGetGameFriendly(x.game)));
+  mText(`<h2>game tables</h2>`, dParent, { maleft: 12 })
+  let t = UI.tables = mDataTable(tables, dParent, null, ['friendly', 'game_friendly', 'playerNames'], 'tables', false);
+  mTableCommandify(t.rowitems.filter(ri => ri.o.status != 'open'), {
+    0: (item, val) => hFunc(val, 'onclickTable', item.o.id, item.id),
+  });
+  mTableStylify(t.rowitems.filter(ri => ri.o.status == 'open'), { 0: { fg: 'blue' }, });
+  let d = iDiv(t);
+  for (const ri of t.rowitems) {
+    let r = iDiv(ri);
+    let id = ri.o.id;
+    if (ri.o.prior == 1) mDom(r, {}, { tag: 'td', html: getWaitingHtml(24) });
+    if (ri.o.status == 'open') {
+      let playerNames = ri.o.playerNames;
+      if (playerNames.includes(me)) {
+        if (ri.o.owner != me) {
+          let h1 = hFunc('leave', 'onclickLeaveTable', ri.o.id); let c = mAppend(r, mCreate('td')); c.innerHTML = h1;
+        }
+      } else {
+        let h1 = hFunc('join', 'onclickJoinTable', ri.o.id); let c = mAppend(r, mCreate('td')); c.innerHTML = h1;
+      }
+    }
+    if (ri.o.owner != me) continue;
+    let h = hFunc('delete', 'onclickDeleteTable', id); let c = mAppend(r, mCreate('td')); c.innerHTML = h;
+    if (ri.o.status == 'open') { let h1 = hFunc('start', 'onclickStartTable', id); let c1 = mAppend(r, mCreate('td')); c1.innerHTML = h1; }
+  }
+}
+async function gamePresent() {
+  console.log('polling!', DA.pollCounter);
+  DA.tData = await tableLoad();
+  console.log('', DA.pollCounter, 'PRESENT', DA.tid); //,DA.tData);
+}
+
+async function tableCreate(player, tData) {
+  if (nundef(player)) player = UGetName();
+  if (nundef(tData)) tData = { players: ['felix', 'amanda'], status: 'open' };
+  let tid = generateTableName(tData.players.length, M.tables);
+  tData.id = tid;
+  let res = await mPhpPost('game_user', { action: 'create', tid, tData });
+  if (res.tid) {
+    console.log("Game Creation:", res.tid);
+    return await tableGetDefault(res.tid);
+  } else {
+    console.log("Game Creation failed");
+    return null;
+  }
+}
+
+function _showYaml(o, title, dParent, styles = {}, opts = {}) {
+  o = toFlatObject(o);
+  mLinebreak(dParent);
+  let keys = Object.keys(o);
+  let grid = mGrid(keys.length, 2, dParent, styles);
+  mDom(grid, { 'grid-column': 'span 2', align: 'center', weight: 'bold' }, { html: title });
+  console.log('type', typeof o);
+  if (isList(o)) {
+    arrSort(o);
+    o.map((x, i) => { mDom(grid, { fg: 'red', align: 'right' }, { html: i }); mDom(grid, { maleft: 10 }, { html: x }); });
+  } else if (isDict(o)) {
+    keys.sort();
+    for (const k of keys) {
+      mDom(grid, { fg: 'red', align: 'right', w: '200' }, { html: k })
+      mDom(grid, { maleft: 10, w: '60%', align: '800' }, { html: o[k] });
+    }
+  }
+  return dParent;
+}
+
+
 //#region games: orig vs alternative
 function UGetName() { return U.name; }
 function MGetUserColor(uname) { return Serverdata.users[uname].color; }

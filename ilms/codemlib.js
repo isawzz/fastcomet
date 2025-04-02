@@ -732,10 +732,10 @@ async function mPhpPost(cmd, o, projectName = 'ilms', verbose = false, jsonResul
     return isString(text) ? text : e;
   }
 }
-async function mPhpPostAudio(url, path, projectName='ilms', verbose=true) { return await mPhpPost('dl', { url, path }); }
-async function mPhpPostFile(text, path, projectName='ilms', verbose=true) { return await mPhpPost('write_file', { text, path },projectName, verbose); }
-async function mPhpPostLine(line, path, projectName='ilms', verbose=true) { return await mPhpPost('append_action', { line, path }, false); }
-async function mPhpPostText(text, path, projectName='ilms', verbose=true) { return await mPhpPost('append_text', { text, path }, false); }
+async function mPhpPostAudio(url, path, projectName = 'ilms', verbose = true) { return await mPhpPost('dl', { url, path }); }
+async function mPhpPostFile(text, path, projectName = 'ilms', verbose = true) { return await mPhpPost('write_file', { text, path }, projectName, verbose); }
+async function mPhpPostLine(line, path, projectName = 'ilms', verbose = true) { return await mPhpPost('append_action', { line, path }, false); }
+async function mPhpPostText(text, path, projectName = 'ilms', verbose = true) { return await mPhpPost('append_text', { text, path }, false); }
 function mPickOneOfGrid(dParent, styles = {}, opts = {}) {
   let d0 = mDom(dParent, dictMerge(styles, { gap: 6 }), opts);
   mGrid(d0);
@@ -1067,4 +1067,3 @@ function mYaml(d, js) {
 function mYesNo(dParent, styles = {}, opts = {}) {
   return mSelect(dParent, styles, dictMerge(opts, { list: ['yes', 'no'] }));
 }
-

@@ -1,4 +1,5 @@
 
+
 function mAlign(d, da, opts) {
   if (mGetStyle(d, 'display') != 'inline-block') {
     let parent = d.parentNode;
@@ -1067,4 +1068,6 @@ function mYaml(d, js) {
 function mYesNo(dParent, styles = {}, opts = {}) {
   return mSelect(dParent, styles, dictMerge(opts, { list: ['yes', 'no'] }));
 }
+
+
 

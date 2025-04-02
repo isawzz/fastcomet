@@ -12,7 +12,7 @@ async function test4_game0() {
 	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul']; let d = mBy('dExtraRight');
 	for (const name of names) { let b = mDom(d, { className: 'button' }, { tag: 'button', html: name, onclick: async () => await switchToUser(name) }); }
 
-	let username = localStorage.getItem('username') ?? 'hans'; if (username == 'felix') username = 'amanda'; else username = 'felix';
+	let username = localStorage.getItem('username') ?? 'hans'; if (username == 'felix') username = 'mimi'; else username = 'felix';
 	await switchToUser(username);
 
 	//testbuttons

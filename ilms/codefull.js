@@ -1,5 +1,4 @@
 
-
 async function actionLoadAll() {
   let action = await mPhpGetFile('zdata/action.txt');
   DA.action = null;
@@ -1512,6 +1511,26 @@ function createStopwatch(elem) {
   updateDisplay();
   return { elem, start, stop, toggle, getElapsed, getStatus, reset };
 }
+function deepCompare(obj1, obj2) {
+  if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null) {
+    return obj1 === obj2 ? null : { oldValue: obj1, newValue: obj2 };
+  }
+  const changes = {};
+  for (let key in obj1) {
+    if (obj1.hasOwnProperty(key)) {
+      const nestedChanges = deepCompare(obj1[key], obj2[key]);
+      if (nestedChanges !== null) {
+        changes[key] = nestedChanges;
+      }
+    }
+  }
+  for (let key in obj2) {
+    if (obj2.hasOwnProperty(key) && !obj1.hasOwnProperty(key)) {
+      changes[key] = { oldValue: undefined, newValue: obj2[key] };
+    }
+  }
+  return Object.keys(changes).length > 0 ? changes : null;
+}
 function detectSessionType() {
   let loc = window.location.href;
   DA.sessionType =
@@ -2558,6 +2577,13 @@ function hToggleClassMenu(ev) {
   mClass(elem, 'active');
   return [prev, elem];
 }
+function handleVisibilityChange() {
+  if (document.visibilityState === "hidden") {
+    pollStop();
+  } else {
+    pollStart();
+  }
+}
 function hexBoardCenters(topside, side) {
   if (nundef(topside)) topside = 4;
   if (nundef(side)) side = topside;
@@ -2968,6 +2994,15 @@ function onMouseMoveLine(ev) {
       mStyle(iDiv(line), { opacity: .1, bg: 'white' });
     }
   });
+}
+function onPoll() {
+  console.log('', DA.pollCounter++, 'polling', DA.state);
+  switch (DA.state) {
+    case 'play': tablePresent(); break;
+    case 'no_table': showMessage('No table present!');
+    case 'pause':
+    default: pollStop(); break;
+  }
 }
 async function onchangeAutoSwitch() {
   if (DA.autoSwitch === true) {
@@ -3841,14 +3876,13 @@ function parseDate(dateStr) {
   const [month, day, year] = dateStr.split('/').map(Number);
   return new Date(year, month - 1, day);
 }
-function pollStart(ms = 10) {
-  console.log('', ++DA.pollCounter, '...poll in', ms, 'secs')
-  TO.poll = setTimeout(gamePresent, ms)
+function pollResume(ms) { }
+function pollStart(ms = 1000) {
+  if (!TO.poll) TO.poll = setInterval(onPoll, ms);
 }
 function pollStop() {
-  if (nundef(TO.poll)) { console.log('nothing active!'); return; }
-  console.log('', DA.pollCounter, 'pollStop');
-  clearTimeout(TO.poll);
+  clearInterval(TO.poll);
+  TO.poll = null;
 }
 async function postUsers() {
   let users = jsonToYaml(M.users);
@@ -4452,13 +4486,13 @@ function showGameover(table, dParent) {
   mButton('PLAY AGAIN', () => onclickStartTable(table.id), d, { className: 'button', fz: 24 });
 }
 async function showGames() {
-  let dParent = mBy('dGameList'); 
-  if (isdef(dParent)) { mClear(dParent); } 
+  let dParent = mBy('dGameList');
+  if (isdef(dParent)) { mClear(dParent); }
   else {
     mClear('dMain');
     dParent = mDom('dMain', {}, { className: 'section', id: 'dGameList' });
   }
-  mText(`<h2>start new game</h2>`, dParent, { maleft: 12 });
+  mText(`<h2>games</h2>`, dParent, { maleft: 12 });
   let d = mDom(dParent, { fg: 'white' }, { id: 'game_menu' }); mCenterCenterFlex(d); //mFlexWrap(d);
   let gamelist = 'accuse aristo bluff ferro fishgame fritz huti lacuna nations setgame sheriff spotit wise'; if (DA.TEST0) gamelist += ' a_game'; gamelist = toWords(gamelist);
   for (const gname of gamelist) {
@@ -4665,9 +4699,9 @@ async function showTable(id) {
   await updateTestButtonsLogin(table.playerNames);
   func.activate(table, items);
 }
-async function showTables(from) {
+async function showTables() {
   let me = UGetName();
-  let tables = dict2list(await getTables()); console.log(tables);
+  let tables = dict2list(M.tables);
   tables.map(x => x.prior = x.status == 'open' ? 0 : x.turn.includes(me) ? 1 : x.playerNames.includes(me) ? 2 : 3);
   sortBy(tables, 'prior');
   let dParent = mBy('dTableList');
@@ -4675,7 +4709,7 @@ async function showTables(from) {
   else dParent = mDom('dMain', {}, { className: 'section', id: 'dTableList' });
   if (isEmpty(tables)) { mText('no active game tables', dParent); return []; }
   tables.map(x => x.game_friendly = capitalize(MGetGameFriendly(x.game)));
-  mText(`<h2>game tables</h2>`, dParent, { maleft: 12 })
+  mText(`<h2>tables</h2>`, dParent, { maleft: 12 })
   let t = UI.tables = mDataTable(tables, dParent, null, ['friendly', 'game_friendly', 'playerNames'], 'tables', false);
   mTableCommandify(t.rowitems.filter(ri => ri.o.status != 'open'), {
     0: (item, val) => hFunc(val, 'onclickTable', item.o.id, item.id),
@@ -4997,12 +5031,46 @@ async function switchToUser(username) {
   localStorage.setItem('username', username);
   setTheme(U);
 }
+async function tableCreate(gamename, players, options) {
+  if (nundef(gamename)) gamename = "setgame";
+  if (nundef(players)) players = { mimi: userToPlayer('mimi', gamename), felix: userToPlayer('felix', gamename), amanda: userToPlayer('amanda', gamename) };
+  if (nundef(options)) options = MGetGameOptions(gamename);
+  console.log('tableCreate', gamename, players, options);
+  let me = UGetName();
+  let playerNames = [me]; console.log('me', me)
+  assertion(me in players, "_createOpenTable without owner!!!!!")
+  for (const name in players) { addIf(playerNames, name); }
+  let table = {
+    status: 'open',
+    id: generateTableId(),
+    fen: null,
+    game: gamename,
+    owner: playerNames[0],
+    friendly: generateTableName(playerNames.length, []), //MGetTableNames()),
+    players,
+    playerNames: playerNames,
+    options
+  };
+  let tid = table.id;
+  let tData = table;
+  let res = await mPhpPost('game_user', { action: 'create', tid, tData });
+  if (res.tid) {
+    console.log("Game Creation:", res.tid);
+    let data = await tableGetDefault(res.tid); console.log(data);
+  } else {
+    console.log("Game Creation failed");
+    return null;
+  }
+  return table;
+}
 async function tableGetDefault(tid = null, tData = null) {
   if (nundef(tid)) tid = valf(DA.tid, localStorage.getItem('tid'), arrLast(Object.keys(M.tables)));
   if (nundef(tid)) return null;
   if (nundef(tData)) { tData = valf(DA.tData, await loadStaticYaml(`y/tables/${tid}.yaml`)); }
   [DA.tid, DA.tData] = [tid, tData];
   return tData ? { tid, tData } : null;
+}
+async function tableHasChanged() {
 }
 async function tableLoad(tid) {
   let o = await tableGetDefault(tid);
@@ -5011,20 +5079,41 @@ async function tableLoad(tid) {
   let tData = o.tData;
   console.log('table loaded', tData);
   localStorage.setItem('tid', tid);
-  addIf(M.tables, tid);
+  M.tables[tid] = tData;
   return tData;
+}
+async function tablePause() {
+  DA.state = "pause";
+}
+async function tablePlay() {
+  DA.state = "play"; pollStart();
+}
+async function tablePresent(tData) {
+  let o = await tableGetDefault(null, tData);
+  if (!o) { console.log('no table found!'); DA.state = 'no_table'; return; }
+  console.log(o);
+  let changes = deepCompare(DA.tData, o.tData);
+  if (!changes) { console.log('not presenting!'); return; }
+  let tid = o.tid;
+  tData = o.tData;
+  let title = fromNormalized(tid);
+  mClear('dTopLeft');
+  mDom('dTopLeft', { family: 'algerian', maleft: 10 }, { html: title });
+  mClear('dMain')
+  mDom('dMain', {}, { tag: 'pre', html: jsonToYaml(tData) });
 }
 async function tablesDeleteAll() {
   await mPhpGet('delete_dir', { dir: 'tables' });
   DA.tid = null;
   DA.tData = null;
   localStorage.removeItem('tid');
-  M.tables = [];
+  M.tables = {};
   mClear('dMain');
   mClear('dTopLeft');
   console.log('all tables deleted!');
 }
 async function tablesList() {
+  await showTables(); return;
   let files = await mPhpGetFiles('tables'); //console.log('files', files); return;
   await showTables(files.map(x => x.split('.')[0])); return;
   DA.tid = null;
@@ -5447,4 +5536,3 @@ function valf() {
   for (const arg of arguments) if (isdef(arg)) return arg;
   return null;
 }
-

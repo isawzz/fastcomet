@@ -133,10 +133,13 @@ button:active {
 .section {
   border-radius: 10px;
   border: 2px silver solid;
-  background-color: #f0f0f090;
+  background-color: #f0f0f0d0;
+  color: #111;
+  font-size: 24px;
   margin: 10px;
   padding: 10px;
   box-sizing: border-box;
+  width: 100%;
   /* transition: all 0.5s ease-in-out; */
 }
 
