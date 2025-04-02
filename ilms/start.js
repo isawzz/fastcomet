@@ -8,7 +8,6 @@ async function test4_game0() {
 	await loadAssetsStatic(); //console.log('tables', M.tables); return;
 	await loadTables();
 	let elems = mLayoutTM('dPage'); mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain'); mLayoutTopExtraSpaceBetween('dTop'); mFlexV('dTop'); //mStyle('dTop', { hmin: 32 }); mStyle('dExtra', { hmin: 32 })
-
 	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul']; let d = mBy('dExtraRight');
 	for (const name of names) { let b = mDom(d, { className: 'button' }, { tag: 'button', html: name, onclick: async () => await switchToUser(name) }); }
 
@@ -36,7 +35,6 @@ async function test4_game0() {
 	document.addEventListener("visibilitychange", handleVisibilityChange);
 	//await showGames();
 	//await showGameMenu('setgame');
-
 }
 async function test4_compare() {
 
