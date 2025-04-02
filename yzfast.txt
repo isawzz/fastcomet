@@ -1,6 +1,10 @@
 alles ist fuer immer ok - I have left this plane.
 
-___ 6:37 AM 4/1/2025 airport lib 15.4. 16000ah 
+___ 6:30 AM 4/2/2025 airport lib 15.4. 17000
+6:31 AM 4/2/2025
+7:44 AM 4/2/2025
+ich brauch die table styles! 
+___ 6:37 AM 4/1/2025 airport lib 15.4. 16000 
 6:38 AM 4/1/2025
 states! DA.state
 no_table: do not poll
