@@ -1,13 +1,16 @@
 alles ist fuer immer ok - I have left this plane.
 
 ___ 6:33 AM 4/3/2025 airport lib 15.4. 17000
-
-___ 6:30 AM 4/2/2025 airport lib 15.4. 17000
-- in das wagerl alles reingeben, dann nur klo und zeug nehmen
-7:44 AM 4/2/2025
-ich brauch die table styles! 
-6:31 AM 4/2/2025
+=>consolidate php files!!!
+8:02 AM 4/3/2025
+- shortinfo veraendert sich bei tableCreate und tablesDelete
+(tableDelete)
+6:33 AM 4/3/2025
 - first time muss table presented werden bei onPlay
+___ 6:30 AM 4/2/2025 airport lib 15.4. 17000
+7:44 AM 4/2/2025
+ok - ich brauch die table styles! 
+6:31 AM 4/2/2025
 ___ 6:37 AM 4/1/2025 airport lib 15.4. 16000 
 6:38 AM 4/1/2025
 states! DA.state
