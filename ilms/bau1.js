@@ -1,4 +1,15 @@
 
+function pollResume(ms) { }
+async function pollStart(ms = 1000) {
+  clearTimeout(TO.poll);
+  await mSleep(500);
+  TO.poll = setInterval(onPoll, ms);
+}
+function pollStop() {
+  clearInterval(TO.poll);
+  TO.poll = null;
+}
+
 async function showTables() {
   let me = UGetName();
   let tables = dict2list(M.tables);

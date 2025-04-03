@@ -1,0 +1,39 @@
+status: open
+id: G9cjORoMe4npd
+fen: null
+game: setgame
+owner: felix
+friendly: tournament_of_Episkopi
+players:
+  mimi:
+    name: mimi
+    color: '#ffe4e1'
+    texture: ../assets/textures/marble_rosa.jpeg
+    blendMode: normal
+    imgKey: mimi
+    level: 1
+    playmode: human
+  felix:
+    name: felix
+    color: '#0e1e76'
+    texture: ../assets/textures/marble_meer1.jpg
+    blendMode: normal
+    imgKey: felix
+    level: 4
+    playmode: human
+  amanda:
+    name: amanda
+    color: '#046307'
+    texture: ../assets/textures/wall1.jpg
+    blendMode: overlay
+    imgKey: amanda
+    level: 2
+    playmode: human
+playerNames:
+  - felix
+  - mimi
+  - amanda
+options:
+  use_level: 'no,yes'
+  numCards: '6,9,15,12'
+  gamemode: 'solo,multi'

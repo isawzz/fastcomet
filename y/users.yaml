@@ -15,7 +15,7 @@ annabel:
   imgKey: annabel
   games:
     setgame:
-      level: 7
+      level: 3
 diana:
   name: diana
   color: '#4c2882'

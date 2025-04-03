@@ -2528,6 +2528,7 @@ function getRelCoords(ev, elem) {
   return { x: x, y: y };
 }
 function getStyleProp(elem, prop) { return getComputedStyle(elem).getPropertyValue(prop); }
+
 async function getTables() {
   let files = await mPhpGetFiles('tables'); //console.log('files', files);
   M.tableFilenames = files.map(x => x.split('.')[0]);
@@ -2917,12 +2918,6 @@ function measureText(text, styles = {}, cx = null) {
   cx.font = isdef(styles.font) ? styles.font : `${styles.fz}px ${styles.family}`;
   var metrics = cx.measureText(text);
   return [metrics.width, metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent];
-}
-async function myAsync(ms, func) {
-  pollStop();
-  let args = [...arguments].slice(2);
-  let res = await func(...args);
-  pollStart(ms);
 }
 function normalizeString(s, opts = {}) {
   let sep = valf(opts.sep, '_');
@@ -3548,14 +3543,6 @@ async function onclickStartGame() {
   let players = collectPlayers();
   await startGame(DA.gamename, players, options);
 }
-async function onclickStartTable(id) {
-  let table = Serverdata.tables.find(x => x.id == id);
-  if (nundef(table)) table = await mGetRoute('table', { id });
-  if (!table) { showMessage('table deleted!'); return await showTables('showTable'); }
-  console.log('table', jsCopy(table));
-  table = setTableToStarted(table);
-  let res = await mPostRoute('postTable', table);
-}
 function onclickStopwatch(ev) {
   let [prevElem, elem] = hToggleClassMenu(ev);
   if (prevElem == elem) return;
@@ -3867,14 +3854,6 @@ function parseDate(dateStr) {
   const [month, day, year] = dateStr.split('/').map(Number);
   return new Date(year, month - 1, day);
 }
-function pollResume(ms) { }
-function pollStart(ms = 1000) {
-  if (!TO.poll) TO.poll = setInterval(onPoll, ms);
-}
-function pollStop() {
-  clearInterval(TO.poll);
-  TO.poll = null;
-}
 async function postUsers() {
   let users = jsonToYaml(M.users);
   let res = await mPhpPost('game_user', { action: 'savey', file: 'users', o: M.users });//mPhpPost('game_user',users, 'users');
@@ -3992,7 +3971,7 @@ function renderBoard() {
   });
 }
 function replaceAll(str, search, replacement) {
-  console.log(str, search, replacement)
+  //console.log(str, search, replacement)
   return str.split(search).join(replacement);
 }
 function replaceElement(elem, newElem) {
@@ -4053,12 +4032,12 @@ async function saveAndUpdatePlayerOptions(allPl, gamename) {
   let changed = false;
   for (const p in poss) {
     if (p == 'playmode') continue;
-    if (oldOpts[p] != opts[p]) { changed = true; break; }
+    if (oldOpts[p] != opts[p]) { console.log('change:',p,oldOpts[p],opts[p]); changed = true; break; }
   }
   if (changed) {
     let games = valf(MGetUser(name).games, {});
     games[gamename] = opts;
-    let res = await postUsers(); console.log(M.users);
+    let res = await postUsers(); //console.log(M.users);
   }
 }
 async function saveDataFromPlayerOptionsUI(gamename) {
@@ -4091,7 +4070,7 @@ function setDropPosition(ev, elem, targetElem, dropPos) {
   }
 }
 async function setPlayerNotPlaying(item, gamename) {
-  console.log(item, gamename);
+  //console.log(item, gamename);
   await saveDataFromPlayerOptionsUI(gamename);
   removeInPlace(DA.playerList, item.name);
   mRemoveIfExists('dPlayerOptions');
@@ -4433,8 +4412,7 @@ async function showGameMenuPlayerDialog(name, shift = false) {
   else await setPlayerNotPlaying(allPlItem, gamename);
 }
 async function showGameOptions(dParent, gamename) {
-  console.log('HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-  let poss = MGetGameOptions(gamename); console.log('!!!', poss)
+  let poss = MGetGameOptions(gamename); //console.log('!!!', poss)
   if (nundef(poss)) return;
   for (const p in poss) {
     let key = p;
@@ -4485,7 +4463,7 @@ async function showGames() {
   }
   mText(`<h2>games</h2>`, dParent, { maleft: 12 });
   let d = mDom(dParent, { fg: 'white' }, { id: 'game_menu' }); mCenterCenterFlex(d); //mFlexWrap(d);
-  let gamelist = 'accuse aristo bluff ferro fishgame fritz huti lacuna nations setgame sheriff spotit wise'; if (DA.TEST0) gamelist += ' a_game'; gamelist = toWords(gamelist);
+  let gamelist = DA.gamelist; 
   for (const gname of gamelist) {
     let g = MGetGame(gname);
     let bg = g.color;
@@ -5011,7 +4989,9 @@ async function tableCreate(gamename, players, options) {
   let res = await mPhpPost('game_user', { action: 'create', tid, tData });
   if (res.tid) {
     console.log("Game Creation:", res.tid);
-    let data = await tableGetDefault(res.tid); console.log(data);
+    let data = M.tables[tid] = await tableGetDefault(res.tid); console.log(data);
+    M.tableFilenames.push(tid);
+    DA.tid=tid;DA.tData=tData;
   } else {
     console.log("Game Creation failed");
     return null;
@@ -5041,7 +5021,7 @@ async function tablePause() {
   DA.state = "pause";
 }
 async function tablePlay() {
-  DA.state = "play"; tablePresent(); pollStart();
+  DA.state = "play"; tablePresent(); pollStart(4000);
 }
 async function tablesDeleteAll() {
   await mPhpGet('delete_dir', { dir: 'tables' });

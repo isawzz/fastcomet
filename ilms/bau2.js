@@ -14,4 +14,14 @@ async function onPoll() {
 		default: pollStop(); break;
 	}
 }
+function pollResume(ms) { }
+async function pollStart(ms = 1000) {
+  clearTimeout(TO.poll);
+  await mSleep(500);
+  TO.poll = setInterval(onPoll, ms);
+}
+function pollStop() {
+  clearInterval(TO.poll);
+  TO.poll = null;
+}
 
