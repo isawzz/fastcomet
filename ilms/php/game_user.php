@@ -46,6 +46,13 @@ if ($data['action'] === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
   exit;
 }
 
+if ($data['action'] === 'deletey' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $path = YDIR . $data['file'] . '.yaml';
+    unlink($path);
+    echo json_encode(["path" => $path, "code" => 'deleted']);
+    exit;
+}
+
 if ($data['action'] === 'test_array' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $arr = ["users" => 1]; //, "typeConfig" => ["a" => "du"], "parsedData" => "wer", "typeParse" => "hallo"];
     arrayToYamlFile($arr, "hallo.yaml");

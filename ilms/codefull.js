@@ -2579,10 +2579,11 @@ function hToggleClassMenu(ev) {
   return [prev, elem];
 }
 function handleVisibilityChange() {
+  if (DA.polling == false) return;
   if (document.visibilityState === "hidden") {
     pollStop();
   } else {
-    pollStart();
+    pollResume();
   }
 }
 function hexBoardCenters(topside, side) {
@@ -3185,9 +3186,6 @@ async function onclickDeleteSelected() {
   await loadAssets();
   collPostReload();
 }
-async function onclickDeleteTable(id) {
-  let res = await mPostRoute('deleteTable', { id });
-}
 async function onclickEditDetails() {
   let key = UI.selectedImages[0];
   let cmd = UI.commands.simpleNew;
@@ -3213,24 +3211,6 @@ async function onclickHomeNew() {
   mDom(dt, { w100: true, margin: 'auto' }, { tag: 'textarea', rows: 15 });
   let db = mDom(dt);
   mButton('Save', homeOnclickSaveBlog, db, {}, 'button');
-}
-async function onclickJoinTable(id) {
-  let table = Serverdata.tables.find(x => x.id == id);
-  let me = UGetName();
-  assertion(table.status == 'open', 'too late to join! game has already started!')
-  assertion(!table.playerNames.includes(me), `${me} already joined!!!`);
-  table.players[me] = createGamePlayer(me, table.game);
-  table.playerNames.push(me);
-  let res = await mPostRoute('postTable', { id, players: table.players, playerNames: table.playerNames });
-}
-async function onclickLeaveTable(id) {
-  let table = Serverdata.tables.find(x => x.id == id);
-  let me = UGetName();
-  assertion(table.status == 'open', 'too late to leave! game has already started!')
-  assertion(table.playerNames.includes(me), `${me} NOT in joined players!!!!`);
-  delete table.players[me];
-  removeInPlace(table.playerNames, me);
-  let res = await mPostRoute('postTable', { id, players: table.players, playerNames: table.playerNames });
 }
 function onclickMenu(ev) {
   let keys = evToAttr(ev, 'key');
@@ -3564,10 +3544,6 @@ function onclickStopwatch(ev) {
       DA.action = { elem: d1, key: action, status: 'started' };
     }
   }
-}
-async function onclickTable(id) {
-  Tid = id;
-  await switchToMainMenu('table');
 }
 async function onclickTableMenu() {
   let id = getTid();
@@ -4452,9 +4428,10 @@ function showGameover(table, dParent) {
   let d = showRibbon(dParent, msg);
   updateTestButtonsLogin(table.playerNames);
   mDom(d, { h: 12 }, { html: '<br>' })
-  mButton('PLAY AGAIN', () => onclickStartTable(table.id), d, { className: 'button', fz: 24 });
+  mButton('PLAY AGAIN', () => onclickTableStart(table.id), d, { className: 'button', fz: 24 });
 }
 async function showGames() {
+  DA.pollFunc = 'showGames';
   let dParent = mBy('dGameList');
   if (isdef(dParent)) { mClear(dParent); }
   else {
@@ -4648,25 +4625,6 @@ function showRibbon(dParent, msg) {
   let bg = `linear-gradient(270deg, #fffffd, #00000080)`
   d = mDom(dParent, { bg, mabottom: 10, align: 'center', vpadding: 10, fz: 30, w100: true }, { html: msg, id: 'ribbon' });
   return d;
-}
-async function showTable(id) {
-  let me = UGetName();
-  let table = await mGetRoute('table', { id });  //console.log('table',table)
-  if (!table) { showMessage('table deleted!'); return await showTables('showTable'); }
-  DA.Interrupt = true;
-  while (DA.LengthyProcessRunning === true) { await mSleep(100); }
-  DA.Interrupt = false;
-  let func = DA.funcs[table.game];
-  T = table;
-  clearMain(); mClassRemove('dExtra', 'p10hide');
-  showTitleGame(table);
-  if (func.hasInstruction) prepInstruction(table);
-  let items = func.present(table);
-  func.stats(table);
-  if (table.status == 'over') { showGameover(table, 'dTitle'); return; }
-  assertion(table.status == 'started', `showTable status ERROR ${table.status}`);
-  await updateTestButtonsLogin(table.playerNames);
-  func.activate(table, items);
 }
 function showText(dParent, text, bg = 'black') {
   return mDom(dParent, { align: 'center', wmin: 120, padding: 2, bg, fg: colorIdealText(bg) }, { html: text });
@@ -5017,30 +4975,12 @@ async function tableLoad(tid) {
   M.tables[tid] = tData;
   return tData;
 }
-async function tablePause() {
-  DA.state = "pause";
-}
-async function tablePlay() {
-  DA.state = "play"; tablePresent(); pollStart(4000);
-}
 async function tablesDeleteAll() {
   await mPhpGet('delete_dir', { dir: 'tables' });
   DA.tid = null;
   DA.tData = null;
   localStorage.removeItem('tid');
   M.tables = {};
-  mClear('dMain');
-  mClear('dTopLeft');
-  console.log('all tables deleted!');
-}
-async function tablesList() {
-  await showTables(); return;
-  let files = await mPhpGetFiles('tables'); //console.log('files', files); return;
-  await showTables(files.map(x => x.split('.')[0])); return;
-  DA.tid = null;
-  DA.tData = null;
-  localStorage.removeItem('tid');
-  M.tables = [];
   mClear('dMain');
   mClear('dTopLeft');
   console.log('all tables deleted!');

@@ -1,27 +1,18 @@
 
-async function onPoll() {
-	console.log('', DA.pollCounter++, 'polling', DA.state);
-	switch (DA.state) {
-		case 'play':
-			let o = await tableGetDefault(null, tData);
-			if (!o) { console.log('no table found!'); DA.state = 'no_table'; return; }
-			//console.log(o);
-			let changes = deepCompare(DA.tData, o.tData);
-			if (!changes) { console.log('not presenting!'); return; }
-			tablePresent(); break;
-		case 'no_table': showMessage('No table present!');
-		case 'pause':
-		default: pollStop(); break;
-	}
-}
-function pollResume(ms) { }
-async function pollStart(ms = 1000) {
-  clearTimeout(TO.poll);
-  await mSleep(500);
-  TO.poll = setInterval(onPoll, ms);
+async function pollResume(ms){
+	pollStop();
+	DA.polling = true;
+
+	let func = window[DA.pollFunc]; 
+	console.log('', DA.pollCounter++, func.name); 
+
+	let res = await func(); //console.log('res', res);	
+
+	TO.poll = setTimeout(pollResume,valf(ms,DA.pollms));
+
 }
 function pollStop() {
-  clearInterval(TO.poll);
-  TO.poll = null;
-}
+	if (TO.poll) { clearTimeout(TO.poll); TO.poll = null; }
+	DA.polling = false;
 
+}

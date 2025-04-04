@@ -12,38 +12,42 @@ async function test4_game0() {
 		DA.funcs[gname] = defaultGameFunc();
 	}
 
-	DA.pollCounter = 0;
 	await loadAssetsStatic(); //console.log('tables', M.tables); return;
 	await loadTables();
 	let elems = mLayoutTM('dPage'); mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain'); mLayoutTopExtraSpaceBetween('dTop'); mFlexV('dTop'); //mStyle('dTop', { hmin: 32 }); mStyle('dExtra', { hmin: 32 })
 	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul']; let d = mBy('dExtraRight');
 	for (const name of names) { let b = mDom(d, { className: 'button' }, { tag: 'button', html: name, onclick: async () => await switchToUser(name) }); }
 
-	let username = localStorage.getItem('username') ?? 'hans'; if (username == 'felix') username = 'mimi'; else username = 'felix';
+	//await mSleep(rNumber(0,2000));
+	let username = rChoose(names); //['felix','lauren','diana','mimi','amanda','guest','gul']); //localStorage.getItem('username') ?? 'hans'; 
+	//if (username == 'felix') username = 'mimi'; else { username = 'felix';}
 	await switchToUser(username);
 
 	//testbuttons
+	mDom(dExtraLeft, { className: 'button',bg:'green' }, { tag: 'button', html: 'POLL', onclick: pollResume });
+	mDom(dExtraLeft, { className: 'button',bg:'red' }, { tag: 'button', html: 'STOP', onclick: pollStop});
+
+	mDom(dExtraLeft, { w: 20, bg: 'green', opacity: 0, display: 'inline' }, { html: ' | ' });
+
 	mDom(dExtraLeft, { className: 'button', maleft: 10 }, { tag: 'button', html: 'create', onclick: async () => await tableCreate() });
-	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'load', onclick: async () => await tableLoad() });
-	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'present', onclick: async () => {let t=await tableLoad(); tablePresent(t); } });
-	mDom(dExtraLeft, { w: 20, bg: 'green', opacity: 0, display: 'inline' }, { html: ' | ' });
-	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'games', onclick: showGames });
-	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'tables', onclick: async () => await tablesList() });
 	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'delete', onclick: async () => await tablesDeleteAll() });
+	// mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'load', onclick: async () => await tableLoad() });
+	// mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'present', onclick: async () => {let t=await tableLoad(); tablePresent(t); } });
 	mDom(dExtraLeft, { w: 20, bg: 'green', opacity: 0, display: 'inline' }, { html: ' | ' });
-	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'play', onclick: async () => await tablePlay() });
-	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'pause', onclick: async () => await tablePause() });
 
-	//etzt muss ich die games presenten die es gibt
-	//tablesList();
-	await showTables();
-	//DA.state = 'no_table';
+	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'games', onclick: showGames });
+	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'tables', onclick: async () => await showTables() });
 
-	DA.state = 'slowpoll';
-	await pollStart(10000);
-	document.addEventListener("visibilitychange", handleVisibilityChange);
+	// await showTables();
 	//await showGames();
 	//await showGameMenu('setgame');
+
+  DA.pollFunc = 'showTables';
+	DA.pollms = 3000;
+	DA.pollCounter = 0;
+	DA.polling = false;
+	await pollResume();
+	document.addEventListener("visibilitychange", handleVisibilityChange);
 }
 async function test4_compare() {
 
