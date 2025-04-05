@@ -1,6 +1,14 @@
 alles ist fuer immer ok - I have left this plane.
 
+___ 5:00 AM 4/5/2025 airport lib 15.4. 19000
+5:50 AM 4/5/2025
+e 5-9,13h30-15
+5:37 AM 4/5/2025
+ich brauch ein dMessage und ein dTitle!
+5:00 AM 4/5/2025
+- showTable
 ___ 6:33 AM 4/3/2025 airport lib 15.4. 17000
+ diagnostik@autistenhilfe.at
 =>consolidate php files!!!
 8:02 AM 4/3/2025
 - shortinfo veraendert sich bei tableCreate und tablesDelete
