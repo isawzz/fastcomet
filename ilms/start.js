@@ -16,10 +16,10 @@ async function test4_game0() {
 	await loadTables();
 	let elems = mLayoutTM('dPage'); mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain'); 
 
-	mLayoutTopExtraMessageTitle('dTop'); mFlexV('dTop'); //mStyle('dTop', { hmin: 32 }); mStyle('dExtra', { hmin: 32 })
+	mLayoutTopTestExtraMessageTitle('dTop'); mFlexV('dTop'); //mStyle('dTop', { hmin: 32 }); mStyle('dExtra', { hmin: 32 })
 
 
-	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul']; let d = mBy('dExtraRight');
+	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul']; let d = mBy('dTestRight');
 	for (const name of names) { let b = mDom(d, { className: 'button' }, { tag: 'button', html: name, onclick: async () => await switchToUser(name) }); }
 
 	//await mSleep(rNumber(0,2000));
@@ -28,19 +28,20 @@ async function test4_game0() {
 	await switchToUser(username);
 
 	//testbuttons
-	mDom(dExtraLeft, { className: 'button',bg:'green' }, { tag: 'button', html: 'POLL', onclick: pollResume });
-	mDom(dExtraLeft, { className: 'button',bg:'red' }, { tag: 'button', html: 'STOP', onclick: pollStop});
+	d=mBy('dTestLeft');
+	mDom(d, { className: 'button',bg:'green' }, { tag: 'button', html: 'POLL', onclick: pollResume });
+	mDom(d, { className: 'button',bg:'red' }, { tag: 'button', html: 'STOP', onclick: pollStop});
 
-	mDom(dExtraLeft, { w: 20, bg: 'green', opacity: 0, display: 'inline' }, { html: ' | ' });
+	mDom(d, { w: 20, bg: 'green', opacity: 0, display: 'inline' }, { html: ' | ' });
 
-	//mDom(dExtraLeft, { className: 'button', maleft: 10 }, { tag: 'button', html: 'create', onclick: async () => await tableCreate() });
-	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'delete', onclick: async () => await tablesDeleteAll() });
-	// mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'load', onclick: async () => await tableLoad() });
-	// mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'present', onclick: async () => {let t=await tableLoad(); tablePresent(t); } });
-	mDom(dExtraLeft, { w: 20, bg: 'green', opacity: 0, display: 'inline' }, { html: ' | ' });
+	//mDom(d, { className: 'button', maleft: 10 }, { tag: 'button', html: 'create', onclick: async () => await tableCreate() });
+	mDom(d, { className: 'button' }, { tag: 'button', html: 'delete', onclick: async () => await tablesDeleteAll() });
+	// mDom(d, { className: 'button' }, { tag: 'button', html: 'load', onclick: async () => await tableLoad() });
+	// mDom(d, { className: 'button' }, { tag: 'button', html: 'present', onclick: async () => {let t=await tableLoad(); tablePresent(t); } });
+	mDom(d, { w: 20, bg: 'green', opacity: 0, display: 'inline' }, { html: ' | ' });
 
-	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'games', onclick: showGames });
-	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'tables', onclick: async () => await showTables() });
+	mDom(d, { className: 'button' }, { tag: 'button', html: 'games', onclick: showGames });
+	mDom(d, { className: 'button' }, { tag: 'button', html: 'tables', onclick: async () => await showTables() });
 
 	// await showTables();
 	//await showGames();

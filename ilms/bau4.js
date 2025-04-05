@@ -1,4 +1,45 @@
 
+async function uiTypePlayerStats(table, me, dParent, layout, styles = {}) {
+  let dOuter = mDom(dParent,{matop:8}); dOuter.setAttribute('inert', true); console.log(dOuter);
+  if (layout == 'rowflex') mStyle(dOuter, { display: 'flex', justify: 'center' });
+  else if (layout == 'col') mStyle(dOuter, { display: 'flex', dir: 'column' });
+  addKeys({ hmin:100, rounding: 10, bg: '#00000050', margin: 8, box: true, 'border-style': 'solid', 'border-width': 10 }, styles);
+  let show_first = me;
+  let order = arrCycle(table.plorder, table.plorder.indexOf(show_first));
+  let items = {};
+	//return items;
+  for (const name of order) {
+    let pl = table.players[name];
+    styles['border-color'] = 'red'; pl.color;
+    let d = mDom(dOuter, styles, { id: name2id(name) });
+    // let img = await showUserImage(name, d, 40); 
+    // mStyle(img, { box: true })
+    // items[name] = { div: d, img, name };
+  }
+  return items;
+}
+function playerStatCount(key, n, dParent, styles = {}, opts = {}) {
+	let sz = valf(styles.sz, 16);
+	addKeys({ display: 'flex', margin: 4, dir: 'column', hmax: 2 * sz, 'align-content': 'center', fz: sz, align: 'center' }, styles);
+	let d = mDiv(dParent, styles);
+	let o = M.superdi[key];
+
+	console.log('hallooooooooooooooooooo', typeof key, isFilename(key), isdef(o),'sz',sz)
+	// if (typeof key == 'function') key(d, { h: sz, hline: sz, w: '100%', fg: 'grey' });
+	// else if (isFilename(key)) mKey(key, d, { h: sz, hline: sz, w: '100%', fg: 'grey' }, opts);
+	// else if (isColor(key)) mDom(d, { bg: key, h: sz, fz: sz, w: '100%', fg: key }, { html: ' ' });
+	// else if (isdef(o)) mKey(key, d, { h: sz, hline: sz, w: '100%', fg: 'grey' }, opts);
+	// else mText(key, d, { h: sz, fz: sz, w: '100%' });
+
+	if (typeof key == 'function') key(d, { w: '100%', fg: 'grey' });
+	else if (isFilename(key)) mKey(key, d, { w: '100%', fg: 'grey' }, opts);
+	else if (isColor(key)) mDom(d, { bg: key, fz: sz, w: '100%', fg: key }, { html: ' ' });
+	else if (isdef(o)) mKey(key, d, { hmax:sz, w: '100%', fg: 'grey' }, opts);
+	else mText(key, d, { fz: sz, w: '100%' });
+	d.innerHTML += `<span ${isdef(opts.id) ? `id='${opts.id}'` : ''} style="font-weight:bold;color:inherit">${n}</span>`;
+	return d;
+}
+
 function clearEvents() {
 	for (const k in TO) { clearTimeout(TO[k]); TO[k] = null; }
 	for (const k in ANIM) { if (isdef(ANIM[k])) ANIM[k].cancel(); ANIM[k] = null; }

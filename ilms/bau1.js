@@ -25,8 +25,9 @@ async function showTable(id) {
   mClassRemove('dExtra', 'p10hide');
   showTitleGame(tData);
   if (func.hasInstruction) prepInstruction(tData);
-  let items = func.present(tData);
-  func.stats(tData);
+  func.prepLayout(tData);
+  let items = [];//func.present(tData);
+  await func.stats(tData);
   if (tData.status == 'over') { showGameover(tData, 'dTitle'); return; }
   assertion(tData.status == 'started', `showTable status ERROR ${tData.status}`);
   // await updateTestButtonsLogin(table.playerNames);

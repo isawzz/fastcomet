@@ -4701,7 +4701,7 @@ function showTitle(title, dParent = 'dTitle') {
   return mDom(dParent, { maleft: 20 }, { tag: 'h1', html: title, classes: 'title' });
 }
 function showTitleGame(table) {
-  let d = mBy('dExtraLeft');
+  let d = mBy('dTitle'); mClear(d);
   let html = `${MGetGame(table.game).friendly.toUpperCase()}: ${table.friendly}`;
   mDom(d, { maleft: 10, family: 'algerian' }, { html });
 }
@@ -4721,14 +4721,14 @@ function showTrick() {
     zIndex += 1;
   }
 }
-function showUserImage(uname, d, sz = 40) {
+async function showUserImage(uname, d, sz = 40) {
   let u = MGetUser(uname);
   let key = u.imgKey;
   let m = M.superdi[key];
   if (nundef(m)) {
     key = 'unknown_user';
   }
-  return mKey(key, d, { 'object-position': 'center top', 'object-fit': 'cover', h: sz, w: sz, round: true, border: `${u.color} 3px solid` });
+  return await mKey(key, d, { 'object-position': 'center top', 'object-fit': 'cover', h: sz, w: sz, round: true, border: `${u.color} 3px solid` });
 }
 function showValidMoves(table) {
   if (nundef(table.moves)) { console.log('no moves yet!'); return; }
@@ -5288,23 +5288,6 @@ async function uiTypePalette(dParent, color, fg, src, blendMode) {
       NewValues.bg = item.bg;
     }
   }
-}
-function uiTypePlayerStats(table, me, dParent, layout, styles = {}) {
-  let dOuter = mDom(dParent); dOuter.setAttribute('inert', true); //console.log(dOuter)
-  if (layout == 'rowflex') mStyle(dOuter, { display: 'flex', justify: 'center' });
-  else if (layout == 'col') mStyle(dOuter, { display: 'flex', dir: 'column' });
-  addKeys({ rounding: 10, bg: '#00000050', margin: 4, box: true, 'border-style': 'solid', 'border-width': 2 }, styles);
-  let show_first = me;
-  let order = arrCycle(table.plorder, table.plorder.indexOf(show_first));
-  let items = {};
-  for (const name of order) {
-    let pl = table.players[name];
-    styles['border-color'] = pl.color;
-    let d = mDom(dOuter, styles, { id: name2id(name) })
-    let img = showUserImage(name, d, 40); mStyle(img, { box: true })
-    items[name] = { div: d, img, name };
-  }
-  return items;
 }
 function uiTypeRadios(lst, d, styles = {}, opts = {}) {
   let rg = mRadioGroup(d, {}, 'rSquare', 'Resize (cropped area) to height: '); mClass(rg, 'input');

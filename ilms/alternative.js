@@ -3,11 +3,13 @@ function defaultGameFunc() {
 	function setup(table) { let fen = { players: table.players, turn: [table.owner] }; delete table.players; }
 	function present(dParent, table) { mClear('dMain'); } //showMessage(`BINGO!!! ${table.friendly} view ${name}: NOT IMPLEMENTED!!!!!`,1000); } 
 	async function activate(table) { console.log('activate for', getUname()) }
+	async function stats(table) { console.log('stats for', getUname()) }
 	function checkGameover(table) { return false; }
 	async function hybridMove(table) { console.log('hybrid moves for', getUname()) }
 	async function botMove(table) { console.log('robot moves for', getUname()) }
+	function prepLayout(table) { presentStandardRoundTable(table); }
 	async function stepComplete(table, o) { console.log(`integrate if step complete for ${table.friendly}`); }
-	return { setup, activate, checkGameover, present, hybridMove, botMove, stepComplete };
+	return { stats, prepLayout, setup, activate, checkGameover, present, hybridMove, botMove, stepComplete };
 }
 
 function button96() {
@@ -23,7 +25,8 @@ function button96() {
 		table.turn = jsCopy(table.playerNames);
 		return fen;
 	}
-	function stats(table) {
+	function prepLayout(table) { presentStandardRoundTable(table); }
+	async function stats(table) {
 		let [me, players] = [getUname(), table.players];
 		let style = { patop: 8, mabottom: 20, wmin: 80, bg: 'beige', fg: 'contrast' };
 		let player_stat_items = uiTypePlayerStats(table, me, 'dStats', 'rowflex', style)
@@ -94,7 +97,7 @@ function button96() {
 		if (succeed) o.stepIfValid = step + 1;
 		let res = await mPostRoute('table', o);
 	}
-	return { setup, present, stats, activate };
+	return { prepLayout, setup, present, stats, activate };
 }
 
 function setgame() {
@@ -110,10 +113,13 @@ function setgame() {
 		table.turn = jsCopy(table.playerNames);
 		return fen;
 	}
-	function stats(table) {
-		let [me, players] = [getUname(), table.players];
-		let style = { patop: 8, mabottom: 20, wmin: 80, bg: 'beige', fg: 'contrast' };
-		let player_stat_items = uiTypePlayerStats(table, me, 'dStats', 'rowflex', style)
+	function prepLayout(table) { presentStandardRoundTable(table); }
+	async function stats(table) {
+		let [me, players] = [UGetName(), table.players];
+		let style = { patop: 8, mabottom: 20, wmin: 80, hmin:90, bg: 'beige', fg: 'contrast' }; 
+		//mDom('dStats',style); return;
+		let player_stat_items = await uiTypePlayerStats(table, me, 'dStats', 'rowflex', style);
+		return;
 		for (const plname in players) {
 			let pl = players[plname];
 			let item = player_stat_items[plname];
@@ -123,7 +129,6 @@ function setgame() {
 		}
 	}
 	function present(table) {
-		presentStandardRoundTable(table);
 		const colors = { red: '#e74c3c', green: '#27ae60', purple: 'indigo' };
 		setLoadPatterns('dPage', colors);
 		let fen = table.fen;
@@ -326,6 +331,6 @@ function setgame() {
 		if (isSet) o.stepIfValid = step + 1;
 		let res = await mPostRoute('table', o); //console.log(res);
 	}
-	return { setup, present, stats, activate, hasInstruction: false };
+	return { prepLayout, setup, present, stats, activate, hasInstruction: false };
 }
 

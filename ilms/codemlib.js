@@ -517,13 +517,15 @@ function mLayoutTopExtraSpaceBetween(dParent) {
   let [dTopLeft, dTopMiddle, dTopRight] = [mDom('dTop', {}, { id: 'dTopLeft' }), mDom('dTop', {}, { id: 'dTopMiddle' }), mDom('dTop', {}, { id: 'dTopRight' })]
   let [dExtraLeft, dExtraMiddle, dExtraRight] = [mDom('dExtra', {}, { id: 'dExtraLeft' }), mDom('dExtra', {}, { id: 'dExtraMiddle' }), mDom('dExtra', {}, { id: 'dExtraRight' })]
 }
-function mLayoutTopExtraMessageTitle(dParent) {
+function mLayoutTopTestExtraMessageTitle(dParent) {
   dParent = toElem(dParent);
   mStyle(dParent, {}, { id: 'dOuterTop' });
   let dTop = mDom(dParent, { display: 'flex', justify: 'space-between' }, { id: 'dTop' });
+  let dTest = mDom(dParent, { display: 'flex', justify: 'space-between', hpadding:10 }, { id: 'dTest' });
   let dExtra = mDom(dParent, { display: 'flex', justify: 'space-between' }, { id: 'dExtra' });
   let dMessage = mDom(dParent, { h:0,bg:'red',fg:'yellow' }, { id: 'dMessage' });
   let [dTopLeft, dTopMiddle, dTopRight] = [mDom('dTop', {}, { id: 'dTopLeft' }), mDom('dTop', {}, { id: 'dTopMiddle' }), mDom('dTop', {}, { id: 'dTopRight' })]
+  let [dTestLeft, dTestMiddle, dTestRight] = [mDom('dTest', {}, { id: 'dTestLeft' }), mDom('dTest', {}, { id: 'dTestMiddle' }), mDom('dTest', {}, { id: 'dTestRight' })]
   let [dExtraLeft, dExtraMiddle, dExtraRight] = [mDom('dExtra', {}, { id: 'dExtraLeft' }), mDom('dExtra', {}, { id: 'dExtraMiddle' }), mDom('dExtra', {}, { id: 'dExtraRight' })]
   mDom(dExtraLeft,{},{id:'dTitle'});
 }
