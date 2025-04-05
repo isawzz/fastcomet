@@ -14,7 +14,11 @@ async function test4_game0() {
 
 	await loadAssetsStatic(); //console.log('tables', M.tables); return;
 	await loadTables();
-	let elems = mLayoutTM('dPage'); mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain'); mLayoutTopExtraSpaceBetween('dTop'); mFlexV('dTop'); //mStyle('dTop', { hmin: 32 }); mStyle('dExtra', { hmin: 32 })
+	let elems = mLayoutTM('dPage'); mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain'); 
+
+	mLayoutTopExtraMessageTitle('dTop'); mFlexV('dTop'); //mStyle('dTop', { hmin: 32 }); mStyle('dExtra', { hmin: 32 })
+
+
 	let names = ['amanda', 'felix', 'lauren', 'mimi', 'gul']; let d = mBy('dExtraRight');
 	for (const name of names) { let b = mDom(d, { className: 'button' }, { tag: 'button', html: name, onclick: async () => await switchToUser(name) }); }
 
@@ -29,7 +33,7 @@ async function test4_game0() {
 
 	mDom(dExtraLeft, { w: 20, bg: 'green', opacity: 0, display: 'inline' }, { html: ' | ' });
 
-	mDom(dExtraLeft, { className: 'button', maleft: 10 }, { tag: 'button', html: 'create', onclick: async () => await tableCreate() });
+	//mDom(dExtraLeft, { className: 'button', maleft: 10 }, { tag: 'button', html: 'create', onclick: async () => await tableCreate() });
 	mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'delete', onclick: async () => await tablesDeleteAll() });
 	// mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'load', onclick: async () => await tableLoad() });
 	// mDom(dExtraLeft, { className: 'button' }, { tag: 'button', html: 'present', onclick: async () => {let t=await tableLoad(); tablePresent(t); } });

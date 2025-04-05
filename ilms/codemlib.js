@@ -86,7 +86,7 @@ function mClassToggle(d, classes) {
   for (const c of wlist) if (d.classList.contains(c)) mClassRemove(d, c); else mClass(d, c);
 }
 function mClear(d) {
-  toElem(d).innerHTML = '';
+  d=toElem(d); if (d) d.innerHTML = '';
 }
 async function mCollapse(divs, dParent, styles = {}) {
   function collapseOne(div) {
@@ -516,6 +516,16 @@ function mLayoutTopExtraSpaceBetween(dParent) {
   let dExtra = mDom(dParent, { display: 'flex', justify: 'space-between' }, { id: 'dExtra' });
   let [dTopLeft, dTopMiddle, dTopRight] = [mDom('dTop', {}, { id: 'dTopLeft' }), mDom('dTop', {}, { id: 'dTopMiddle' }), mDom('dTop', {}, { id: 'dTopRight' })]
   let [dExtraLeft, dExtraMiddle, dExtraRight] = [mDom('dExtra', {}, { id: 'dExtraLeft' }), mDom('dExtra', {}, { id: 'dExtraMiddle' }), mDom('dExtra', {}, { id: 'dExtraRight' })]
+}
+function mLayoutTopExtraMessageTitle(dParent) {
+  dParent = toElem(dParent);
+  mStyle(dParent, {}, { id: 'dOuterTop' });
+  let dTop = mDom(dParent, { display: 'flex', justify: 'space-between' }, { id: 'dTop' });
+  let dExtra = mDom(dParent, { display: 'flex', justify: 'space-between' }, { id: 'dExtra' });
+  let dMessage = mDom(dParent, { h:0,bg:'red',fg:'yellow' }, { id: 'dMessage' });
+  let [dTopLeft, dTopMiddle, dTopRight] = [mDom('dTop', {}, { id: 'dTopLeft' }), mDom('dTop', {}, { id: 'dTopMiddle' }), mDom('dTop', {}, { id: 'dTopRight' })]
+  let [dExtraLeft, dExtraMiddle, dExtraRight] = [mDom('dExtra', {}, { id: 'dExtraLeft' }), mDom('dExtra', {}, { id: 'dExtraMiddle' }), mDom('dExtra', {}, { id: 'dExtraRight' })]
+  mDom(dExtraLeft,{},{id:'dTitle'});
 }
 function mLinebreak(dParent, gap = 0) {
   dParent = toElem(dParent);

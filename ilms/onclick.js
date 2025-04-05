@@ -6,7 +6,9 @@ async function onclickStartGame() {
   await startGame(DA.gamename, players, options);
 }
 async function onclickTable(id) {
-  let tData = await tableLoad(id); tablePresent(tData);
+  showTable(id);
+  // let tData = await tableLoad(id); 
+  // tablePresent(tData); DA.pollFunc = "showTable";
 }
 async function onclickTableDelete(id) {
   let res = await mPhpPost('game_user', { action: 'deletey', file:`tables/${id}` });
