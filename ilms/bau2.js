@@ -1,5 +1,6 @@
 
 async function pollResume(ms){
+	return;
 	pollStop();
 	DA.polling = true;
 

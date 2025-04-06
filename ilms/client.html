@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>WebSocket Client</title>
+</head>
+
+<body>
+	<h2>WebSocket Client</h2>
+	<input id="message" type="text" placeholder="Type a message">
+	<button onclick="sendMessage()">Send</button>
+	<div id="output"></div>
+
+	<script>
+		const socket = new WebSocket("ws://localhost:8081");
+
+		socket.onopen = () => console.log("Connected to WebSocket server");
+		socket.onmessage = event => {
+			document.getElementById("output").innerHTML += `<p>${event.data}</p>`;
+		};
+		socket.onclose = () => console.log("Disconnected from server");
+
+		function sendMessage() {
+			const msg = document.getElementById("message").value;
+			console.log('...sending message',msg)
+			socket.send(msg);
+		}
+	</script>
+</body>
+
+</html>

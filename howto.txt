@@ -1,4 +1,13 @@
 
+_______ php sockets
+local:
+- edit c:/xampp/php.ini
+- uncomment line: extension=sockets
+- save, restart xampp: apache and mssql 
+
+- install Ratchet:
+
+
 _______ FASTCOMET
 - fastcomet kann static .yaml files laden!!!!!!! (aus public_html)
 ____ created test0/app.js: www.moxito.online/test0

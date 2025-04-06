@@ -1,11 +1,13 @@
 
 onload = start;
 
-async function start() { await test4_game0(); }
+async function start() { await test4_game1(); }
 
+async function test4_game1() {
+}
 async function test4_game0() {
 
-	DA.gamelist = ['setgame','button96']; //'accuse aristo bluff ferro fishgame fritz huti lacuna nations setgame sheriff spotit wise'; if (DA.TEST0) gamelist += ' a_game'; gamelist = toWords(gamelist);
+	DA.gamelist = ['setgame', 'button96']; //'accuse aristo bluff ferro fishgame fritz huti lacuna nations setgame sheriff spotit wise'; if (DA.TEST0) gamelist += ' a_game'; gamelist = toWords(gamelist);
 	DA.funcs = { setgame: setgame(), button96: button96() }; //implemented games!
 	for (const gname in DA.gamelist) {
 		if (isdef(DA.funcs[gname])) continue;
@@ -14,7 +16,7 @@ async function test4_game0() {
 
 	await loadAssetsStatic(); //console.log('tables', M.tables); return;
 	await loadTables();
-	let elems = mLayoutTM('dPage'); mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain'); 
+	let elems = mLayoutTM('dPage'); mStyle('dMain', { overy: 'auto' }); mCenterFlex('dMain');
 
 	mLayoutTopTestExtraMessageTitle('dTop'); mFlexV('dTop'); //mStyle('dTop', { hmin: 32 }); mStyle('dExtra', { hmin: 32 })
 
@@ -28,9 +30,9 @@ async function test4_game0() {
 	await switchToUser(username);
 
 	//testbuttons
-	d=mBy('dTestLeft');
-	mDom(d, { className: 'button',bg:'green' }, { tag: 'button', html: 'POLL', onclick: pollResume });
-	mDom(d, { className: 'button',bg:'red' }, { tag: 'button', html: 'STOP', onclick: pollStop});
+	d = mBy('dTestLeft');
+	mDom(d, { className: 'button', bg: 'green' }, { tag: 'button', html: 'POLL', onclick: pollResume });
+	mDom(d, { className: 'button', bg: 'red' }, { tag: 'button', html: 'STOP', onclick: pollStop });
 
 	mDom(d, { w: 20, bg: 'green', opacity: 0, display: 'inline' }, { html: ' | ' });
 
@@ -43,11 +45,11 @@ async function test4_game0() {
 	mDom(d, { className: 'button' }, { tag: 'button', html: 'games', onclick: showGames });
 	mDom(d, { className: 'button' }, { tag: 'button', html: 'tables', onclick: async () => await showTables() });
 
-	// await showTables();
+	await showTables(); return;
 	//await showGames();
 	//await showGameMenu('setgame');
 
-  DA.pollFunc = 'showTables';
+	DA.pollFunc = 'showTables';
 	DA.pollms = 3000;
 	DA.pollCounter = 0;
 	DA.polling = false;

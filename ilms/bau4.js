@@ -10,7 +10,15 @@ async function uiTypePlayerStats(table, me, dParent, layout, styles = {}) {
 	//return items;
   for (const name of order) {
     let pl = table.players[name];
-    styles['border-color'] = 'red'; pl.color;
+
+		// let c=colorO(pl.color); console.log('color',c);//w3colorHexToHsl01Array
+		// let hsl=c.toHsl();console.log('hsl',hsl);//w3colorHexToHsl01Array
+		let chex=colorFrom(pl.color);
+		let [h,s,l]=colorHexToHsl01Array(chex); console.log('light',name,l)
+		l=clamp(l,0.35,0.65); console.log('=>', name, l);
+		let cFinal=colorFromHsl(h, s,l);
+
+    styles['border-color'] = cFinal; //'red'; //pl.color;
     let d = mDom(dOuter, styles, { id: name2id(name) });
     // let img = await showUserImage(name, d, 40); 
     // mStyle(img, { box: true })
