@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>WebSocket Chat</title>
+	<link rel="icon" href="../assets/img/emo/tulip.png" style="height: 60px" />
+</head>
+
+<body>
+	<h2>WebSocket Chat</h2>
+	<input id="msg" placeholder="Type your message..." />
+	<button onclick="send()">Send</button>
+	<pre id="log"></pre>
+
+	<script>
+		let ws = new WebSocket("ws://localhost:8081");
+
+		ws.onopen = () => log("Connected to chat server");
+
+		ws.onmessage = (e) => log("Received: " + e.data);
+
+		ws.onclose = () => log("Disconnected");
+
+		function send() {
+			const msg = document.getElementById("msg").value;
+			ws.send(msg);
+			log("You: " + msg);
+		}
+
+		function log(msg) {
+			const logArea = document.getElementById("log");
+			logArea.textContent += msg + "\n";
+		}
+	</script>
+</body>
+
+</html>

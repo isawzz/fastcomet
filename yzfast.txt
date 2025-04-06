@@ -1,6 +1,8 @@
 alles ist fuer immer ok - I have left this plane.
 
 ___ 6:39 AM 4/6/2025 airport lib 15.4. 20000
+7:55 AM 4/6/2025
+- connect ssh:
 7:06 AM 4/6/2025
 come on verwende php sockets!!!
 6:50 AM 4/6/2025

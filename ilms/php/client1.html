@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>WebSocket Client</title>
+	<link rel="icon" href="../assets/img/emo/tulip.png" style="height: 60px" />
+</head>
+
+<body>
+	<h2>WebSocket Client</h2>
+	<input id="message" type="text" placeholder="Type a message">
+	<button onclick="sendMessage()">Send</button>
+	<div id="output"></div>
+
+	<script>
+		const ws = new WebSocket("ws://localhost:8081");
+
+		ws.onopen = () => {
+			console.log("Connected!");
+			ws.send("Hello Server!");
+		};
+
+		ws.onmessage = (event) => {
+			console.log("Received:", event.data);
+		};
+	</script>
+</body>
+
+</html>
