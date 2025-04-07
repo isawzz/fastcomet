@@ -1,8 +1,13 @@
 
 onload = start;
 
-async function start() { await test4_game1(); }
+async function start() { await test0_getFiles(); }
 
+async function test0_getFiles(){
+	let res = await mPhpPost('game_user', { action: 'dir', dir: `tables` }, 'ilms',true);
+	console.log('res', res);
+
+}
 async function test4_game1() {
 }
 async function test4_game0() {

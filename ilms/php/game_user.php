@@ -8,6 +8,17 @@ if ($data === null) {
     exit;
 }
 
+if ($data['action'] === 'dir' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $files = scandir(YDIR . $data['dir']);
+    echo json_encode(["data" => $data, "dir" => $files]); die;
+    foreach ($files as $file) {
+        if ($file !== '.' && $file !== '..') {
+            echo $file . "\n";
+        }
+    }
+    exit;
+}
+
 if ($data['action'] === 'savey' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $path = YDIR . $data['file'] . '.yaml';
     $o = $data['o']; 

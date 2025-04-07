@@ -529,8 +529,7 @@ app.post('/ask_list_no', async (req, res) => {
 	fs.writeFileSync(listsFile, y, 'utf8');
 	res.json(list);
 });
-
-//#_endregion
+//#endregion
 
 //#region socket io
 const http = require('http');
@@ -543,6 +542,7 @@ const clients = {};
 io.on('connection', (client) => {
 	clients[client.id] = client;
 	client.on('userChange', x => handle_userChange(x, client.id));
+	client.on('move', x => handle_move(x, client, client.id));
 	client.on('disconnect', x => handle_disconnect(x, client.id));
 });
 function handle_disconnect(x, id) {
@@ -552,6 +552,10 @@ function handle_disconnect(x, id) {
 	if (isList(idlist)) removeInPlace(idlist, id);
 	// for(const k in Spectators){removeInPlace(Spectators[k],uname)}
 	io.emit('message', `${uname} left`);
+}
+function handle_move(x, socket, id){
+	io.emit("move", x); 
+	socket.broadcast.emit("move", {move:x,id});
 }
 function handle_userChange(x, id) {
 	if (x.oldname == x.newname) { console.log('no change:', x.oldname); return; }
