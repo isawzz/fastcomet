@@ -1,7 +1,7 @@
 
 onload = start;
 
-async function start() { await test0_getFiles(); }
+async function start() { await test4_game0(); }
 
 async function test0_getFiles(){
 	let res = await mPhpPost('game_user', { action: 'dir', dir: `tables` }, 'ilms',true);
@@ -50,8 +50,8 @@ async function test4_game0() {
 	mDom(d, { className: 'button' }, { tag: 'button', html: 'games', onclick: showGames });
 	mDom(d, { className: 'button' }, { tag: 'button', html: 'tables', onclick: async () => await showTables() });
 
-	await showTables(); return;
-	//await showGames();
+	await showGames();
+	await showTables(); 
 	//await showGameMenu('setgame');
 
 	DA.pollFunc = 'showTables';
